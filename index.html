@@ -1,57 +1,217 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<style type="text/css">
-			* { font-family: Tahoma; }
-			#Information { background: #EEE; padding: 10px 20px; }
-			#Information p { font-size: 12px;}
-			.footnote { font-size: 10px; }
-		</style>
-	</head>
-	<body>
-		<img src="Images/GreatHall.jpg" />
-		<h1>Great Hall Lunch Menu</h1>
-		<h2>Welcome to the Great Hall at Hogwarts</h2>
-		<div id="Information">
-			<p><strong>Please Note:</strong></p>
-			<p>Breakfast, lunch and <a href="DinnerMenu.html">dinner</a> are served here in the Great Hall. All of Hogwarts' students are to eat their meals together with their respective Houses. If you receive an owl post please clean up after any mess made by said owl. Please finish your lunch meal by 12:30p.m. and vacate the hall. The <u>Divination Workshop</u> starts at 12:45p.m.<sup>1</sup></p>
-			<p><em>All beverages including H<sub>2</sub>0 must be consumed prior to leaving the Great Hall.</em></p>
-		</div>
-		<div id="LunchOptions">
-			<h3>Lunch Options</h3>
-			<p>Each option comes with your choice of beverage plus a side of Dragon Tartare and one desert.</p>
-			<ol>
-				<li>Roast Chicken</li>
-				<li>Steak-and-Kidney Pudding</li>
-				<li>Stoat Sandwich</li>
-				<li>Picie Puffs (cereal)</li>
-				<li>Cherri Owls (cereal)</li>
-			</ol>
-		</div>
-		<div id="Desserts">
-			<h3>Desserts</h3>
-			<ul>
-				<li>Cauldron Cake</li>
-				<li>Rock Cake</li>
-				<li>Treacle Tart</li>
-				<li>Chocolate Frog</li>
-			</ul>
-		</div>
-		<div id="Beverage">
-			<h3>Beverages</h3>
-			<ul>
-				<li>McSpratts</li>
-				<li>Butterbeer</li>
-				<li>Exploding Lemonade</li>
-				<li>Gillywater</li>
-				<li>Pumpkin Juice</li>
-			</ul>
-		</div>
-		<h4>Location</h4>
-		<p>Hogwarts Castle<br> Scotland<br> United Kingdom</p>
-		<hr>
-		<p class="footnote">
-			<sup>1</sup>A sign on the Gryffindor Tower
-		</p>
-	</body>
+
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>About Me &#8211; Introduce Me</title>
+
+<meta name="keywords" content="about">
+
+
+<!-- Twitter Cards -->
+<meta name="twitter:title" content="About Me">
+
+<meta name="twitter:site" content="@drob">
+<meta name="twitter:creator" content="@drob">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://varianceexplained.org/images/default-thumb.png">
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="About Me">
+
+<meta property="og:url" content="http://varianceexplained.org/about/">
+<meta property="og:site_name" content="Variance Explained">
+
+
+
+
+
+<link rel="canonical" href="http://varianceexplained.org/about/">
+<link href="http://varianceexplained.org/feed.xml" type="application/atom+xml" rel="alternate" title="Variance Explained Feed">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://varianceexplained.org/assets/css/main.css">
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- HTML5 Shiv and Media Query Support -->
+<!--[if lt IE 9]>
+	<script src="http://varianceexplained.org/assets/js/vendor/html5shiv.min.js"></script>
+	<script src="http://varianceexplained.org/assets/js/vendor/respond.min.js"></script>
+<![endif]-->
+
+<!-- Modernizr -->
+<script src="http://varianceexplained.org/assets/js/vendor/modernizr-2.7.1.custom.min.js"></script>
+
+<!-- MathJax -->
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<link href='//fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700%7CPT+Serif:400,700,400italic' rel='stylesheet' type='text/css'>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="http://varianceexplained.org/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="http://varianceexplained.org/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="http://varianceexplained.org/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://varianceexplained.org/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://varianceexplained.org/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://varianceexplained.org/images/apple-touch-icon-144x144-precomposed.png">
+
+<!-- Google Analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-57723549-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</head>
+
+<body class="page">
+
+<!--[if lt IE 9]><div class="browser-upgrade alert alert-info">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div><![endif]-->
+
+<div class="navigation-wrapper">
+	<div class="site-name">
+		<a href="http://varianceexplained.org">LiXin Wu Home</a>
+	</div><!-- /.site-name -->
+	<div class="top-navigation">
+
+	</div><!-- /.top-navigation -->
+</div><!-- /.navigation-wrapper -->
+
+
+
+<div id="main" role="main">
+  <div class="article-author-side">
+    
+
+
+	<img src="wulixin.jpg" class="bio-photo" alt="my photo">
+
+<h3>武利鑫</h3>
+<p>A Young Data Scientist , works in R and Python/SAS.</p>
+<a href="mailto:wlx521@outlook.com" class="author-social" target="_blank"><i class="fa fa-envelope-square"></i> Email</a>
+<a href="http://github.com/wulixin" class="author-social" target="_blank"><i class="fa fa-github"></i> Github</a>
+<a href="https://www.linkedin.com/in/利鑫-武-681711108" class="author-social" target="_blank"><i class="fa fa-linkedin"></i> Linkedin</a>
+
+
+<h4>Subscribe</h4>
+
+<form method='post' action='http://blogtrottr.com'>
+    <input type='text' name='btr_email' placeholder = 'Your email'/><br />
+    <input type='hidden' name='btr_url' value='http://varianceexplained.org/feed.xml' />
+    <input type='hidden' name='schedule_type' value='0' />
+    <input type='submit' class="styled-button-4" value='Subscribe to this blog' />
+</form>
+
+<style type="text/css"> 
+.styled-button-4 {
+	-webkit-box-shadow:rgba(0,0,0,0.98) 0 1px 0 0;
+	-moz-box-shadow:rgba(0,0,0,0.98) 0 1px 0 0;
+	box-shadow:rgba(0,0,0,0.98) 0 1px 0 0;
+	background-color:#EEE;
+	border-radius:0;
+	-webkit-border-radius:0;
+	-moz-border-radius:0;
+	border:1px solid #999;
+	color:#666;
+	font-family:'Lucida Grande',Tahoma,Verdana,Arial,Sans-serif;
+	font-size:11px;
+	font-weight:700;
+	padding:2px 6px;
+	height:28px
+}
+</style>
+
+
+<h4>Recommended My Blogs</h4>
+<ul>
+    <li><a href="https://www.datacamp.com/community/blog">基金评级与分析</a></li>
+    <li><a href="http://www.r-bloggers.com/">抖音用户情感分析</a></li>
+    <li><a href="http://blog.rstudio.org/">SAS专业分析报告</a></li>
+    <li><a href="http://r4stats.com/">共享单车多维度数据挖掘</a></li>
+    <li><a href="http://simplystatistics.org/">市场营销高阶模型</a></li>
+</ul>
+
+  </div>
+  <article class="page">
+    <h1>自我介绍/About Me</h1>
+    <div class="article-wrap">
+      <p>我是一名年轻的数据科学家,拥有敏锐的市场嗅觉,对数据科学充满激情,是一名 R 和 python 的深度学习者,拥有自己的知识库,资源库,跟随国外多名数据科学家学习,能够快速学习国外新的预测技术与算法.同时能够运用 SAS, IBM 平台进行数据挖掘,科学建模,深度学习,数据可视化,基于商业需求策划出可供执行的商业方案.在量化金融,反欺诈算法,信用风险评估,市场营销,推荐算法,自动化报表与数据可视化有深入的研究.</p>
+
+     <p>我是互联网教育的受益者,Coursera,Udemy,在线教育平台,让我有机会成长为一名跨专业综合型人才,大学期间完成了300+课程,打开了自己的视野,成为一个有想法,勇于实践的青年. 在华裔数据科学家<a href="https://github.com/happyrabbit">HUI LIN </a>的启蒙与帮助下,走进了数据科学的大门,开启了自己数据科学家的旅程,期待有一天也可以推动开源事业的发展.</p>
+    <p>2017.3-2019.1期间,在民生银行深圳运营部工作,在这里我打通了数据科学在客户管理,精准营销与量化金融的应用,对于KPI,自动化报表,dashboard有了进一步的学习与收获.</p>
+
+<h1 id="books">教育经历/Education</h1>
+<ul>
+  <li>2013.9.1-2017.7.1 <a href="https://www.amazon.com/gp/product/1491981652/"> 湖北经济学院 </a>市场营销专业,学习市场营销,渠道管理,服务营销,消费者心理学,客户管理,市场营销调研等系统课程.本专业为国家级别重点专业.</li>
+  <li>2013.9.1-2017.7.1 网易云课堂 完成IBA：经济通识,小微贷款实务微专业学习</li>
+  <li>2013.9.1-2016.7.1 Coursera  完成IE Business School 品牌和产品管理专项课程，University of New Mexico 的International Business等专项课程</li>
+  <li>2016.9.1-2017.1.1 CDA学院 数据挖掘工程师</li>
+</ul>
+
+<h1 id="software">项目成果/Projects</h1>
+
+<ul>
+  <li> 客户管理领域: 客户画像,客户全景视图,客户生命周期模型,新一代客户标签升级.</li>
+  <li> 精准营销领域：响应模型,事件营销,基于推荐算法的补缺营销,市场细分,产品定位,消费者选择高阶模型,EFA,CFA 因子分析及结构化模型</li>
+  <li> 量化金融领域: 基于开源 API 构建稳定的 Pipeline 大型数据处理与分析,搭建基金与股票自动化分析系统.通过文本数据,图形数据构建市场投资情绪趋势图,情感词频,词云,关键词汇分析,挖掘投资热点 topics,基于热点概念与板块挖掘与分析相关股票.拥有业内较为先进的财富管理方案的设计</li>
+</ul>
+
+<h1 id="publications">论文/文章发表</h1>
+
+<ol>
+  <li>武利鑫, <strong>叶敏(导师),</strong> <a href="https://mp.weixin.qq.com/s/36E2tsmPKxZIf1qYRdBnSQ
+">基于RFM数据挖掘的客户动态价值管理.</a> <em>知网</em> 2017,7,1.</li>
+  <li><strong>Lixin Wu</strong> (2018) <a href="https://mp.weixin.qq.com/s/3u-RxcP_XpK6Np49EdYgjA">共享单车多维度数据挖掘与可视化</a></li>
+</ol>
+
+<h1 id="links">Links</h1>
+
+<ul>
+  <li>
+    <p><a href="https://github.com/wulixin">My github</a></p>
+  </li>
+</ul>
+
+<p>My Public Wecha
+<img src="wechat.png" width="208" height="58" alt="wechat" title="my wechat photo" />
+</p>
+
+<div class="footer-wrap">
+  <footer>
+    
+
+<span>&copy; 2019 Lxin Wu Good Lucky.</span>
+
+  </footer>
+</div><!-- /.footer-wrap -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="http://varianceexplained.org/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="http://varianceexplained.org/assets/js/scripts.min.js"></script>
+</body>
 </html>
