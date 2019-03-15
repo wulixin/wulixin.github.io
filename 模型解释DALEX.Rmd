@@ -1,0 +1,176 @@
+---
+title: "探索模型解释的标准化流程"
+author: "LIXINWU"
+date: "2019年3月14号"
+output: html_document
+---
+
+```{r setup,echo=FALSE,message=FALSE, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(DT)
+library(DALEX)
+library(dplyr)
+library(tidyr)
+library(tidyverse)
+library(survival)
+```
+
+#Build A Model
+    通过泰坦尼克号生存的数据进行挖掘,建立模型,探索模型解释的标准化维度.
+
+## Model for Titanic survival 
+
+```{r message=FALSE,echo=FALSE,warning=FALSE}
+# prepare model
+library(randomForest)
+load("D:/R_pluraslight/titanic.rda")
+titanic <- na.omit(titanic)
+model_titanic_rf <- randomForest(survived=="yes" ~ gender + age + class+embarked+ fare + sibsp + parch,  data = titanic)
+model_titanic_rf
+```
+
+
+
+##Explanier for Titanic survival 
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+explain_titanic_rf <- explain(model_titanic_rf, 
+                      data = titanic[,-9],
+                      y = titanic$survived == "yes", 
+                      label = "Random Forest v7")
+```
+
+
+##Variable importance plots
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+vi_rf <- variable_importance(explain_titanic_rf)
+#head(vi_rf)
+plot(vi_rf)
+```
+
+##Variable effects
+
+###Age 
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+vr_age  <- variable_response(explain_titanic_rf, variable =  "age")
+#head(vr_age)
+plot(vr_age, use_facets = TRUE)
+```
+
+###Class
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+vr_class  <- variable_response(explain_titanic_rf, variable =  "class")
+plot(vr_class)
+```
+
+###Fare
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+vr_fare  <- variable_response(explain_titanic_rf, variable =  "fare")
+plot(vr_fare, use_facets = TRUE)
+```
+
+###Embarked
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+vr_embarked  <- variable_response(explain_titanic_rf, variable =  "embarked")
+plot(vr_embarked)
+```
+
+##Instance level explanations
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+new_passanger <- data.frame(
+  class = factor("1st", levels = c("1st", "2nd", "3rd", "deck crew", "engineering crew", "restaurant staff", "victualling crew")),
+  gender = factor("male", levels = c("female", "male")),
+  age = 8,
+  sibsp = 0,
+  parch = 0,
+  fare = 72,
+  embarked = factor("Southampton", levels = c("Belfast", "Cherbourg", "Queenstown", "Southampton"))
+)
+
+sp_rf <- single_prediction(explain_titanic_rf, new_passanger)
+plot(sp_rf)
+```
+
+#More Models 
+###Logistic regression 
+
+```{r echo=FALSE,WARNONG=FALSE,message=FALSE}
+library("rms")
+model_titanic_lmr <- lrm(survived == "yes" ~ class + gender + rcs(age) + sibsp +
+                   parch + fare + embarked, titanic)
+explain_titanic_lmr <- explain(model_titanic_lmr, data = titanic, 
+                       y = titanic$survived == "yes", 
+                       predict_function = function(m,x) predict(m, x, type="fitted"),
+                       label = "Logistic regression")
+```
+
+
+###Generalized Boosted Models 
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+library("gbm")
+model_titanic_gbm <- gbm(survived == "yes" ~ class + gender + age + sibsp +
+                     parch + fare + embarked, data = titanic, n.trees = 15000)
+
+explain_titanic_gbm <- explain(model_titanic_gbm, data = titanic, 
+                       y = titanic$survived == "yes", 
+                       predict_function = function(m,x) predict(m, x, n.trees = 15000, type = "response"),
+                       label = "Generalized Boosted Models")
+```
+
+###Support Vector Machines (SVM)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+library("e1071")
+model_titanic_svm <- svm(survived == "yes" ~ class + gender + age + sibsp +
+                     parch + fare + embarked, data = titanic, 
+             type = "C-classification", probability = TRUE)
+explain_titanic_svm <- explain(model_titanic_svm, data = titanic, 
+                       y = titanic$survived == "yes", 
+                       label = "Support Vector Machines")
+```
+
+###k-Nearest Neighbours (kNN)
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library("caret")
+model_titanic_knn <- knn3(survived == "yes" ~ class + gender + age + sibsp +
+                     parch + fare + embarked, data = titanic, k = 5)
+explain_titanic_knn <- explain(model_titanic_knn, data = titanic, 
+                       y = titanic$survived == "yes", 
+                       predict_function = function(m,x) predict(m, x)[,2],
+                       label = "k-Nearest Neighbours")
+###Variable performance
+vi_rf <- variable_importance(explain_titanic_rf)
+vi_lmr <- variable_importance(explain_titanic_lmr)
+vi_gbm <- variable_importance(explain_titanic_gbm)
+vi_svm <- variable_importance(explain_titanic_svm)
+vi_knn <- variable_importance(explain_titanic_knn)
+
+plot(vi_rf, vi_lmr, vi_gbm, vi_svm, vi_knn, bar_width = 4)
+```
+
+###Single variable 
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+vr_age_rf  <- variable_response(explain_titanic_rf, variable =  "age")
+vr_age_lmr  <- variable_response(explain_titanic_lmr, variable =  "age")
+vr_age_gbm  <- variable_response(explain_titanic_gbm, variable =  "age")
+vr_age_svm  <- variable_response(explain_titanic_svm, variable =  "age")
+vr_age_knn  <- variable_response(explain_titanic_knn, variable =  "age")
+plot(vr_age_rf, vr_age_lmr, vr_age_gbm, vr_age_svm, vr_age_knn)
+```
+
+
+###Instance level explanations
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+sp_rf <- single_prediction(explain_titanic_rf, new_passanger)
+sp_lmr <- single_prediction(explain_titanic_lmr, new_passanger)
+sp_gbm <- single_prediction(explain_titanic_gbm, new_passanger)
+sp_svm <- single_prediction(explain_titanic_svm, new_passanger)
+sp_knn <- single_prediction(explain_titanic_knn, new_passanger)
+plot(sp_rf, sp_lmr, sp_gbm, sp_svm, sp_knn)
+```
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+sessionInfo()
+```
