@@ -1,0 +1,235 @@
+/*-------------------------------------------------------
+  Global stylesheet
+---------------------------------------------------------*/
+/*-------------------------------------------------------
+  Variables & Mixins
+---------------------------------------------------------*/
+/* Variables
+---------------------------------------------------------*/
+/* Colors */
+/* Font sizing */
+/* Typeface */
+/* Helper Styles
+---------------------------------------------------------*/
+.list-reset {
+  margin: 0;
+  padding: 0;
+  list-style-type: none; }
+
+.sans-serif {
+  font-family: "Open Sans", sans-serif; }
+
+.cursive {
+  font-family: "Pacifico", cursive; }
+
+/*-------------------------------------------------------
+  Base styles
+---------------------------------------------------------*/
+/* 
+  Apply a natural box layout model to all elements, 
+  but allowing components to change.
+  http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+*/
+html {
+  box-sizing: border-box; }
+
+*, *:before, *:after {
+  box-sizing: inherit; }
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Open Sans", sans-serif;
+  font-size: 18px; }
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1; }
+
+h1,
+h2 {
+  font-family: "Pacifico", cursive;
+  font-weight: 400; }
+
+h1 {
+  font-size: 48px; }
+
+h2 {
+  font-size: 36px;
+  margin-bottom: 20px; }
+
+h3 {
+  text-transform: uppercase;
+  font-size: 18px; }
+
+a {
+  color: #ed145a;
+  text-decoration: none;
+  display: inline-block; }
+
+a:hover {
+  color: #aaa; }
+
+.content-wrapper {
+  max-width: 930px;
+  width: 80%;
+  margin: 0 auto; }
+
+/*-------------------------------------------------------
+  Modules and standalone components
+---------------------------------------------------------*/
+/* Header styles
+---------------------------------------------------------*/
+/* Global header - includes global nav */
+.global-header {
+  padding: 30px 55px 40px;
+  position: relative; }
+
+.global-nav {
+  position: absolute;
+  top: 40px;
+  right: 55px;
+  font-size: 0; }
+
+.global-nav a {
+  text-transform: uppercase;
+  padding: 10px;
+  font-size: 18px;
+  color: #222; }
+  .global-nav a:hover {
+    color: #ed145a; }
+
+/* Blog post content header */
+.post-header {
+  margin-bottom: 40px; }
+
+.post-header p {
+  margin: 0; }
+
+.post-author {
+  font-size: 14px;
+  text-transform: uppercase; }
+
+.post-date,
+.post-source {
+  font-size: 12px; }
+
+.post-source span {
+  text-transform: uppercase; }
+
+/* Main content area
+---------------------------------------------------------*/
+main {
+  padding-bottom: 60px; }
+
+.feature-img {
+  width: 100%;
+  margin-bottom: 60px; }
+
+/* Buttons */
+article {
+  /* TODO: Could possibly move to base or add class
+  to make specific to this page only?*/
+  position: relative; }
+
+button,
+input[type="submit"] {
+  font-size: 18px;
+  border: none; }
+
+.btn-group {
+  position: absolute;
+  top: 0;
+  right: 0; }
+
+.btn {
+  background: #aaa;
+  color: white;
+  padding: 6px 30px;
+  border-radius: 4px;
+  line-height: 1;
+  vertical-align: top; }
+
+.btn-print,
+.btn-subscribe {
+  background: #ed145a; }
+
+.btn-save {
+  background: #222; }
+
+.btn-share {
+  background: #63bae4; }
+
+/* Homepage teaser */
+.excerpt {
+  overflow: hidden;
+  background: #eee;
+  margin: 20px 0; }
+  .excerpt img {
+    float: left;
+    margin-right: 15px;
+    max-width: 100%; }
+  .excerpt h3 {
+    margin-top: 20px; }
+
+.grid-container {
+  display: flex;
+  flex-wrap: wrap; }
+
+.grid-item {
+  width: 48%;
+  margin-right: 2%;
+  padding: 20px; }
+
+/* Global footer
+---------------------------------------------------------*/
+.global-footer {
+  background: #222;
+  color: white;
+  padding: 40px 0;
+  font-size: 14px;
+  overflow: hidden; }
+
+.global-footer h2 {
+  font-size: 18px; }
+
+.about,
+.credits {
+  width: 50%;
+  float: left; }
+
+.credits {
+  text-align: right; }
+  .credits ul {
+    list-style-type: none; }
+
+/*-------------------------------------------------------
+  Style Guide Page
+---------------------------------------------------------*/
+/* 
+  Only for adding styles for presenting examples and
+  documentation. Make sure these styles don't affect 
+  the components or project styles.
+*/
+.style-guide > h1 {
+  padding: 60px 0; }
+.style-guide section {
+  padding-top: 35px; }
+.style-guide pre {
+  padding: 10px 15px;
+  line-height: 1.4;
+  border: 1px solid #222; }
+.style-guide .example {
+  margin-top: 20px;
+  border-top: 1px solid #aaa;
+  padding: 20px 0 30px; }
+.style-guide .red {
+  color: #ed145a; }
+.style-guide .blue {
+  color: #63bae4; }
+.style-guide .black {
+  color: #222; }
+.style-guide .gray {
+  color: #aaa; }
