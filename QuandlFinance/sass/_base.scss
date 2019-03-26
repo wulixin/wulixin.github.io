@@ -1,0 +1,60 @@
+/*-------------------------------------------------------
+  Base styles
+---------------------------------------------------------*/
+/* 
+  Apply a natural box layout model to all elements, 
+  but allowing components to change.
+  http://www.paulirish.com/2012/box-sizing-border-box-ftw/
+*/
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: $sans-serif;
+  font-size: $font-size-base;
+}
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1;
+}
+h1,
+h2 {
+  font-family: $cursive;
+  font-weight: 400;
+}
+h1 {
+  font-size: $font-size-xl;
+}
+h2 {
+  font-size: $font-size-l;
+  margin-bottom: 20px;
+}
+h3 {
+  text-transform: uppercase;
+  font-size: $font-size-base;
+}
+a {
+  color: $link-color;
+  text-decoration: none;
+  display: inline-block;
+}
+a:hover {
+  color: $hover-color;
+}
+.content-wrapper {
+  max-width: 930px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+
+
+

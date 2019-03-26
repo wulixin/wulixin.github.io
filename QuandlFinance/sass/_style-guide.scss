@@ -1,0 +1,39 @@
+/*-------------------------------------------------------
+  Style Guide Page
+---------------------------------------------------------*/
+/* 
+  Only for adding styles for presenting examples and
+  documentation. Make sure these styles don't affect 
+  the components or project styles.
+*/
+
+.style-guide {
+  > h1 {
+    padding: 60px 0;
+  }
+  section {
+    padding-top: 35px;
+  }
+  pre {
+    padding: 10px 15px;
+    line-height: 1.4;
+    border: 1px solid $black;
+  }
+  .example {
+    margin-top: 20px;
+    border-top: 1px solid $gray;
+    padding: 20px 0 30px;
+  }
+  .red {
+    color: $red;
+  }
+  .blue {
+    color: $blue;
+  }
+  .black {
+    color: $black;
+  }
+  .gray {
+    color: $gray;
+  }
+}

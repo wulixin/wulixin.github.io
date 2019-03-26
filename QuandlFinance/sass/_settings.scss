@@ -1,0 +1,51 @@
+/*-------------------------------------------------------
+  Variables & Mixins
+---------------------------------------------------------*/
+
+/* Variables
+---------------------------------------------------------*/
+/* Colors */
+$red:               #ed145a;
+$black:             #222;
+$blue:              #63bae4;
+$gray:              #aaa;
+$link-color:        $red;
+$hover-color:       $gray;
+
+/* Font sizing */
+$font-size-base:    18px;
+$font-size-l:       36px; 
+$font-size-xl:      48px;
+$font-size-s:       14px;
+$font-size-xs:      12px;
+
+/* Typeface */
+$open-sans:        'Open Sans', sans-serif;
+$pacifico:         'Pacifico', cursive;
+$sans-serif:       $open-sans;
+$cursive:          $pacifico;
+
+
+
+/* Helper Styles
+---------------------------------------------------------*/
+.list-reset {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.sans-serif {
+  font-family: $sans-serif;
+}
+.cursive {
+  font-family: $cursive;
+}
+
+
+
+
+
+
+
+
+

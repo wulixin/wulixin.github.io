@@ -1,0 +1,150 @@
+/*-------------------------------------------------------
+  Modules and standalone components
+---------------------------------------------------------*/
+
+
+/* Header styles
+---------------------------------------------------------*/
+/* Global header - includes global nav */
+.global-header {
+  padding: 30px 55px 40px;
+  position: relative;
+}
+.global-nav {
+  position: absolute;
+  top: 40px;
+  right: 55px;
+  font-size: 0;
+}
+.global-nav a {
+  text-transform: uppercase;
+  padding: 10px;
+  font-size: $font-size-base;
+  color: $black;
+  
+  &:hover {
+    color: $red;
+  }
+}
+
+/* Blog post content header */
+.post-header {
+  margin-bottom: 40px;
+}
+.post-header p {
+  margin: 0;
+}
+.post-author {
+  font-size: $font-size-s;
+  text-transform: uppercase;
+}
+.post-date,
+.post-source {
+  font-size: $font-size-xs;
+}
+.post-source span {
+  text-transform: uppercase;
+}
+
+
+
+/* Main content area
+---------------------------------------------------------*/
+main {
+  padding-bottom: 60px;
+}
+.feature-img {
+  width: 100%;
+  margin-bottom: 60px;
+}
+
+
+/* Buttons */
+article {
+  /* TODO: Could possibly move to base or add class
+  to make specific to this page only?*/
+  position: relative;
+}
+button,
+input[type="submit"]{
+  font-size: $font-size-base;
+  border: none;
+}
+.btn-group {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.btn {
+  background: $gray;
+  color: white;
+  padding: 6px 30px;
+  border-radius: 4px;
+  line-height: 1;
+  vertical-align: top;
+}
+.btn-print,
+.btn-subscribe {
+  background: $red;
+}
+.btn-save {
+  background: $black;
+}
+.btn-share {
+  background: $blue;
+}
+
+/* Homepage teaser */
+.excerpt {
+  overflow: hidden;
+  background: #eee;
+  margin: 20px 0;
+  
+  img {
+    float: left;
+    margin-right: 15px;
+    max-width: 100%;
+  }
+  h3 {
+    margin-top: 20px;
+  }
+}
+.grid-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+.grid-item {
+  width: 48%;
+  margin-right: 2%;
+  padding: 20px;
+}
+
+
+
+/* Global footer
+---------------------------------------------------------*/
+.global-footer {
+  background: $black;
+  color: white;
+  padding: 40px 0;
+  font-size: $font-size-s;
+  overflow: hidden;
+}
+.global-footer h2 {
+  font-size: $font-size-base;
+}
+.about,
+.credits {
+  width: 50%;
+  float: left;
+}
+.credits {
+  text-align: right;
+  
+  ul {
+    list-style-type: none;
+  }
+}
+
+
+

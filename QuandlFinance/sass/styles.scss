@@ -1,0 +1,7 @@
+/*-------------------------------------------------------
+  Global stylesheet
+---------------------------------------------------------*/
+@import "settings"; // variables & mixins
+@import "base"; // global default styles
+@import "modules"; // modules and standalone components
+@import "style-guide"; // style guide page

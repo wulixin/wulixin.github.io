@@ -1,0 +1,210 @@
+---
+title: "场外基金量化分析与预测报告书"
+subtitle: "量化金融系列"
+author: "LiXin Wu"
+date: "2019年3月15日"
+output: 
+  html_document:
+  theme: cosmo
+highlight: monochrome 
+toc: true
+toc_float: false
+toc_depth: 4
+number_sections: true
+code_folding: hide
+---
+  
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##研究背景
+     随着经济的发展和社会的进步,国民的个人财富也有了丰富的积累,这些财富急需进行有效的保值和增值服务.在此背景下,资产管理行业获得了前所未有的发展态势,迎来了**大资管时代**.在全球资产管理行业，以股票为代表的权益类资产是全球资管行业资产配置比重最大、最典型的一类资产,其次是基金.2017年由于新的**资管新规**要求未来理财产品必须完成净值化转型,理财产品的风险将逐步让渡给投资者,目前银行配置权益类资产的风险明显降低,配置意愿必然增长.
+     权益类资产中股票和基金的投资具有很大的风险,作为个人投资者如何选择投资产品,实现财富有效的保值和增值呢？作为个人投资者我们比任何时候都迫切渴望提高自身产品选择能力,作者希望通过把国外金融公司先进的**量化金融技术**与**预测科学**,用通俗易懂的语言帮助投资者提高自身投资能力.
+
+```{r echo=FALSE,message=FALSE}
+library(RColorBrewer)
+library(timetk)
+library(dplyr)
+library(tidyquant)
+library(ggplot2)
+library(forcats)
+library(MAPA)
+library(magick)
+library(nnfor)
+library(data.table)
+library(quantmod)
+library(PerformanceAnalytics)
+library(TTR)
+library(nnfor)
+library(forecast)
+library(xts)
+library(zoo)
+library(PortfolioAnalytics)
+library(Quandl)
+library(astsa)
+library(lubridate)
+```
+
+
+```{r echo=FALSE}
+library(data.table)
+library(stringr)
+funds<-fread("D:\\funds20190315.csv")
+
+df<-funds%>%
+  select(ts_code,ann_date,unit_nav,accum_nav)%>%
+  mutate(ann_date=ymd(ann_date))%>%
+  mutate(day=day(ann_date),month=month(ann_date),quarter=quarter(ann_date))%>%
+  mutate(Returns=dailyReturn(as.xts(as.numeric(unit_nav),order.by=ann_date), subset=NULL,leading=TRUE))
+
+title<-paste0(unique(df$ts_code),"基金走势分析")
+df_xts<-xts(x=df[,3],order.by= df$ann_date)
+
+```
+
+##基金走势图
+   这只基金`$title`.基金的走势图可以帮助我们更换的了解基金目前所处的相对位置.
+   
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+df<- df%>%
+    mutate(model = ifelse(ann_date >= "2019-01-01", "2019", 
+                        ifelse(ann_date >= "2018-01-01","2018","2017")))
+
+df%>%
+  ggplot(aes(x = ann_date, y = unit_nav, color = model)) +
+  geom_point(alpha = 0.5) +
+  geom_line(alpha = 0.5) +
+  labs(
+    x = "净值",
+    y = "时间轴",
+    title = title,
+    subtitle = "穿越牛熊的基金"
+  )  
+```
+
+
+##分析过去
+  分析过去帮助我们更好的了解这只基金,预测未来帮我们把握未来投资机会.
+
+###投资回报
+
+```{r echo=FALSE}
+XQHR <- Return.calculate(df_xts)
+chart.CumReturns(XQHR,main="Cumulative Returns",begin="first")
+```
+
+###投资周期-季度VS月份
+    
+  每一年不同季度,每个月的投资回报情况有助于我们了解投资周期和定投的周期.
+    
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+df%>%
+  mutate(year=year(ann_date))%>%
+  ggplot(aes(x = year, y = quarter, fill =as.numeric(Returns))) +
+  geom_tile(alpha = 0.8, color = "white") +
+  scale_fill_gradientn(colours = c(palette_light()[[2]], palette_light()[[3]])) +
+  labs(title = "每年各个季度回报情况",
+       y = "每个月第几个工作日",
+       fill = "投资回报")
+df%>%
+  mutate(year=year(ann_date))%>%
+  ggplot(aes(x = month, y = day, fill=as.numeric(Returns))) +
+  geom_tile(alpha = 0.8, color = "white") +
+  scale_fill_gradientn(colours = c(palette_light()[[2]], palette_light()[[3]]))+
+  facet_wrap(~year)+
+  labs(title = "每年每月每天的投资回报",
+       y = "每个月第几个工作日",
+       fill = "投资回报")
+
+```
+
+
+###投资风险  
+
+   一只赚钱的基金总是正的反弹比负的反弹多.正的波动产生的面积大于负的,根据面积图走势预测未来获利空间.
+   
+```{r echo=FALSE}
+charts.PerformanceSummary(XQHR)
+```
+
+
+###风险度量
+   
+   风险度量,当一只基金突破边际风险线次数过多时,基本上很难赚钱.
+```{r echo=FALSE}
+chart.BarVaR(XQHR,
+             methods=c("HistoricalVaR", "ModifiedVaR", "GaussianVaR"),
+             lwd=2, ypad=.01,main="风险度量获取最大周期收益")
+```
+
+
+   
+
+###机会窗口
+   机会窗口期的次数衡量这只基金最佳买入时机上车的机会,一般如果一只基金大多数客户亏损,这只基金的买入机会是比较少的.
+   through表示最佳买入时间点.
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+pf_rebal1 <- Return.portfolio(R =df_xts, weights = 1)
+library(DT)
+datatable(table.Drawdowns(pf_rebal1))
+#chart.Drawdown(pf_rebal1)
+```
+
+##预测未来
+  预测未来20天的走势,采用传统的时间序列数据移动平均与目前MLP超级机器学习的算法进行预测.
+
+###传统预测方法(ARIMA)
+
+  未来走势方向
+  
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+##ACF/PACF都是tail off ,符合ARIMA趋势预测，移动平滑，指数平滑或者SARIMA
+##acf2(diff(as.ts(XingQuanHeRun)))
+#ACF of t
+##ggAcf(diff(as.ts(XingQuanHeRun)))
+#z_returns<-diff(as.ts(XingQuanHeRun))
+#model1<-sarima(z_returns, p = 1, d = 0, q = 1)
+#model2<-sarima(z_returns, p = 2, d = 0, q = 1)
+# BIC /AIC 大小的比较  Ljung-Box 噪声的检验
+#通过比较模型1拥有比较大的AIC 和比较小的BIC，表现更好；
+##预测
+title1<-paste0(unique(df$ts_code),"基金走势预测")
+sarima.for(as.ts(df_xts), n.ahead = 20,p = 2, d = 1, q = 0)
+title(title1)
+```
+
+
+###超级学习机器(Extreme learning machines)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+#Forecast using ELM neural network
+#ends<-XQHR
+#ends[is.na(ends)]<-0
+#fit <- elm.fast(ends[,1],ends[,-1])
+#plot(fit)
+```
+
+*这里有点偏技术了,这种超级学习器模拟了重仓股票波动引起的基金净值波动的影响,预测未来变化趋势,看拟合情况还非常不错,预测值和真实值关于Y=X对称.虽然有点偏差,这种技术最近一年在国外金融数据领域才被应用.下面也是预测学领域新算法：
+
+###多元聚合预测(Multiple Aggregation Prediction)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+ts<-ts(df_xts,frequency=263,start=c(2017,1),end=c(2019,3))
+mapasimple(ts,outplot=2,paral=2)
+```
+
+  这张图也是再次验证了我们的预测以上就是我们今天量化金融分析与预测的全部内容.投资股票与基金除了量化分析技术外我们还需要懂得定性分析,同时深谙博弈论.具有系统的金融学科的知识基础.
+
+##关于作者(About me)
+LiXin Wu,a young data scientist,be good at target marketing,quantitative analysis,customer management,natural language analyst,and spatial data analyst.
+欢迎交流邮箱wlx521@outlook.com
+    个人网页https://wulixin.github.io/
+
+
+
+
+
+
