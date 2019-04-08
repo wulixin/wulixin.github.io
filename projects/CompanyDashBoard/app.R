@@ -120,15 +120,8 @@ server <- function(input, output) {
     )
   })
   output$mapl<- renderLeaflet({
-    Countries2<-fread("Countries2.csv")
-    colnames(Countries2)<-c("Country","long","lat","Group","Order","Count")
+    Countries<-fread("Countries.csv")
     countries_names<-c("South Africa","Hong Kong","Taiwan","Italy","Mexico","South Korea","Australia","Brazil","Spain","UK","France","Japan","Russia","Singapore","China","Germany","India")
-    Countries<-Countries2%>%
-      na.omit()%>%
-      filter(Country %in% countries_names)%>%
-      group_by(Country)%>%
-      sample_n(30, replace = TRUE)%>%
-      ungroup()
     map<- leaflet(Countries)%>% 
       addTiles() %>%
       #addMarkers(~long, ~lat,label = ~Country,popup = ~as.character(Count))%>%
