@@ -1,0 +1,236 @@
+
+setwd("C:\\Users\\cmbcwulixin\\Documents\\GitHub\\wulixin.github.io\\projects")
+library(DT)
+library(shiny)
+library(shinydashboard)
+library(leaflet)
+library(plotly)
+library(visNetwork)
+library(treemap)
+library(viridis)
+library(RColorBrewer)
+library(highcharter)
+library(ggplot2)
+data(diamonds, economics_long, mpg, package = "ggplot2")
+library(echarts4r)
+library(ECharts2Shiny)
+library(echarts4r.maps)
+library(data.table)
+library(dplyr)
+library(jsonlite)
+ui <- dashboardPage(
+  skin = "red",
+  dashboardHeader(title = "MaiRui",titleWidth = 100,
+                  dropdownMenuOutput("messageMenu")),
+  dashboardSidebar(
+    width = 180,
+    sidebarMenu(
+      menuItem("全球销售地图", tabName = "salesMap", icon = icon("th")),
+      menuItem("客户关系网络", tabName = "customer_network", icon = icon("th")),
+      menuItem("业绩指标监控", tabName = "monitorindex", icon = icon("th")),
+      menuItem("产品矩阵组合", tabName = "products", icon = icon("th")),
+      menuItem("人力资源架构", tabName = "hr", icon = icon("th")),
+      menuItem("报表系统",tabName="Baobiao",icon=icon("th"))
+    )),
+  dashboardBody(
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+    ),
+    tabItems(
+      # First tab content
+      tabItem(tabName = "salesMap",
+              fluidRow(
+                box(leafletOutput('mapl',height=500,width=1100))
+              )),
+      # Second tab content
+      tabItem(tabName = "customer_network",
+              # infoBoxes with fill=TRUE
+              fluidRow(
+                visNetworkOutput("network_proxy_nodes",height=500,width=1100)
+              )
+      ),
+      tabItem(tabName = "monitorindex",
+              fluidRow(
+                # A static infoBox
+                infoBox("New Orders", 10 * 2, icon = icon("credit-card")),
+                # Dynamic infoBoxes
+                infoBoxOutput("progressBox"),
+                infoBoxOutput("approvalBox")),
+              fluidRow(
+                dataTableOutput('tbl')
+              )
+      ),
+      tabItem(tabName="products",
+              fluidRow(infoBox("New Orders", 10 * 2, icon = icon("credit-card"), fill = TRUE),
+                       infoBoxOutput("progressBox2"),
+                       infoBoxOutput("approvalBox2")),
+              fluidRow(highchartOutput("hcontainer",height = 500,width=500),
+                       highchartOutput("productsales",height = 500,width=500)
+                       )
+              
+      ),
+      tabItem(tabName="hr",
+              fluidRow(
+                box(
+                  title = "总人数", width = 4, solidHeader = TRUE, status = "primary",
+                  "10000"
+                ),
+                box(
+                  title = "在职数", width = 4, solidHeader = TRUE,
+                  "10000"
+                ),
+                box(
+                  title = "人均产能", width = 4, solidHeader = TRUE, status = "warning",
+                  "50$")),
+              fluidRow(highchartOutput("hrtreemap",width="800",height="500"))
+              ),
+      tabItem(tabName="Baobiao",
+              fluidRow(box(
+                         title = "报表链接", width = NULL, status = "primary",
+                         "链接HTML报表系统"))
+     )
+)))
+
+
+
+
+server <- function(input, output) {
+  output$progressBox <- renderInfoBox({
+    infoBox(
+      "Progress", paste0(25 + input$count, "%"), icon = icon("list"),
+      color = "purple")
+  })
+  output$approvalBox <- renderInfoBox({
+    infoBox(
+      "Approval", "80%", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "yellow")
+  })
+  
+  # Same as above, but with fill=TRUE
+  output$progressBox2 <- renderInfoBox({
+    infoBox(
+      "Progress", paste0(25 + input$count, "%"), icon = icon("list"),
+      color = "purple", fill = TRUE
+    )
+  })
+  output$approvalBox2 <- renderInfoBox({
+    infoBox(
+      "Approval", "80%", icon = icon("thumbs-up", lib = "glyphicon"),
+      color = "yellow", fill = TRUE
+    )
+  })
+  output$mapl<- renderLeaflet({
+    Countries2<-fread("Countries2.csv")
+    colnames(Countries2)<-c("Country","long","lat","Group","Order","Count")
+    countries_names<-c("South Africa","Hong Kong","Taiwan","Italy","Mexico","South Korea","Australia","Brazil","Spain","UK","France","Japan","Russia","Singapore","China","Germany","India")
+    Countries<-Countries2%>%
+      na.omit()%>%
+      filter(Country %in% countries_names)%>%
+      group_by(Country)%>%
+      sample_n(30, replace = TRUE)%>%
+      ungroup()
+    map<- leaflet(Countries)%>% 
+      addTiles() %>%
+      #addMarkers(~long, ~lat,label = ~Country,popup = ~as.character(Count))%>%
+      addMarkers(clusterOptions = markerClusterOptions(),label = ~Country,popup = ~as.character(Count))%>%
+      addMiniMap(toggleDisplay = TRUE)%>%
+      addEasyButton(easyButton(
+        icon="fa-globe", title="Zoom to Level 1",
+        onClick=JS("function(btn, map){ map.setZoom(1); }")))%>%
+      addLayersControl(baseGroups = ~Country,
+                       options = layersControlOptions(collapsed = FALSE))
+  })
+  output$click <- renderPrint({
+    d <- event_data("plotly_click")
+    if (is.null(d)) "Click on a state to view event data" else d
+  })
+  
+  output$tbl <-renderDataTable({
+    data(iris)
+    iris2 = iris[c(1:10, 51:60, 101:110), ]
+    datatable(iris2, filter = 'top', options = list(
+      pageLength = 10, autoWidth = TRUE
+    )) %>% 
+      formatStyle('Sepal.Length', fontWeight = styleInterval(5, c('normal', 'bold'))) %>%
+      formatStyle(
+        'Sepal.Width',
+        color = styleInterval(c(3.4, 3.8), c('white', 'blue', 'red')),
+        backgroundColor = styleInterval(3.4, c('gray', 'yellow'))
+      ) %>%
+      formatStyle(
+        'Petal.Length',
+        background = styleColorBar(iris$Petal.Length, 'steelblue'),
+        backgroundSize = '100% 90%',
+        backgroundRepeat = 'no-repeat',
+        backgroundPosition = 'center'
+      ) %>%
+      formatStyle(
+        'Species',
+        transform = 'rotateX(10deg) rotateY(10deg) rotateZ(10deg)',
+        backgroundColor = styleEqual(
+          unique(iris$Species), c('lightblue', 'lightgreen', 'lightpink')))
+  })
+  
+  
+  output$network_proxy_nodes <- renderVisNetwork({
+    nodes <- jsonlite::fromJSON("https://raw.githubusercontent.com/datastorm-open/datastorm-open.github.io/master/visNetwork/data/nodes_miserables.json")
+    edges <- jsonlite::fromJSON("https://raw.githubusercontent.com/datastorm-open/datastorm-open.github.io/master/visNetwork/data/edges_miserables.json")
+    visNetwork(nodes, edges, height = "1000px", width = "80%") %>%
+      visOptions(selectedBy = "group", 
+                 highlightNearest = TRUE, 
+                 nodesIdSelection = TRUE) %>%
+      visPhysics(stabilization = FALSE)%>%
+      visInteraction(navigationButtons = TRUE)
+  })
+  
+  output$hcontainer <- renderHighchart({
+    hchart(princomp(USArrests, cor = TRUE))%>% hc_add_theme(hc_theme_ft())
+  })
+  
+  output$hrtreemap <- renderHighchart({
+    data_frame(
+      index1 = sample(LETTERS[1:5], 500, replace = T),
+      index2 = sample(LETTERS[6:10], 500, replace = T),
+      index3 = sample(LETTERS[11:15], 500, replace = T),
+      value = rpois(500, 5),
+      color_value = rpois(500, 5)
+    ) %>%
+      hctreemap2(
+        group_vars = c("index1", "index2", "index3"),
+        size_var = "value",
+        color_var = "color_value",
+        layoutAlgorithm = "squarified",
+        levelIsConstant = FALSE,
+        levels = list(
+          list(level = 1, dataLabels = list(enabled = TRUE)),
+          list(level = 2, dataLabels = list(enabled = FALSE)),
+          list(level = 3, dataLabels = list(enabled = FALSE))
+        )
+      ) %>% 
+      hc_colorAxis(minColor = brewer.pal(7, "Greens")[1],
+                   maxColor = brewer.pal(7, "Greens")[7]) %>% 
+      hc_tooltip(pointFormat = "<b>{point.name}</b>:<br>
+             Value: {point.value:,.0f}<br>
+             Color Value: {point.colorValue:,.0f}")
+  })
+   output$productsales <- renderHighchart({
+      mpgman2 <- mpg %>% 
+      count(class, year) %>% 
+       hchart("column", hcaes(x = class, y = n, group = year))%>% hc_add_theme(hc_theme_flat())
+ })
+   output$messageMenu <- renderMenu({
+     messageData<-read.csv("messageData.csv")
+     msgs <- apply(messageData, 1, function(row) {
+       messageItem(from = row[["from"]], message = row[["message"]])
+     })
+     
+     # This is equivalent to calling:
+     #   dropdownMenu(type="messages", msgs[[1]], msgs[[2]], ...)
+     dropdownMenu(type = "messages", .list = msgs)
+   })
+  
+}
+
+shinyApp(ui, server)
+
+
