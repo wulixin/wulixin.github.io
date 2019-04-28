@@ -1,0 +1,31 @@
+---
+phone: "17688934312"
+email: "wlx521@outlook.com"
+url: https://wulixin.github.io
+address: |
+  @QuandlFinance
+logo: "https://wx3.sinaimg.cn/mw690/e592b5degy1g2agrxq3usj20jy0epglx.jpg"
+person: 
+  - name:   LiXin Wu 
+    title: DataScientist, QuandlFinance.
+    repeat: 1
+    
+paperwidth: 8.5in
+paperheight: 15 in
+cols: 1
+rows: 1
+output: pagedown::business_card
+---
+
+
+
+```{css, eval=FALSE}
+.wrapper {
+  color: green;
+  background-color: white;
+  border: 1px dotted green;
+}
+.coordinates {
+  color: green;
+}
+```
