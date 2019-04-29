@@ -1,0 +1,209 @@
+---
+title: "2019热点板块之食品"
+output: revealjs::revealjs_presentation
+---
+
+## 板块简介
+   <p>2018年海天味业开启了牛股模式,从30元上涨到70元,外资热衷于食品消费板块,而在消费板块,细分领域调味品领域最容易走出大牛股,从海天味业到千和味业,再到中炬高新.</p>
+   <p>调味品领域竞争非常激烈,千和味业开始从产品创新着手,推出零添加系列的产品,
+   今年以来调味品板块具有很强的抗跌性.</p>
+   <p>数据采集区间最近两个月.</p>
+   
+  <br>其它板块链接,在网页中修改板块名称.</br>
+
+## 板块股票排名
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+#plot packages
+library(dygraphs)
+library(ggplot2)
+library(plotly)
+library(highcharter)
+library(ggvis)
+library(ggmap)
+#other packages
+library(lubridate)
+library(dplyr)
+library(forcats)
+library(MAPA)
+library(magick)
+library(nnfor)
+library(data.table)
+library(quantmod)
+library(PerformanceAnalytics)
+library(TTR)
+library(nnfor)
+library(forecast)
+library(xts)
+library(zoo)
+library(PortfolioAnalytics)
+library(Quandl)
+library(astsa)
+library(flexdashboard)
+library(dplyr)
+#finance packages 
+library(readr)
+library(devtools)
+library(foreach)
+library(Tushare)
+library(lubridate)
+library(lubridate)
+library(DT)
+pro <-pro_api(token ='fe8102bf83f5f83f6608aa46fa5e985c534c227786236a1192e5fd55')
+stocks_names<-pro(api_name = 'stock_basic')
+names<-c("桃李面包","盐津铺子","天味食品","安井食品","三全食品","金字火腿","洽洽食品","双汇发展","上海梅林","绝味食品","好想你","海欣食品","来伊份","安记食品","双塔食品")
+
+stocks_name<-stocks_names%>%filter(name %in% names)
+start_date<-Sys.Date()-days(15)
+latest_week<-Sys.Date()-days(15)
+latest_day<-Sys.Date()-days(1)
+latest_week<-Sys.Date()-days(15)
+latest_month<-Sys.Date()-days(40)
+start_date<-Sys.Date()-days(252)
+get_data<-function(ts_code){
+  start_date=start_date
+  data<-pro(api_name = 'daily', ts_code=ts_code, start_date=latest_month)
+}
+##get basket stocks 
+get_stock_prices <- function(ticker, return_format = "tibble", ...) {
+  # Get stock prices
+  stock_prices <- get_data(ts_code= ticker, ...)
+  colnames(stock_prices)<-c("ts_code","Date","open","high","low","close","pre_close","change","pct_change","volume","amount")
+  Date_new<-stock_prices$Date
+  stock_prices_xts<-as.xts(OHLCV(stock_prices),order.by=ymd(stock_prices$Date))
+  # Rename
+  names(stock_prices_xts) <- c("Open", "High", "Low", "Close","Adjusted","Volume")
+  # Return in xts format if tibble is not specified
+  if (return_format == "tibble") {
+    stock_prices <- stock_prices_xts %>%
+      as_tibble() %>%
+      mutate(Date=ymd(Date_new))
+  } else {
+    stock_prices <- stock_prices_xts
+  }
+  stock_prices
+}
+
+##获取股票的反弹数据
+get_log_returns<-function(data){
+  data%>%
+    mutate(Log.Returns=dailyReturn(as.xts(as.numeric(Close),order.by=Date),subset=NULL,type='arithmetic',leading=TRUE))%>%
+    select(Date,Log.Returns)%>%
+    as.tibble()
+}
+
+
+china_stocks <- stocks_name %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+stocklist <- china_stocks %>%
+  filter(n.trade.days >= 10) %>%
+  mutate(reward.metric = 2500 * (mean.log.returns / sd.log.returns))
+top_n_limit <- 15
+hp <- stocklist %>%
+  mutate(rank = reward.metric %>% desc() %>% min_rank()) %>%
+  filter(rank <= top_n_limit) %>%
+  arrange(rank)
+#table
+hp %>%
+  select(name, rank, reward.metric)%>%
+  datatable(filter = 'top')%>% 
+      formatStyle('reward.metric',color = styleInterval(c(50,100), c('green', 'blue', 'red')),fontWeight = styleInterval(12.5, c('normal', 'bold')),backgroundColor = styleInterval(100, c('gray', 'yellow'))) 
+      
+```
+
+
+## 股票聚类热图
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(d3heatmap)
+library(heatmaply)
+heatmapdata<-china_stocks%>%
+  unnest(stock.prices)%>%
+  select(Date,name,Close)%>%
+  mutate(Close=as.numeric(Close))%>%
+  spread(key=name, value=Close)%>%
+  select(-Date)
+
+d3heatmap(heatmapdata,scale = "column", colors = "RdYlBu",width = 800, height =800,distfun = dist,hclustfun = hclust, dendrogram = "column",anim_duration = 500)
+
+```
+
+##板块全景视图
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(proto)
+library(ggmap)
+library(DT)
+library(highcharter)
+library(viridisLite)
+library(treemap)
+library(flexdashboard)
+library(RJSONIO)
+treemap_data <- china_stocks%>%
+  unnest(stock.prices)%>%
+  mutate(category = gsub(" ", "-", market),
+         subcategory = gsub(" ", "-", industry),
+         ratio=mean.log.returns/sd.log.returns,
+         Volume=as.numeric(Volume)) %>%
+  select(category, subcategory,name,Volume,ratio)%>%
+  sample_n(100)
+tm <- treemap(treemap_data, index = c("category","name"),
+              vSize = "Volume", vColor = "ratio",
+              type = "value", palette = rev(viridis(6)),title="投资回报Map")
+```
+
+
+
+
+
+##投资回报全景图
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+theme_set(theme_bw())  
+# Data Prep
+rownames(hp)<-hp$name  # create new column for car names
+hp$return_type <- ifelse(hp$reward.metric< 100, "below", "above") 
+hp<- hp[order(hp$reward.metric), ]   
+# Diverging Barcharts
+hp%>%arrange(reward.metric)%>%
+  ggplot(aes(x=name, y=reward.metric, label=return_type)) + 
+  geom_bar(stat='identity', aes(fill=return_type), width=.5)  +
+  scale_fill_manual(name="Mileage", 
+                    labels = c("Above Average", "Below Average"), 
+                    values = c("above"="#00ba38", "below"="#f8766d")) + 
+  labs(title= "投资回报") + 
+  theme(plot.background=element_rect(fill="salmon"), 
+        plot.margin = unit(c(2, 2, 1, 1), "cm"))+
+      coord_flip()
+```
+
+
+
+##投资风险均衡
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(ggrepel)
+ggplot(stocklist, aes(x=sd.log.returns, y=mean.log.returns)) + 
+  geom_point(aes(col=industry, size=reward.metric))+ 
+  geom_text_repel(aes(label=name), size=4)+
+  theme(panel.background = element_rect(fill = 'khaki'),
+          panel.grid.major = element_line(colour = "burlywood", size=1.5),
+          panel.grid.minor = element_line(colour = "tomato", 
+                                          size=.25, 
+                                          linetype = "dashed"),
+          panel.border = element_blank(),
+          axis.line.x = element_line(colour = "darkorange", 
+                                     size=1.5, 
+                                     lineend = "butt"),
+          axis.line.y = element_line(colour = "darkorange", 
+                                     size=1.5))+
+  labs(title="risk Vs return", y="return", x="risk", caption="QuandlFinance")
+
+```
