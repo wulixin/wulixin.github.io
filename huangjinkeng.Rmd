@@ -1,0 +1,673 @@
+---
+title: "A股惊现7大黄金坑,黄金坑里藏黄金"
+subtitle: "大数据驱动投资"
+author: "QuandlFinance"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html: default
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+ctex: yes
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(tufte)
+
+knitr::opts_chunk$set(tidy = FALSE, cache.extra = packageVersion('tufte'))
+options(htmltools.dir.version = FALSE)
+```
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567952761&di=a591f26b6d28edf4e3b0183112f1c08a&imgtype=jpg&er=1&src=http%3A%2F%2Fimage2.compass.cn%2Faccessory%2F2016%2F01%2F2016011120471867004800.jpg) 
+
+# 何为黄金坑
+
+>价值投资大师格雷厄姆在其名著《聪明的投资者》中透露,能稳定实现较好投资收益的关键是寻找具有 " 安全边际 " 的公司，即投资价格远低于价值的股票.可以说，找低估值标的进行投资，是一个性价比相对较高的方法，也是极好的买入时机。因为经济的规律总是高低相间，周而复始，一旦经济转好，低估值回到合理估值，就会有极佳的回报.
+>那么可以关注哪些低估的行业呢？我们一起来看看.
+  
+>资管新规以后,固收类产品打破刚性兑付,收益持续下降,权益类资产迎来黄金发展周期.权益类基金作为资产配置.基金投资与股票投资相辅相成.
+  更多内容关注[**QuandlFinance**微信公众号]().`资讯产品`相关资讯服务^[QuandlFinance[好基工作室]()和 [每日金股池]()].若对**基金投资**不了解的,更多内容参见 @QuandlFinance。
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(billboarder)
+library(wordcloud2)
+library(jiebaR)
+library(tmcn)
+library(gplots)
+library(RColorBrewer)
+library(heatmaply)
+library(d3heatmap)
+library(quantmod)
+library(shiny)
+library(shinyWidgets)
+library(bs4Dash)
+library(plotly)
+library(shiny)
+library(fontawesome)
+library(shinyWidgets)
+library(bs4Dash)
+library(DT)
+library(shinydashboard)
+library(leaflet)
+library(dygraphs)
+library(plotly)
+library(visNetwork)
+library(treemap)
+library(viridis)
+library(RColorBrewer)
+library(highcharter)
+library(ggplot2)
+library(echarts4r)
+library(ECharts2Shiny)
+library(echarts4r.maps)
+library(data.table)
+library(dplyr)
+library(jsonlite)
+library(Tushare)
+library(xts)
+library(lubridate)
+today<-ymd(Sys.Date())
+pro <-pro_api(token ='fe8102bf83f5f83f6608aa46fa5e985c534c227786236a1192e5fd55')
+#stocks_names<-pro(api_name = 'stock_basic')
+stocks_names<-fread("D:\\teachers\\stocks_names_201907.csv")
+start_date<-Sys.Date()-years(1)
+latest_week<-Sys.Date()-days(15)
+latest_day<-Sys.Date()-days(1)
+latest_week<-Sys.Date()-days(15)
+latest_month<-Sys.Date()-days(30)
+start_date<-Sys.Date()-days(304)
+get_data<-function(ts_code){
+  start_date=start_date
+  data<-pro(api_name = 'daily', ts_code=ts_code, start_date=start_date)
+}
+##get basket stocks 
+get_stock_prices <- function(ticker, return_format = "tibble", ...) {
+  # Get stock prices
+  stock_prices <- get_data(ts_code= ticker, ...)
+  colnames(stock_prices)<-c("ts_code","Date","open","high","low","close","pre_close","change","pct_change","volume","amount")
+  Date_new<-stock_prices$Date
+  stock_prices_xts<-as.xts(OHLCV(stock_prices),order.by=ymd(stock_prices$Date))
+  # Rename
+  names(stock_prices_xts) <- c("Open", "High", "Low", "Close","Adjusted","Volume")
+  # Return in xts format if tibble is not specified
+  if (return_format == "tibble") {
+    stock_prices <- stock_prices_xts %>%
+      as_tibble() %>%
+      mutate(Date=ymd(Date_new))
+  } else {
+    stock_prices <- stock_prices_xts
+  }
+  stock_prices
+}
+
+##获取股票的反弹数据
+get_log_returns<-function(data){
+  data%>%
+    mutate(Log.Returns=dailyReturn(as.xts(as.numeric(Close),order.by=Date), subset=NULL, type='arithmetic',leading=TRUE))%>%
+    select(Date,Log.Returns)%>%
+    as.tibble()
+}
+
+```
+
+
+
+
+# 黄金坑  房地产
+
+![](https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3890592353,3799332775&fm=26&gp=0.jpg)
+
+
+>经过过去20年的发展,房地产市场全国性房地产公司万科,保利,绿地,融创,恒大,碧桂园在2019年规模效应越来越强,加上近期房地产信托的管控,房地产企业遭遇严重抽血,股价大跌,但万科,恒大,融创公司已经停止下半年的拿地计划,手握千亿现金资产,今年以来融创持续并购中小房地产公司,这个行业越来越成熟,护城河越来越高,最后势必进入寡头垄断时代.
+
+>当然房地产背后最大的控股股东是中国平安,生命人寿,大家保险(安邦)金融帝国.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+namejun<-c("万科A","金地集团","保利地产","金科股份","荣安地产","阳光城")
+
+stocks_jun<-stocks_names%>%filter(name %in% namejun)
+
+jungong <- stocks_jun %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+jungong %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格", title="房地产")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+
+# 黄金坑 航空运输
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567359111034&di=1d171f4790a702b23ce4b1ffeabecf84&imgtype=0&src=http%3A%2F%2Ffile.digitaling.com%2FeImg%2Fuimages%2F20170904%2F1504523585171358.jpeg)
+
+>国际油价,汇率是影响航空公司股价的重要因素,国际油价持续维持在低位,全球经济增速放缓,进一步压制石油的上涨.航空公司成本有望降低一半,当然汇率人民币的国际化对于以人民币为收入的企业非常不利,但目前航空股票已经处于历史低位.
+
+>白菜价,特点需要长时间低成本资金大额买入低价白菜！！
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+names<-c("东方航空","南方航空","春秋航空","中国国航")
+
+stocks_name<-stocks_names%>%
+  filter(name %in% names)
+china_stocks <- stocks_name %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stocks %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="航空")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+
+
+
+
+# 黄金坑  天然气
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567359298221&di=e2633295859eb66a007962ba1bbb0406&imgtype=0&src=http%3A%2F%2Fphotocdn.sohu.com%2F20130401%2FImg371372709.jpg)
+
+>国庆大阅兵,环保先行,燃气公司被动扩张,城中村，城边村开始集中供暖,LNG天然气的价格上涨,本质上只需要西伯利亚的寒风一吹,雪花一飘,燃气瞬间涨停.
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+#医药基金持仓股票
+names1<-c("新疆浩源","新疆火炬","大通燃气","东方环宇","贵州燃气","长春燃气")
+stocks_name1<-stocks_names%>%
+  filter(name %in% names1)
+china_stocks1 <- stocks_name1 %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stocks1 %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="天然气")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+# 黄金坑  银行板块
+
+>打个广告,关注民生银行第一大股东之争,华夏人寿能否上位,安邦人寿能否让贤
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567359445644&di=3d32fae717215e43a88615dc027eacda&imgtype=0&src=http%3A%2F%2Fphotocdn.sohu.com%2F20140627%2FImg401446601.jpg)
+
+>根据申万一级行业市盈率显示的数据,银行业最新的市盈率仅为6.61（8月20日数据）,基本处于历史相对最低位的阶段,具有较高的安全边际.
+>上半年大部分银行贷款不良率下降，净利润增加，虽然也受到经济下行压力影响,但总体经营稳健,特别是随着下半年货币政策保持流动性合理充裕态势下，业绩仍有提升空间.展望后市，市场整体风险偏好保持低位，银行板块的业绩确定性优势以及部分个股较高的股息率有助于板块估值的稳定,以及保持行业间的相对优势，适合中长期配置.
+>重点关注股票 招商银行,平安银行,兴业银行,建设银行
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+yinhang<-c("建设银行","工商银行","招商银行","南京银行","无锡银行","兴业银行","民生银行","平安银行")
+
+stocks_bao<-stocks_names%>%
+  filter(name %in% yinhang)
+
+
+baoxian <- stocks_bao %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+baoxian%>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="商业银行")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+
+# 黄金坑  国电改革
+
+>国家电力改革,影响深远,着眼于未来,利在千秋万代!
+>直购模式与传统电力购买模式,将激发电力企业的活力.
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567359682757&di=3d1f388736630f02fcd450f1c06437e3&imgtype=0&src=http%3A%2F%2Fi0.hexun.com%2F2017-05-06%2F189085346.jpg)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+names7<-c("涪陵电力","文山电力","岷江水电","长江电力")
+
+stocks_name7<-stocks_names%>%
+  filter(name %in% names7)
+
+zhengquan<- stocks_name7 %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+
+zhengquan%>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=2,scales = "free_y")+
+  labs(x="日期",y="价格",title="电力改革")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+
+
+# 火山口 北上资金
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567360271542&di=a5fecc5312db14f12c8a23425ccbee4e&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20181209%2Fa3bc566c450c4d2bb975e2dfe76e12c7.jpeg)
+
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+names8<-c("生益科技","翰蓝环境","鹏鼎控股","光环新网","杰瑞股份","深南电A","涪陵电力","苏交科")
+stocks_name8<-stocks_names%>%
+  filter(name %in% names8)
+
+beishang <- stocks_name8%>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+
+beishang%>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="北上资金重仓")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+# 火山口 QFII外资重仓
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567360339563&di=eaf42734bbaa7c0f57e9e1e3adfa63c4&imgtype=0&src=http%3A%2F%2Fsruserfiles.shippingren.com%2FNews%2F1%2F2%2F201306%2F20130605090642jr2i3ew3.jpg)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+names10<-c("海思科","杰瑞股份","启明星辰","玲珑轮胎","中顺洁柔","宏发股份","太辰光","上海机场","永辉超市")
+
+stocks_name10<-stocks_names%>%
+  filter(name %in% names10)
+
+QFII <- stocks_name10 %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+QFII %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="QFII外资重仓")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+#  火山口 军工大飞机
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567360938129&di=e1d8bf12c55aa0372abd86258fc0f3d2&imgtype=0&src=http%3A%2F%2Fimages.shobserver.com%2Fnews%2F690_390%2F2017%2F5%2F5%2Fc1caf769-1121-4577-8461-6274ab1029ea.jpg)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+names9<-c("航天科技","中航光电","中船防务","航天长峰","中船科技","中航沈飞","中国船舶","航天发展","中航高科","航发科技","航发动力","中直股份","航天电器" ) 
+stocks_name9<-stocks_names%>%
+  filter(name %in% names9)
+
+customer <- stocks_name9 %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+customer %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="军工大飞机")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+# 火山口 北斗卫星
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567360884551&di=3839de7e918c32d0399bd29cd939b9c8&imgtype=0&src=http%3A%2F%2Fgbres.dfcfw.com%2FFiles%2Fpicture%2F20170926%2F3076E27136A909D47A5EF8211CC959DE.png)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+#医药基金持仓股票
+yinhang<-c("中国应急","中国卫通","中航电子","烽火电子",
+       "启明信息","四创电子","北斗星空","中海达","雷科防务","中国卫星"  )
+
+
+stocks_name12<-stocks_names%>%
+  filter(name %in% yinhang)
+
+china_stocks12<- stocks_name12%>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stocks12 %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="北斗卫星")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+
+# 风口浪尖 喝酒吃药
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567361159909&di=f87fcb619e90d6cd50b64c303c923383&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Ftranslate%2F20171026%2F86q8-fynhhay5431168.jpg)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+#医药基金持仓股票
+shanghai<-c("贵州茅台","今世缘","泸州老窖","洋河股份","五粮液","山西汾酒","通策医疗","金域医学","泰格医药","济民制药","益丰药房")
+
+
+
+stocks_namesh<-stocks_names%>%
+  filter(name %in% shanghai)
+
+china_stockssh<- stocks_namesh%>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stockssh %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="吃酒喝药")+
+  #scale_fill_stark()+
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_line(colour = "grey61", size = 0.5, linetype = "dotted"),
+        panel.grid.minor = element_blank(),
+        axis.line=element_line(colour="black"),
+        plot.title = element_text(hjust = 0.5,size=20,colour="indianred4"))+
+  theme(legend.position="none")
+```
+
+
+```{margin_note}
+风险最大时,也是机遇最大时.别人恐惧时,我们要贪婪！！
+
+如果说科技股是前锋马龙,那么军工科技将是大前锋邓肯,券商只能做后卫哈登！！
+```
+
+
+![](https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1567361390957&di=35eb7707a53684fb4624d6b774b6a829&imgtype=0&src=http%3A%2F%2Fww1.sinaimg.cn%2Flarge%2F00698Iypgw1f9zkahmq63j31400mi40e.jpg)
+
+
+
+
+# 本周投资策略
+
+>  以改革促降息，科技股积极可为
+>  内外部环境仍相对温和，积极信号进一步增多，结构性机会积极可为：外部环境看，美国期限利差倒挂预示美国经济下行压力和美国波动压力，对A股影响有限。内部环境看，LPR机制形成，以利率市场化改革方式促降息，有望引导实体经济融资成本下行，叠加减税降费等政策效果的逐步显现，企业成本费用端压力有望进一步降低，市场风险偏好有望改善；8月以来，国内长端利率明显下行，创2017年以来新低。配置上，继续推荐科技股+汽车，优选华为产业链+半导体产业链。
+
+# 投资大师的成功法则
+   
+   大师最初也是初学者,跟随大师的脚步才能快速成长.  
+
+> "集中投资就是计划生育:股票越少，组合业绩越好;长期持有就是龟兔赛跑:长期内复利可以战胜一切;"
+>
+> `r tufte::quote_footer('--- 巴菲特')`
+
+
+
+#  投资建议
+
+> 1 采用金字塔式投资策略,震荡的行情中按比例1:2:3:4分布建仓！
+
+> 2 延长持有周期,追求一定周期内的绝对投资回报！
+
+> 3  投资有风险,投资需谨慎！！ 
+
+  
+
+
