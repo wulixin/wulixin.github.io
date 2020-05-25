@@ -1,0 +1,427 @@
+---
+title: "挺进大别山2.0 超级热点与突发事件双轨驱动投资"
+author: "Quandl WU LIXIN "
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+## 前言
+
+    基于投资策略与投资战略,大数据驱动的定量分析与情感分析驱动的定性分析完美结合,算法,算力,数据成为第一生产力.
+   
+    三大占位：风口浪尖,火山口,黄金坑.占据天时地利人和;
+   
+    五大战略：数据驱动,价值驱动,事件驱动,热点驱动,策略驱动;
+    
+    四大战役：游击战, 歼灭战, 拉锯战,持久战
+   
+    金木水火土五行八卦：大金融,大消费,油气供热,大基建,黑科技;
+
+  
+
+```{r setup, include=FALSE}
+library(tufte)
+
+knitr::opts_chunk$set(tidy = FALSE, cache.extra = packageVersion('tufte'))
+options(htmltools.dir.version = FALSE)
+```
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(billboarder)
+library(wordcloud2)
+library(jiebaR)
+library(tmcn)
+library(gplots)
+library(RColorBrewer)
+library(heatmaply)
+library(d3heatmap)
+library(quantmod)
+library(shiny)
+library(shinyWidgets)
+library(bs4Dash)
+library(plotly)
+library(shiny)
+library(fontawesome)
+library(shinyWidgets)
+library(bs4Dash)
+library(DT)
+library(shinydashboard)
+library(leaflet)
+library(dygraphs)
+library(plotly)
+library(visNetwork)
+library(treemap)
+library(viridis)
+library(RColorBrewer)
+library(highcharter)
+library(ggplot2)
+library(echarts4r)
+library(ECharts2Shiny)
+library(echarts4r.maps)
+library(data.table)
+library(dplyr)
+library(jsonlite)
+library(Tushare)
+library(xts)
+library(lubridate)
+today<-ymd(Sys.Date())
+pro <-pro_api(token ='fe8102bf83f5f83f6608aa46fa5e985c534c227786236a1192e5fd55')
+#stocks_names<-pro(api_name = 'stock_basic')
+stocks_names<-fread("D:\\teachers\\stocks_names_201907.csv")
+start_date<-Sys.Date()-years(1)
+latest_week<-Sys.Date()-days(15)
+latest_day<-Sys.Date()-days(1)
+latest_week<-Sys.Date()-days(15)
+latest_month<-Sys.Date()-days(30)
+start_date<-Sys.Date()-days(520)
+get_data<-function(ts_code){
+  start_date=start_date
+  data<-pro(api_name = 'daily', ts_code=ts_code, start_date=start_date)
+}
+##get basket stocks 
+get_stock_prices <- function(ticker, return_format = "tibble", ...) {
+  # Get stock prices
+  stock_prices <- get_data(ts_code= ticker, ...)
+  colnames(stock_prices)<-c("ts_code","Date","open","high","low","close","pre_close","change","pct_change","volume","amount")
+  Date_new<-stock_prices$Date
+  stock_prices_xts<-as.xts(OHLCV(stock_prices),order.by=ymd(stock_prices$Date))
+  # Rename
+  names(stock_prices_xts) <- c("Open", "High", "Low", "Close","Adjusted","Volume")
+  # Return in xts format if tibble is not specified
+  if (return_format == "tibble") {
+    stock_prices <- stock_prices_xts %>%
+      as_tibble() %>%
+      mutate(Date=ymd(Date_new))
+  } else {
+    stock_prices <- stock_prices_xts
+  }
+  stock_prices
+}
+
+##获取股票的反弹数据
+get_log_returns<-function(data){
+  data%>%
+    mutate(Log.Returns=dailyReturn(as.xts(as.numeric(Close),order.by=Date), subset=NULL, type='arithmetic',leading=TRUE))%>%
+    select(Date,Log.Returns)%>%
+    as.tibble()
+}
+
+```
+
+# 热点概念驱动
+
+  
+
+## 热点概念一
+
+    富时罗素宣布新纳入7只A股,将获得被动型基金的加仓！！
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+ 
+names<-c("宝丰能源","红塔证券","中国卫通","海油发展","丸美股份","移远通信","国联股份")
+stocks_name<-stocks_names%>%
+  filter(name %in% names)
+china_stocks <- stocks_name %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stocks %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="概念驱动")+
+  theme_hildaDay(ticks = TRUE,
+                 legend.position = "none")
+```
+
+
+
+
+
+
+## 热点概念二
+     
+     龙虎板成交额TOP10 亿元
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+#医药基金持仓股票
+names1<-c('中炬高新', '麦克奥迪', '*通化东宝', '漫步者', '广电计量', '共达电声', '瑞达期货', '电声股份','通达电气', '华森制药')
+stocks_name1<-stocks_names%>%
+  filter(name %in% names1)
+china_stocks1 <- stocks_name1 %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stocks1 %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="概念驱动")+
+  theme_hildaDay(ticks = TRUE,
+                 legend.position = "none")
+```
+
+
+## 热点概念三
+    
+    龙虎板净买入股票
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+#医药基金持仓股票
+names3<-c('金种子酒', '金鸡股份', '精测电子','奋斗科技', '瑞丰光电', '华辰装备', '康弘药业', '拉卡拉', '水晶光电')
+
+
+
+stocks_name3<-stocks_names%>%
+  filter(name %in% names3)
+
+china_stocks3<- stocks_name3%>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE,  warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stocks3 %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="概念驱动")+
+  theme_hildaDay(ticks = TRUE,
+                 legend.position = "none")
+```
+
+
+
+
+
+
+# 突发事件驱动
+  大金融作为典型的周期性投资股票,涵盖了金融属性的股票,银行,保险,券商,地产四大主要领域.
+  中国平安，招商银行,平安银行,宁波银行,中信建投,保利地产,金科股份等等！！多只大牛股.
+
+## 突发事件一
+     
+    WTI石油暴跌5%
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+#医药基金持仓股票
+yinhang<-c("东方航空","南方航空","中国国航","春秋航空","华夏航空")
+
+
+stocks_name12<-stocks_names%>%
+  filter(name %in% yinhang)
+
+china_stocks12<- stocks_name12%>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stocks12 %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="突发事件驱动")+
+   theme_hildaDay(ticks = TRUE,
+                 legend.position = "none")
+```
+
+
+## 突发事件二
+
+    水泥出现短缺,水泥价格暴涨！！
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+names7<-c("海螺水泥","上峰水泥","祁连山","冀东水泥","福建水泥")
+stocks_name7<-stocks_names%>%
+  filter(name %in% names7)
+
+zhengquan<- stocks_name7 %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+
+zhengquan%>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="突发事件驱动")+
+  theme_hildaDay(ticks = TRUE,
+                 legend.position = "none")
+```
+
+
+# 抗跌板块股票
+
+
+## 地产集团
+
+   房地产不仅仅是房地产属性,房子作为人们占比最大的固定资产,房子具有很强的金融投资属性！
+   
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+
+#医药基金持仓股票
+names2<-c("万科A","招商蛇口","荣安地产","金地集团","保利地产","绿地控股","金科股份","荣盛发展","阳光城","华夏幸福")
+
+
+stocks_name2<-stocks_names%>%
+  filter(name %in% names2)
+
+china_stocks2<- stocks_name2%>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+
+```{r echo=FALSE,fig.fullwidth = TRUE, warning=FALSE, cache=TRUE, message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stocks2 %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="地产龙头")+
+  theme_hildaDay(ticks = TRUE,
+                 legend.position = "none")
+```
+
+
+
+
+
+
+```{margin_note}
+风险最大时,也是机遇最大时.别人恐惧时,我们要贪婪！！
+
+内心的强大才是真的强大！！
+```
+
+
+# 投资大师的成功法则
+   
+   大师最初也是初学者,跟随大师的脚步才能快速成长.  
+
+> "集中投资就是计划生育:股票越少，组合业绩越好;长期持有就是龟兔赛跑:长期内复利可以战胜一切;"
+>
+> `r tufte::quote_footer('--- 巴菲特')`
+
+
+
+#  投资建议
+
+> 1 采用金字塔式投资策略,震荡的行情中按比例1:2:3:4分布建仓！
+
+> 2 延长持有周期,追求一定周期内的绝对投资回报！
+
+> 3  投资有风险,投资需谨慎！！ 
