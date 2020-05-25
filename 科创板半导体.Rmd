@@ -1,0 +1,280 @@
+---
+title: "688科创板半导体公司研究"
+author: "Quandl WU LIXIN "
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+#plot packages
+library(tvthemes)
+library(dygraphs)
+library(ggplot2)
+library(plotly)
+library(highcharter)
+library(ggvis)
+library(ggmap)
+#other packages
+library(lubridate)
+library(dplyr)
+library(forcats)
+library(MAPA)
+library(magick)
+library(nnfor)
+library(data.table)
+library(quantmod)
+library(PerformanceAnalytics)
+library(TTR)
+library(nnfor)
+library(forecast)
+library(xts)
+library(zoo)
+library(PortfolioAnalytics)
+library(Quandl)
+library(astsa)
+library(flexdashboard)
+library(dplyr)
+#finance packages 
+library(readr)
+library(devtools)
+library(foreach)
+library(Tushare)
+library(lubridate)
+library(lubridate)
+pro <-pro_api(token ='fe8102bf83f5f83f6608aa46fa5e985c534c227786236a1192e5fd55')
+#stocks_names<-pro(api_name = 'stock_basic')
+#stocks_names<-read.csv("D:\\teachers\\stocks_names_new.csv")
+stocks_names<-fread("D:\\teachers\\stocks_names_202002.csv")
+#start_date<-Sys.Date()-days(15)
+latest_week<-Sys.Date()-days(15)
+latest_day<-Sys.Date()-days(1)
+latest_week<-Sys.Date()-days(15)
+latest_month<-Sys.Date()-days(30)
+start_date<-Sys.Date()-days(552)
+get_data<-function(ts_code){
+  start_date=start_date
+  data<-pro(api_name = 'daily', ts_code=ts_code, start_date=start_date)
+}
+##get basket stocks 
+get_stock_prices <- function(ticker, return_format = "tibble", ...) {
+  # Get stock prices
+  stock_prices <- get_data(ts_code= ticker, ...)
+  colnames(stock_prices)<-c("ts_code","Date","open","high","low","close","pre_close","change","pct_change","volume","amount")
+  Date_new<-stock_prices$Date
+  stock_prices_xts<-as.xts(OHLCV(stock_prices),order.by=ymd(stock_prices$Date))
+  # Rename
+  names(stock_prices_xts) <- c("Open", "High", "Low", "Close","Adjusted","Volume")
+  # Return in xts format if tibble is not specified
+  if (return_format == "tibble") {
+    stock_prices <- stock_prices_xts %>%
+      as_tibble() %>%
+      mutate(Date=ymd(Date_new))
+  } else {
+    stock_prices <- stock_prices_xts
+  }
+  stock_prices
+}
+
+##获取股票的反弹数据
+get_log_returns<-function(data){
+  data%>%
+    mutate(Log.Returns=dailyReturn(as.xts(as.numeric(Close),order.by=Date),subset=NULL,type='arithmetic',leading=TRUE))%>%
+    select(Date,Log.Returns)%>%
+    as.tibble()
+}
+
+#stocks_name<-stocks_names%>%filter(industry=="水泥")
+stocks_name<-stocks_names%>%
+  filter(industry=="半导体" & market=="科创板")
+
+
+
+china_stocks <- stocks_name %>%
+  mutate(
+    stock.prices = map(ts_code, 
+                       function(.x) get_stock_prices(.x)
+    ),
+    log.returns  = map(stock.prices, 
+                       function(.x) get_log_returns(.x)),
+    mean.log.returns = map_dbl(log.returns, ~ mean(.$Log.Returns)),
+    sd.log.returns   = map_dbl(log.returns, ~ sd(.$Log.Returns)),
+    n.trade.days = map_dbl(stock.prices, nrow)
+  )%>%as_tibble()
+
+```
+
+
+## 股票走势全景视图
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(tvthemes)
+library(lubridate)
+library(forcats) 
+china_stocks %>%
+  unnest(stock.prices)%>%
+  arrange(desc(Date))%>%
+  ggplot(aes(x=desc(Date),y=as.numeric(Close)),color=name)+
+  geom_line()+
+  facet_wrap(~name,ncol=3,scales = "free_y")+
+  labs(x="日期",y="价格",title="百亿私募机构持仓成长股")+
+  theme_hildaDay(ticks = TRUE,
+                legend.position = "top")
+  
+
+```
+
+
+
+## 股票板块分布全景视图
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(proto)
+library(ggmap)
+library(DT)
+library(highcharter)
+library(viridisLite)
+library(treemap)
+library(flexdashboard)
+library(RJSONIO)
+treemap_data <- china_stocks%>%
+  unnest(stock.prices)%>%
+  mutate(category = gsub(" ", "-", market),
+         subcategory = gsub(" ", "-", industry),
+         ratio=mean.log.returns/sd.log.returns,
+         Volume=as.numeric(Volume)) %>%
+  select(category, subcategory,name,Volume,ratio)%>%
+  sample_n(100)
+tm <- treemap(treemap_data, index = c("category","subcategory","name"),
+              vSize = "Volume", vColor = "ratio",
+              type = "value", palette = rev(viridis(6)),title="股票板块分布")
+```
+
+
+
+##  股票投资回报排名
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+stocklist <- china_stocks %>%
+  filter(n.trade.days >= 10) %>%
+  mutate(reward.metric = 2500 * (mean.log.returns / sd.log.returns))
+top_n_limit <- 15
+hp <- stocklist %>%
+  mutate(rank = reward.metric %>% desc() %>% min_rank()) %>%
+  filter(rank <= top_n_limit) %>%
+  arrange(rank)
+#table
+hp %>%
+  select(name, rank, reward.metric)%>%
+  datatable()
+theme_set(theme_bw())  
+# Data Prep
+rownames(hp)<-hp$name  # create new column for car names
+hp$return_type <- ifelse(hp$reward.metric< 100, "below", "above") 
+hp<- hp[order(hp$reward.metric), ]   
+# Diverging Barcharts
+hp%>%arrange(reward.metric)%>%
+  ggplot(aes(x=name, y=reward.metric, label=return_type)) + 
+  geom_bar(stat='identity', aes(fill=return_type), width=.5)  +
+  scale_fill_manual(name="Mileage", 
+                    labels = c("Above Average", "Below Average"), 
+                    values = c("above"="#00ba38", "below"="#f8766d")) + 
+  labs(title= "投资回报") + 
+  coord_flip()+
+  theme_hildaDay(ticks = TRUE,
+                 legend.position = "none")
+```
+
+ 
+##  投资风险均衡
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(ggrepel)
+ggplot(stocklist, aes(x=sd.log.returns, y=mean.log.returns)) + 
+  geom_point(aes(col=industry, size=reward.metric))+ 
+  geom_text_repel(aes(label=name), size=4)+
+  theme_hildaDay(ticks = TRUE,
+                 legend.position = "none")+
+  labs(title="risk Vs return", y="return", x="risk", caption="QuandlFinance")
+
+```
+
+
+##  皮尔逊相关系数
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(ggplot2)
+library(ggcorrplot)
+ts_codes<-stocks_name$ts_code
+prices = Map(function(n)
+{
+  print(n)
+  tryCatch(get_data(n)[,6], error = function(e) NA)
+}, ts_codes)
+N = length(prices)
+# identify symbols returning valid data
+i = ! unlist(Map(function(i) is.na(prices[i]), seq(N)))
+# combine returned prices list into a matrix, one column for each symbol with valid data
+prices = Reduce(cbind, prices[i])
+colnames(prices) = stocks_name$name[i]
+##########clean up and transform data 
+for(j in 1:ncol(prices)) prices[, j] = na.locf(prices[, j])       # fill in
+prices = prices[, apply(prices, 2, function(x) ! any(is.na(x)))]
+
+log_returns = apply(prices, 2, function(x) diff(log(x)))
+
+X = cor(log_returns)
+colnames(X)<-stocks_name$name[i]
+corr <- round(cor(log_returns), 1)
+# Plot
+ggcorrplot(corr, hc.order = TRUE, 
+           type = "lower", 
+           lab = TRUE, 
+           lab_size = 3, 
+           method="circle", 
+           colors = c("tomato2", "white", "springgreen3"), 
+           title="Correlogram of stocks", 
+           ggtheme=theme_hildaDay(ticks = TRUE,
+                 legend.position = "none"))
+```
+
+
+## 股票聚类分析图
+
+```{r echo=FALSE,warning=FALSE,message=FALSE,fig.cap="股票聚类分析图"}
+library(corrplot)
+library(gplots)
+library(RColorBrewer)
+library(heatmaply)
+library(d3heatmap)
+heatmapdata<-china_stocks%>%
+  unnest(stock.prices)%>%
+  select(Date,name,Close)%>%
+  mutate(Close=as.numeric(Close))%>%
+  spread(key=name, value=Close)%>%
+  select(-Date)
+
+
+d3heatmap(heatmapdata,scale = "column", 
+          show_grid = TRUE, anim_duration = 500,
+          distfun = dist, hclustfun = hclust)
+```
+
+
+
+
+
+更多内容点击 [QuandlFinance](http://wulixin.github.io//QuandlFinance//home.html) 
+footnotes^[内心的强大才是真的强大]
