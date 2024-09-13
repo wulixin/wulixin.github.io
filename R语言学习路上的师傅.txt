@@ -1,0 +1,17 @@
+                                          R语言的中文博客
+                                          
+我的好大哥谢益辉的个人博客(http://yihui.name)，博客中主要包括各种有趣的技术和吐槽文章。谢益辉是统计之都的创始人，现任RStudio公司程序员，在美国，曾经给他写过邮件。
+
+我的师傅：林慧姐的个人博客- https://hui1987.com，https://scientistcafe.com，
+Machine Learning using R  Published in Oct 2017  Book Link  ISBN 9787121326585   Publishing House of Electronics industry
+Practitioner’s Guide to Data Science  Published in May 2023  Book Link, Online version  ISBN 9780815354390  CRC Press
+
+张丹的个人博客粉丝日志(http://blog.fens.me)，原创了大量的R语言技术实战文章，包括R的极客理想系列文章、RHadoop实践系列文章、R利剑NoSQL系列文章，并写作“R的极客理想”系列图书。
+
+刘思喆的个人博客贝吉塔行星(http://www.bjt.name)，博客中主要包括R语言企业级应用的文章。刘思喆现任京东推荐算法经理。
+
+李舰的个人博客(http://jliblog.com)，博客中主要包括R语言建模的文章。李舰现任 Mango Solutions中国区数据总监。
+
+邓一硕的个人博客一格物堂(http://yishuo.org)，博客中主要包括R语言金融数据分析的文章。
+
+阿稳的个人博客-不周山(http://www.wentrue.net/blog)，博客中主要包括R语言并行技术的文章。
