@@ -1,0 +1,58 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="header">
+    <image class="logo" src="/assets/logo.png" mode="aspectFit"></image>
+    <view class="title">上市公司知识库</view>
+  </view>
+  
+  <view class="search-container">
+    <view class="search-box">
+      <icon type="search" size="18" color="#999"></icon>
+      <input 
+        class="search-input" 
+        placeholder="请输入公司代码或名称" 
+        value="{{searchInput}}"
+        bindinput="onInputChange"
+        bindconfirm="onSearch"
+        confirm-type="search"
+      />
+      <view class="search-btn" bindtap="onSearch">搜索</view>
+    </view>
+    
+    <view class="search-tips">
+      <text>示例：600519(贵州茅台)、000858(五粮液)</text>
+    </view>
+  </view>
+  
+  <view class="history-container" wx:if="{{searchHistory.length > 0}}">
+    <view class="history-header">
+      <text class="history-title">搜索历史</text>
+      <text class="clear-history" bindtap="clearHistory">清空</text>
+    </view>
+    <view class="history-list">
+      <view 
+        class="history-item" 
+        wx:for="{{searchHistory}}" 
+        wx:key="index" 
+        bindtap="onHistoryItemTap" 
+        data-code="{{item}}"
+      >
+        <icon type="waiting" size="16" color="#999"></icon>
+        <text>{{item}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <view class="intro-container">
+    <view class="card">
+      <view class="subtitle">使用说明</view>
+      <view class="text">
+        本小程序提供上市公司基本信息查询，包括：
+        <view>• 公司所在地</view>
+        <view>• 地区优势</view>
+        <view>• 市值大小</view>
+        <view>• 过去半年涨停次数</view>
+      </view>
+    </view>
+  </view>
+</view>

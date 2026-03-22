@@ -1,0 +1,516 @@
+---
+title: "每日复盘A股行情三维度数据分析"
+author: "wulixin----大数据让投资更简单！.<br/>因为专注所以专业<br/>欢迎24小时随时来电！<br/>与有格局有魄力有胆识投资者共同成长!！"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: hpstr
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+library(ggrepel)
+library(lubridate)
+library(forcats) 
+library(proto)
+library(ggmap)
+library(DT)
+library(highcharter)
+library(viridisLite)
+library(treemap)
+library(flexdashboard)
+library(RJSONIO)
+library(tvthemes)
+library(dygraphs)
+library(ggplot2) 
+library(plotly)
+library(highcharter)
+library(ggvis)
+library(ggmap)
+#other packages
+library(dplyr)
+library(MAPA)
+library(magick)
+library(nnfor)
+library(data.table)
+library(quantmod)
+library(PerformanceAnalytics)
+library(TTR)
+library(nnfor)
+library(forecast)
+library(xts)
+library(zoo)
+library(PortfolioAnalytics)
+library(Quandl)
+library(astsa)
+library(flexdashboard)
+library(dplyr)
+#finance packages 
+library(readr)
+library(devtools)
+library(foreach)
+library(Tushare)
+library(lubridate)
+library(Quandl)
+library(quantmod)
+library(PerformanceAnalytics)
+library(foreach)
+library(xts)
+library(TTR)
+library(data.table)
+library(dplyr)
+library(Tushare)
+library(tidyverse)
+library(forcats)
+library(MAPA)
+library(magick)
+library(nnfor)
+library(astsa)
+library(flexdashboard)
+#plot packages 
+library(dygraphs)
+library(ggplot2)
+library(plotly)
+library(highcharter)
+library(ggvis)
+library(ggmap)
+#finance packages 
+library(readr)
+library(devtools)
+library(lubridate)
+library(billboarder)
+library(wordcloud2)
+library(jiebaR)
+library(tmcn)
+library(gplots)
+library(RColorBrewer)
+library(heatmaply)
+#library(d3heatmap)
+library(quantmod)
+library(shiny)
+library(shinyWidgets)
+library(bs4Dash)
+library(plotly)
+library(shiny)
+#library(fontawesome)
+library(DT)
+library(shinydashboard)
+library(leaflet)
+library(dygraphs)
+library(visNetwork)
+library(treemap)
+library(viridis)
+library(RColorBrewer)
+library(highcharter)
+library(ggplot2)
+library(echarts4r)
+library(ECharts2Shiny)
+library(data.table)
+library(dplyr)
+library(jsonlite)
+library(Tushare)
+library(xts)
+lvl_opts <-  list(
+  list(
+    level = 1,
+    borderWidth = 0,
+    borderColor = "transparent",
+    dataLabels = list(
+      enabled = TRUE,
+      align = "medium",
+      verticalAlign = "top",
+      style = list(fontSize = "20px", textOutline = FALSE, color = "white"))),
+  list(
+    level = 2,
+    borderWidth = 0,
+    borderColor = "transparent",
+    colorVariation = list(key = "brightness", to = 0.250),
+    dataLabels = list(enabled = FALSE),
+    style = list(fontSize = "20px", textOutline = FALSE, color = "white")
+  )
+)
+today<-ymd(Sys.Date())
+
+
+pro_api<-function (token) {
+  http_url <- "http://api.Tushare.pro"
+  return(function(api_name, ...) {
+    params <- list(token = token, api_name = api_name, params = list(...))
+    r <- httr::POST(http_url, body = params, encode = "json")
+    res <- httr::content(r, "parsed", "application/json")
+    if (is.null(res$data)) {
+      return(NULL)
+    }
+    columns <- res$data$fields
+    items <- res$data$items
+    df <- as.data.frame(data.table::rbindlist(items))
+    colnames(df) <- columns
+    return(df)
+  }) }
+
+pro <-pro_api(token ='fe8102bf83f5f83f6608aa46fa5e985c534c227786236a1192e5fd55')
+
+#stocks_names<-pro(api_name = 'stock_basic')
+stocks_names<-pro(api_name = 'stock_basic',fields='ts_code,symbol,name,area,industry,list_date')
+
+
+ts_name<-stocks_names%>%select(ts_code)
+start_date<-Sys.Date()-years(1)
+ts_codes<-ts_name$ts_code
+
+dataprices = pro(api_name="daily",trade_date='20240108')
+
+df_all<-dataprices%>%left_join(stocks_names)
+df_all$list_date<-ymd(df_all$list_date)
+latest_month<-Sys.Date()-days(350)
+
+```
+
+
+# 股市认知
+
+## A股市场改革之路
+    
+  * A股在过去的35年中不断的改革中蜿蜒前进,相比于美股,日本股市,国内市场存在制度上,公司财务造假,大股东巨额减持套现,股权高质押等等不确定性较强的因素,导致这个市场散户亏钱效应明显.
+  
+  * 但在指数化上,A股的重要指数走出了美股指数的走势,而且过去国家对于指数的不断调整,不断把指数成分股革新,这样指数出现了漂亮的上证50,科创50,创业板指数.当然改革中二八效应依然是很明显的,对于短期利益追逐者长期追涨杀跌,对于价值投资者,长期投资者回报相当比较可可观!
+  
+ * 改革短期看会回到原点,但正如丁元英所说,改革就是利益的重新划分,你需要躲过衙门的快刀,也需要躲过黑庄的死手,虎口夺食.
+   
+## 投资的境界
+
+* 投资的第一境界应该就是追求短期的追涨杀跌的收益,也就是赚波段收益;
+
+* 投资的第二境界懂得追求价值投资,长远收益,追求长期持有30%~50%的收益;
+* 投资的第三境界应该是买在无人问津的价值低估周期,卖在门庭若市的价格泡沫周期,这时候追求的就是翻2~4倍;
+  
+* 当你过了荷尔蒙周期,你就会减少操作的频率,选择耐心的持有！巴菲特懂得用时间和耐力来证明自己的选择,当初他投资比亚迪也是在这样.
+
+*  真正领悟大的智慧不是诸葛亮的六出祁山而是司马懿的坚守不出，在持久战中需要明白投资的意义在于干大战定天下，在于屠杀敌人有生力量，而不是攻城略地，就像长平之战，鄱阳湖之战，解放战争三大战役！
+
+## 数据可视化中心
+
+* [全局作战操盘地图](http://wulixin.github.io//QuandlFinance//home.html) 
+* [全局作战聚类地图](http://wulixin.github.io//QuandlFinance//home.html) 
+* [全局作战社交网络地图](http://wulixin.github.io//QuandlFinance//home.html) 
+* [全局作战皮尔逊相关系数图](http://wulixin.github.io//QuandlFinance//home.html) 
+* [全局作战异常交易监测图](http://wulixin.github.io//QuandlFinance//home.html) 
+* [全局作战目标对象走势全局图](http://wulixin.github.io//QuandlFinance//home.html) 
+ 
+
+# 价格维度—高价VS低价
+  
+  在2020年的上涨行情中,高价股持续上涨不断新高,在这一波行情中高价股投资者赚的盆满钵满,随着时间到了2021年,持有煤炭,钢铁,造纸,有色,玻璃等传统行业上涨的过程中,低价股不断的翻倍.
+  
+  
+  
+## ST垃圾低价专区
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+library(dplyr)
+library(tidyverse)
+df_allST<-df_all%>%
+  #filter(industry %in% c("汽车整车","软件服务"))%>%
+  filter(name %in% df_all[str_which(df_all$name,'ST'),13] & pct_chg>4)%>%
+  arrange(desc(pct_chg))%>%
+  select(name,ts_code,pct_chg,list_date,close,industry,area,market,vol)
+
+colnames(df_allST)<-c("名称","代码","涨跌幅","上市时间","收盘价","行业","地区","板块","交易量")
+
+
+datatable(df_allST,filter = 'top', options = list(
+        pageLength = 5, autoWidth = TRUE))|>
+      formatStyle('收盘价',color = styleInterval(c(100,600), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(12.5, c('normal', 'bold'))) |>
+      formatStyle('涨跌幅',color = styleInterval(c(0, 5), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(5, c('normal', 'bold'))) |>
+      formatStyle( 
+        '交易量',color = styleInterval(c(5000, 100000), c('green', 'blue', 'red')),
+        backgroundColor = styleInterval(10000, c('gray', 'yellow'))) 
+
+```  
+    
+   
+## 低价活跃个股
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+shiyuan <- df_all%>%
+  filter(close<10 & pct_chg>5)%>%
+  select(ts_code,name,industry,close,pct_chg,vol,change)%>%
+  arrange(desc(pct_chg))
+
+
+colnames(shiyuan)<-c("代码","公司名称","行业","收盘价","涨跌幅","交易量","价格变化")
+
+library(janitor)
+library(purrr)
+
+shiyuan%>%
+  tabyl("行业")%>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting()%>%
+  arrange(desc(n))%>%
+  filter(n>5)%>%
+  knitr::kable()
+
+datatable(shiyuan,filter = 'top', options = list(
+        pageLength = 35, autoWidth = TRUE))|>
+      formatStyle('收盘价',color = styleInterval(c(100,600), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(12.5, c('normal', 'bold'))) |>
+      formatStyle('涨跌幅',color = styleInterval(c(0, 5), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(5, c('normal', 'bold'))) |>
+      formatStyle( 
+        '交易量',color = styleInterval(c(5000, 100000), c('green', 'blue', 'red')),
+        backgroundColor = styleInterval(10000, c('gray', 'yellow'))) 
+
+```
+
+
+## 高价活跃个股
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+baiyuan <- df_all%>%
+  filter(close>100 & pct_chg> 4)%>%
+  select(ts_code,name,industry,close,pct_chg,vol,change)%>%
+  arrange(desc(pct_chg))
+
+
+colnames(baiyuan)<-c("代码","公司名称","行业","收盘价","涨跌幅","交易量","价格变化")
+
+baiyuan%>%
+  tabyl("行业")%>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting()%>%
+  arrange(desc(n))%>%
+  filter(n>5)%>%
+  knitr::kable()
+
+datatable(baiyuan,filter = 'top', options = list(
+        pageLength = 25, autoWidth = TRUE))|>
+      formatStyle('收盘价',color = styleInterval(c(100,600), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(12.5, c('normal', 'bold'))) |>
+      formatStyle('涨跌幅',color = styleInterval(c(0, 5), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(5, c('normal', 'bold'))) |>
+      formatStyle( 
+        '交易量',color = styleInterval(c(5000, 100000), c('green', 'blue', 'red')),
+        backgroundColor = styleInterval(10000, c('gray', 'yellow'))) 
+
+```
+
+   
+# 时间维度-新股VS旧股
+   
+
+## 次新股
+
+  在IPO的进程中,次新股代表新型经济特征的公司,尤其是服务业,科技创新行业的公司不断的上市,这对于过去的投资者来说因为IPO数量不断的增多,对于市场上公司的认知存在很大的挑战！
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+cixin<- df_all%>%
+  filter(list_date>ymd(latest_month) & pct_chg>3)%>%
+  select(ts_code,name,industry,close,pct_chg,vol,change)%>%
+  arrange(desc(pct_chg))
+
+colnames(cixin)<-c("代码","公司名称","行业","收盘价","涨跌幅","交易量","价格变化")
+
+cixin%>%
+  tabyl("行业")%>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting()%>%
+  arrange(desc(n))%>%
+  filter(n>5)%>%
+  knitr::kable()
+
+datatable(cixin,filter = 'top', options = list(
+        pageLength = 25, autoWidth = TRUE))|>
+      formatStyle('收盘价',color = styleInterval(c(100,600), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(12.5, c('normal', 'bold'))) |>
+      formatStyle('涨跌幅',color = styleInterval(c(0, 5), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(5, c('normal', 'bold'))) |>
+      formatStyle( 
+        '交易量',color = styleInterval(c(5000, 100000), c('green', 'blue', 'red')),
+        backgroundColor = styleInterval(10000, c('gray', 'yellow'))) 
+
+```
+
+
+
+## 热门老股
+
+  过去呈现出大盘牛的特征,而现在呈现出的特点指数牛,板块牛的行情,一个板块一旦坐在了风口浪尖,那么这个板块的股票将出现持续性较强的拉升周期!
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+ziJing<-df_all%>%filter(industry %in% c("生物制药","白酒","小金属","元器件","电子元件","半导体") & pct_chg>3)%>%
+  select(ts_code,name,industry,close,pct_chg,vol,change)%>%
+  arrange(desc(pct_chg))
+
+colnames(ziJing)<-c("代码","公司名称","行业","收盘价","涨跌幅","交易量","价格变化")
+
+ziJing%>%
+  tabyl("行业")%>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting()%>%
+  arrange(desc(n))%>%
+  filter(n>5)%>%
+  knitr::kable()
+
+
+datatable(ziJing,filter = 'top', options = list(
+        pageLength = 25, autoWidth = TRUE))|>
+      formatStyle('收盘价',color = styleInterval(c(100,600), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(12.5, c('normal', 'bold'))) |>
+      formatStyle('涨跌幅',color = styleInterval(c(0, 5), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(5, c('normal', 'bold'))) |>
+      formatStyle( 
+        '交易量',color = styleInterval(c(5000, 100000), c('green', 'blue', 'red')),
+        backgroundColor = styleInterval(10000, c('gray', 'yellow'))) 
+
+```
+
+
+
+#  板块维度— 20%涨跌幅VS10%涨跌幅
+
+    科创板创业板能够上涨20%，主板却只有10%，对于板块的认知,科创板个股上市以来出现了持续的夭折,并且不断的新低,但正如博弈论中所说,这种均衡状态是不会持续太久的,如果100%的人都不赚钱,那么总有一天会打破这种均衡！
+
+## 北交所
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+
+beijiao<- df_all%>%
+  filter(market %in% c("北交所") & pct_chg>1)%>%
+  select(ts_code,name,industry,close,pct_chg,vol,change)%>%
+  arrange(desc(pct_chg))
+
+
+colnames(beijiao)<-c("代码","名称","行业","收盘价","涨跌幅","交易量","价格变化")
+
+datatable(beijiao,filter = 'top', options = list(
+        pageLength = 15, autoWidth = TRUE))|>
+      formatStyle('收盘价',color = styleInterval(c(100,600), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(12.5, c('normal', 'bold'))) |>
+      formatStyle('涨跌幅',color = styleInterval(c(0, 5), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(5, c('normal', 'bold'))) |>
+      formatStyle( 
+        '交易量',color = styleInterval(c(5000, 100000), c('green', 'blue', 'red')),
+        backgroundColor = styleInterval(10000, c('gray', 'yellow')))
+
+```
+
+
+##  科创板个股
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+kechuang <- df_all%>%
+  filter(market == "科创板" & pct_chg>5)%>%
+  select(ts_code,name,industry,close,pct_chg,vol,change)%>%
+  arrange(desc(pct_chg))
+
+colnames(kechuang)<-c("代码","公司名称","行业","收盘价","涨跌幅","交易量","价格变化")
+
+kechuang%>%
+  tabyl("行业")%>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting()%>%
+  arrange(desc(n))%>%
+  filter(n>5)%>%
+  knitr::kable()
+
+datatable(kechuang,filter = 'top', options = list(
+        pageLength = 15, autoWidth = TRUE))|>
+      formatStyle('收盘价',color = styleInterval(c(100,600), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(12.5, c('normal', 'bold'))) |>
+      formatStyle('涨跌幅',color = styleInterval(c(0, 5), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(5, c('normal', 'bold'))) |>
+      formatStyle( 
+        '交易量',color = styleInterval(c(5000, 100000), c('green', 'blue', 'red')),
+        backgroundColor = styleInterval(10000, c('gray', 'yellow'))) 
+
+```
+
+ 
+##  创业板个股
+   
+    注册制改革之后，创业板大量公司上市,必然会分解改革的阵痛；
+    
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+chuangyeban <- df_all%>%
+  filter(market == "创业板" & pct_chg>5)%>%
+  select(ts_code,name,industry,close,pct_chg,vol,change)%>%
+  arrange(desc(pct_chg))
+
+colnames(chuangyeban)<-c("代码","公司名称","行业","收盘价","涨跌幅","交易量","价格变化")
+
+chuangyeban%>%
+  tabyl("行业")%>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting()%>%
+  arrange(desc(n))%>%
+  filter(n>5)%>%
+  knitr::kable()
+
+
+datatable(chuangyeban,filter = 'top', options = list(
+        pageLength = 25, autoWidth = TRUE))|>
+      formatStyle('收盘价',color = styleInterval(c(100,600), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(12.5, c('normal', 'bold'))) |>
+      formatStyle('涨跌幅',color = styleInterval(c(0, 5), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(5, c('normal', 'bold'))) |>
+      formatStyle( 
+        '交易量',color = styleInterval(c(5000, 100000), c('green', 'blue', 'red')),
+        backgroundColor = styleInterval(10000, c('gray', 'yellow'))) 
+
+
+```
+
+
+## 主板
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+zhuban<- df_all%>%
+  filter(market %in% c("主板","中小板") & pct_chg>5)%>%
+  select(ts_code,name,industry,close,pct_chg,vol,change)%>%
+  arrange(desc(pct_chg))
+colnames(zhuban)<-c("代码","公司名称","行业","收盘价","涨跌幅","交易量","价格变化")
+
+zhuban%>%
+  tabyl("行业")%>%
+  adorn_totals("row") %>%
+  adorn_pct_formatting()%>%
+  arrange(desc(n))%>%
+  filter(n>5)%>%
+  knitr::kable()
+
+datatable(zhuban,filter = 'top', options = list(
+        pageLength = 45, autoWidth = TRUE))|>
+      formatStyle('收盘价',color = styleInterval(c(100,600), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(12.5, c('normal', 'bold'))) |>
+      formatStyle('涨跌幅',color = styleInterval(c(0, 5), c('green', 'blue', 'red')),
+                  fontWeight = styleInterval(5, c('normal', 'bold'))) |>
+      formatStyle( 
+        '交易量',color = styleInterval(c(5000, 100000), c('green', 'blue', 'red')),
+        backgroundColor = styleInterval(10000, c('gray', 'yellow'))) 
+
+```
+
+
+  执业编号：S0770621060006 投资有风险，投资需要谨慎
+
+ 温馨提示投资有风险,投资需要谨慎!
+
+更多内容点击 [关注小编](http://wulixin.github.io//QuandlFinance//home.html) 
+
+footnotes^[内心的强大才是真的强大]

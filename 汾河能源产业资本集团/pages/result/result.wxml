@@ -1,0 +1,75 @@
+<!--result.wxml-->
+<view class="container">
+  <!-- 加载中 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading">
+      <image class="loading-icon" src="/assets/loading.gif" mode="aspectFit"></image>
+      <text>正在加载数据...</text>
+    </view>
+  </view>
+  
+  <!-- 错误提示 -->
+  <view class="error-container" wx:elif="{{error}}">
+    <icon type="warn" size="60" color="#F76260"></icon>
+    <text class="error-text">{{error}}</text>
+    <button class="back-btn" bindtap="goBack">返回首页</button>
+  </view>
+  
+  <!-- 公司信息 -->
+  <block wx:elif="{{company}}">
+    <view class="company-header">
+      <view class="company-name">{{company.name}}</view>
+    </view>
+    
+    <view class="info-container">
+      <!-- 公司所在地 -->
+      <view class="info-card">
+        <view class="card-title">
+          <icon type="location" size="18" color="#3A7BF8"></icon>
+          <text>公司所在地</text>
+        </view>
+        <view class="card-content">
+          <text>{{company.location}}</text>
+        </view>
+      </view>
+      
+      <!-- 地区优势 -->
+      <view class="info-card">
+        <view class="card-title">
+          <icon type="success" size="18" color="#3A7BF8"></icon>
+          <text>地区优势</text>
+        </view>
+        <view class="card-content">
+          <text>{{company.regionalAdvantage}}</text>
+        </view>
+      </view>
+      
+      <!-- 市值大小 -->
+      <view class="info-card">
+        <view class="card-title">
+          <icon type="info" size="18" color="#3A7BF8"></icon>
+          <text>市值大小</text>
+        </view>
+        <view class="card-content">
+          <text class="highlight">{{company.marketValue}}</text>
+        </view>
+      </view>
+      
+      <!-- 过去半年涨停次数 -->
+      <view class="info-card">
+        <view class="card-title">
+          <icon type="info" size="18" color="#3A7BF8"></icon>
+          <text>过去半年涨停次数</text>
+        </view>
+        <view class="card-content">
+          <text class="highlight">{{company.limitUpCount}}次</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="action-container">
+      <button class="action-btn back" bindtap="goBack">返回首页</button>
+      <button class="action-btn share" open-type="share">分享</button>
+    </view>
+  </block>
+</view>

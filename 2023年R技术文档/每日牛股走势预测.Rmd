@@ -1,0 +1,330 @@
+---
+title: "QuandlFinance每天强烈买入信号牛股"
+author: "wulixin----大数据让投资更简单！.<br/>因为专注所以专业<br/>欢迎24小时随时来电！<br/>与有格局有魄力有胆识投资者共同成长!！"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: hpstr
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+library(ggrepel)
+library(lubridate)
+library(forcats) 
+library(proto)
+library(ggmap)
+library(DT)
+library(highcharter)
+library(viridisLite)
+library(treemap)
+library(flexdashboard)
+library(RJSONIO)
+library(tvthemes)
+library(dygraphs)
+library(ggplot2) 
+library(plotly)
+library(highcharter)
+library(ggvis)
+library(ggmap)
+#other packages
+library(dplyr)
+library(MAPA)
+library(magick)
+library(nnfor)
+library(data.table)
+library(quantmod)
+library(PerformanceAnalytics)
+library(TTR)
+library(nnfor)
+library(forecast)
+library(xts)
+library(zoo)
+library(PortfolioAnalytics)
+library(astsa)
+library(flexdashboard)
+library(dplyr)
+#finance packages 
+library(readr)
+library(devtools)
+library(foreach)
+library(Tushare)
+library(lubridate)
+library(Quandl)
+library(quantmod)
+library(PerformanceAnalytics)
+library(foreach)
+library(TTR)
+library(data.table)
+library(dplyr)
+library(Tushare)
+library(tidyverse)
+library(forcats)
+library(MAPA)
+library(magick)
+library(nnfor)
+library(astsa)
+library(flexdashboard)
+#plot packages 
+library(dygraphs)
+library(ggplot2)
+library(plotly)
+library(highcharter)
+library(ggvis)
+library(ggmap)
+#finance packages 
+library(readr)
+library(devtools)
+library(lubridate)
+library(billboarder)
+library(wordcloud2)
+library(jiebaR)
+library(tmcn)
+library(gplots)
+library(RColorBrewer)
+library(heatmaply)
+#library(d3heatmap)
+library(quantmod)
+library(shiny)
+library(shinyWidgets)
+library(bs4Dash)
+library(plotly)
+library(shiny)
+#library(fontawesome)
+library(DT)
+library(shinydashboard)
+library(leaflet)
+library(dygraphs)
+library(visNetwork)
+library(treemap)
+library(viridis)
+library(RColorBrewer)
+library(highcharter)
+library(ggplot2)
+library(echarts4r)
+library(ECharts2Shiny)
+library(data.table)
+library(dplyr)
+library(jsonlite)
+library(Tushare)
+library(xts)
+pro_api<-function (token) {
+  http_url <- "http://api.Tushare.pro"
+  return(function(api_name, ...) {
+    params <- list(token = token, api_name = api_name, params = list(...))
+    r <- httr::POST(http_url, body = params, encode = "json")
+    res <- httr::content(r, "parsed", "application/json")
+    if (is.null(res$data)) {
+      return(NULL)
+    }
+    columns <- res$data$fields
+    items <- res$data$items
+    df <- as.data.frame(data.table::rbindlist(items))
+    colnames(df) <- columns
+    return(df)
+  }) }
+
+today<-ymd(Sys.Date())
+pro <-pro_api(token ='fe8102bf83f5f83f6608aa46fa5e985c534c227786236a1192e5fd55')
+#stocks_names<-pro(api_name = 'stock_basic')
+today<-str_remove(str_remove(Sys.Date(), "-"),"-")
+yesterday<-str_remove(str_remove(Sys.Date()-1, "-"),"-")
+start_d<-str_remove(str_remove(Sys.Date()-years(1), "-"),"-")
+
+```
+
+# 选股逻辑
+  
+    信息化时代信息高速传播，加剧了羊群效应，趋同投资效应，动量理论效应增加，多头策略个股，过去上涨的很好的股票，在未来一段时间依然上涨的很好，大数据聚焦多头个股，把握知名度高，热度高，有群众基础的多头策略！
+    知名度，热度，爆发度，群众基础（最近三个月是否爆发过），三个小涨，负面新闻，情绪面,交易量,换手率.
+    采用多维度指标index构建交易信号signal，形成交易策略strategy.通过大数据时代算法与模型对于趋势性的良好预测，预测未来股价走势！
+
+## 个股走势图
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+
+dat<-pro(api_name = 'daily', ts_code='605122.SH',start_date=start_d)
+
+dat<-dat%>%
+  mutate(open=as.numeric(as.character(open)),
+         high=as.numeric(as.character(high)),
+         close=as.numeric(as.character(close)),
+         low=as.numeric(as.character(low)),
+         vol=as.numeric(as.character(vol)),
+         pre_close=as.numeric(as.character(pre_close)))
+colnames(dat)<-c("ts_code","date","open","high","low","close","pre_close","change","pct_change","volume","amount")
+
+library(tvthemes)
+p<-dat %>%
+  plot_ly(x = ~date, type="candlestick",
+          open = ~open, close = ~close,
+          high = ~high, low = ~low) %>%
+  layout(title = "个股走势图",
+         xaxis = list(rangeslider = list(visible = F)),showlegend=TRUE)
+
+p
+
+```
+
+    
+# 分析过去
+
+
+## 交易策略可视化
+   
+    从指标到信号到交易规则再到交易策略,四步走最后可视化,实现2*3策略!
+
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+stock_prices_xts<-as.xts(OHLCV(dat),order.by=ymd(dat$date))
+# Rename
+names(stock_prices_xts) <- c("Open", "High", "Low", "Close","Adjusted","Volume")
+#SPY<- adjustOHLC(stock_prices)
+S<-stock_prices_xts
+##逃顶指标
+ratio <- S$Close/((S$High + S$Low)/2)
+avgratio <- SMA(ratio,n=2)
+out<-(avgratio-1)*1000
+dat$date<-ymd(dat$date)
+S.TAOPAO<-xts(x=out,order.by =dat$date)
+
+S.SMA.14 <- SMA(Cl(S), n = 14)
+S.SMA.7 <- SMA(Cl(S), n = 7)
+S.SMA.20 <- SMA(Cl(S), n = 20)
+S.SMA.30 <- SMA(Cl(S), n = 30)
+S.SMA.100 <- SMA(Cl(S), n = 100)
+S.RSI.14 <- RSI(Cl(S))
+S.RSI.SellLevel <- xts(rep(71, NROW(S)), index(S))
+S.RSI.BuyLevel <- xts(rep(31, NROW(S)), index(S))
+highchart(type = "stock") %>% 
+  # create axis :)
+  hc_yAxis_multiples(
+    create_yaxis(3, height = c(2, 1, 1), turnopposite = TRUE)
+  ) %>% 
+  # series :D
+  hc_add_series(S, yAxis = 0, name = "股票") %>% 
+  hc_add_series(S.SMA.7, yAxis = 0, name = "Fast MA 7") %>%
+  hc_add_series(S.SMA.14, yAxis = 0, name = "Fast MA 14") %>%
+  hc_add_series(S.SMA.20, yAxis = 0, name = "Fast MA 20") %>%
+  hc_add_series(S.SMA.30, yAxis = 0, name = "Fast MA 30") %>%
+  hc_add_series(S.SMA.100, yAxis = 0, name = "Slow MA 100") %>% 
+  hc_add_series(S$Volume, color = "gray", yAxis = 1, name = "Volume", type = "column") %>% 
+  hc_add_series(S.RSI.14, yAxis = 2, name = "Osciallator", color = hex_to_rgba("green", 0.7)) %>%
+  hc_add_series(S.RSI.SellLevel, color = hex_to_rgba("red", 0.7),
+                yAxis = 2, name = "Sell level") %>% 
+  hc_add_series(S.RSI.BuyLevel, color = hex_to_rgba("blue", 0.7),
+                yAxis = 2, name = "Buy level") 
+```
+
+
+## 多维度指标可视化
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+
+{
+  chartSeries(stock_prices_xts, type = "bars",title="多维度指标发出交易信号",theme = chartTheme('white',up.col='red',dn.col='green'))
+addBBands()
+###### 重要指标
+addChVol()	#	Add Technical Indicator to Chart
+###### 重要指标
+#####这个有趣
+addDEMA()	#	Add Moving Average to Chart
+addDPO()	#	Add Technical Indicator to Chart  重要指标
+addCMF()	#	Add Technical Indicator to Chart
+addCLV()	#	Add Technical Indicator to Chart
+addCCI()	#	Add Commodity Channel Index
+addEMA()	#	Add Moving Average to Chart
+addEnvelope()	#	Add Technical Indicator to Chart
+addEVWMA()	#	Add Moving Average to Chart
+addKST()	#	Add Technical Indicator to Chart  重要指标
+addExpiry()	#	Add Contract Expiration Bars to Chart
+
+#####现金流
+addMFI()	#		Add Technical Indicator to Chart、
+##  反弹点位指标
+addSAR()	#		Add Parabolic Stop and Reversal to Chart
+##趋势指标    可以使用
+addTDI()	#		Add Technical Indicator to Chart
+#addTRIX()	#		Add Technical Indicator to Chart
+## 趋势线指标  可以使用 
+addZigZag()	#	Add Technical Indicator to Chart
+addZLEMA()	#	Add Moving Average to Chart
+}
+
+```
+
+# 预测未来
+
+## ARIMA 时间序列模型
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+
+
+```
+
+
+## Prohet models AI模型预测
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+
+
+```
+
+
+## Vector autoregressions 向量自动回归模型
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+
+```
+
+
+## Neural network models 神经网络模型
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+
+```
+
+
+## Bootstrapping 集成模型   
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+
+
+
+```
+
+
+
+## bagging装袋树模型
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+
+```
+
+
+## very short time series
+
+```{r encho=FALSE, message=FALSE,warning=FALSE}
+
+
+```
+
+  执业编号：S0770621060006 投资有风险，投资需要谨慎
+
+ 温馨提示投资有风险,投资需要谨慎!
+
+更多内容点击 [关注小编](http://wulixin.github.io//QuandlFinance//home.html) 
+
+footnotes^[内心的强大才是真的强大]

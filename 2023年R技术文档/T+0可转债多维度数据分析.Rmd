@@ -1,0 +1,325 @@
+
+---
+date: "`r Sys.Date()`"
+author: "LIXIN WU"
+title: "短线投机T+0热门转债"
+output: officedown::rdocx_document
+---
+
+
+```{r setup, include=FALSE,echo=FALSE,warning=FALSE,message=FALSE}
+
+library(officedown)
+library(officer)
+library(ggplot2)
+library(plotly)
+library(flextable)
+library(mmtable2)
+library(htmlTable)
+library(kableExtra)
+library(ggrepel)
+library(lubridate)
+library(forcats) 
+library(proto)
+library(ggmap)
+library(DT)
+library(highcharter)
+library(viridisLite)
+library(treemap)
+library(flexdashboard)
+library(RJSONIO)
+library(tvthemes)
+library(dygraphs)
+library(ggplot2) 
+library(plotly)
+library(highcharter)
+library(ggvis)
+library(ggmap)
+#other packages
+library(dplyr)
+library(MAPA)
+library(magick)
+library(nnfor)
+library(data.table)
+library(quantmod)
+library(PerformanceAnalytics)
+library(TTR)
+library(nnfor)
+library(forecast)
+library(xts)
+library(zoo)
+library(PortfolioAnalytics)
+library(Quandl)
+library(astsa)
+library(flexdashboard)
+library(dplyr)
+#finance packages 
+library(readr)
+library(devtools)
+library(foreach)
+library(Tushare)
+library(lubridate)
+library(Quandl)
+library(quantmod)
+library(PerformanceAnalytics)
+library(foreach)
+library(xts)
+library(TTR)
+library(data.table)
+library(dplyr)
+library(Tushare)
+library(tidyverse)
+library(forcats)
+library(MAPA)
+library(magick)
+library(nnfor)
+library(astsa)
+library(flexdashboard)
+#plot packages 
+library(dygraphs)
+library(ggplot2)
+library(plotly)
+library(highcharter)
+library(ggvis)
+library(ggmap)
+#finance packages 
+library(readr)
+library(devtools)
+library(lubridate)
+library(billboarder)
+library(wordcloud2)
+library(jiebaR)
+library(tmcn)
+library(gplots)
+library(RColorBrewer)
+library(heatmaply)
+library(d3heatmap)
+library(quantmod)
+library(shiny)
+library(shinyWidgets)
+library(bs4Dash)
+library(plotly)
+library(shiny)
+#library(fontawesome)
+library(DT)
+library(shinydashboard)
+library(leaflet)
+library(dygraphs)
+library(visNetwork)
+library(treemap)
+library(viridis)
+library(RColorBrewer)
+library(highcharter)
+library(ggplot2)
+library(echarts4r)
+library(ECharts2Shiny)
+library(data.table)
+library(dplyr)
+library(jsonlite)
+library(Tushare)
+library(xts)
+today<-ymd(Sys.Date())
+
+pro_api<-function (token) {
+  http_url <- "http://api.Tushare.pro"
+  return(function(api_name, ...) {
+    params <- list(token = token, api_name = api_name, params = list(...))
+    r <- httr::POST(http_url, body = params, encode = "json")
+    res <- httr::content(r, "parsed", "application/json")
+    if (is.null(res$data)) {
+      return(NULL)
+    }
+    columns <- res$data$fields
+    items <- res$data$items
+    df <- as.data.frame(data.table::rbindlist(items))
+    colnames(df) <- columns
+    return(df)
+  }) }
+pro <-pro_api(token ='fe8102bf83f5f83f6608aa46fa5e985c534c227786236a1192e5fd55')
+
+df = pro(api_name="cb_basic")
+
+df$new_type<-ifelse(df$value_date>=ymd('20230101'),"2023新上市",
+                    ifelse(df$value_date>=ymd('20210101'),"2022/2021新上市",
+                    ifelse(df$value_date>=ymd('20200101'),"2020新上市","老可转债")))
+
+today<-str_remove(str_remove(Sys.Date(), "-"),"-")
+#
+df1_prices = pro(api_name='cb_daily',trade_date=today)#start_date
+
+#df1_prices = pro(api_name='cb_daily',trade_date='20230113') #start_date
+
+df1_prices$type<-ifelse(df1_prices$pct_chg>5,"活跃火山","死火山")
+
+ft_example <- fp_text_lite(
+  color = "red", bold = TRUE, font.size = 24)
+
+
+ft_obj1 <- fp_text_lite(color = "green", bold = TRUE)
+ft_obj2 <- fp_text_lite(color = "red", bold = TRUE)
+
+ft_example <- fp_text_lite(
+  color = "red", bold = TRUE)
+
+#srcfile <- file.path( R.home("doc"), "html", "logo.jpg" )
+srcfile <- file.path("/Users/wulixin/Desktop/logo.png" )
+extimg <- external_img(src = srcfile, height = 5/5, width = 20/5)
+#感谢支持 `r extimg`
+```
+
+                               
+  
+# 可转债投资背景
+
+    可转债作为金融衍生品中的一种,既具有股票的性质也具有债券的性质,因为其T+0的交易规则,当股市低迷的时候,或者其个股出现暴涨的时候,可转债市场很容易出现暴涨的过度投机,如2020年的英科转债,2021年的小康转债,短期快速翻倍使得可转债成为了短线客户投机的重要标的,因此对于全市场的可转债需要有一个全景式的了解,这样方便我们快速选出投资标的.
+
+    投资语录：可转债市场随着市场规模的扩大，未来将成为股票市场之外另一个具有规模的市场。投资需要了解时间的价值 良好的沟通是成功的一半.
+
+
+## 热门高标转债
+   
+    可转债跟股票一样，大部分时间在100元上下区间波动率非常低，一旦波动幅度加大，就像火山爆发一样，比如湖北广电的可转债，其实这也是充满了机会与风险。
+    
+    
+```{r tab.cap="热门可转债", tab.id = "mytab", tab.cap.style = "Table Caption",,echo=FALSE,warning=FALSE,message=FALSE}
+
+kzz_rm<-df1_prices%>%
+  filter(type=="活跃火山")%>%
+  left_join(df)%>%
+  select(ts_code,bond_short_name,stk_short_name,pct_chg,maturity_date,vol,close,new_type,type)%>%
+  arrange(desc(pct_chg))
+
+colnames(kzz_rm)<-c("代码","转债名称","股票名称","涨跌幅","到期日期","交易量","收盘价","类型","活跃度")
+
+set_flextable_defaults(
+  font.size = 10, theme_fun = theme_vanilla,
+  padding = 6,
+  background.color = "#EFEFEF")
+
+flextable(kzz_rm)
+
+```
+
+
+## 低位即将爆发
+
+    很多可转债在超跌之后，会出现见底之后的大反转！
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+
+kzz_150<-df1_prices%>%
+  filter(close>90 & close<106)%>%
+  left_join(df)%>%
+  select(ts_code,bond_short_name,stk_short_name,pct_chg,maturity_date,vol,close,new_type,type)%>%
+  arrange(desc(pct_chg))
+
+colnames(kzz_150)<-c("代码","转债名称","股票名称","涨跌幅","到期日期","交易量","收盘价","类型","活跃度")
+
+
+flextable(kzz_150)
+
+```
+
+
+## 上升浪稳套利
+
+    很多可转债在超跌之后，会出现见底之后的大反转！
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+
+kzz_1501<-df1_prices%>%
+  filter(close>106 & close<112)%>%
+  left_join(df)%>%
+  select(ts_code,bond_short_name,stk_short_name,pct_chg,maturity_date,vol,close,new_type,type)%>%
+  arrange(desc(pct_chg))
+
+colnames(kzz_1501)<-c("代码","转债名称","股票名称","涨跌幅","到期日期","交易量","收盘价","类型","活跃度")
+
+
+flextable(kzz_1501)
+
+```
+
+
+\newpage
+
+# 时间维度
+##  新上市可转债
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+
+kzz_2023<-df1_prices%>%
+  left_join(df)%>%
+  filter(new_type=="2023新上市")%>%
+  select(ts_code,bond_short_name,stk_short_name,pct_chg,maturity_date,vol,close,new_type,type)%>%
+  arrange(desc(maturity_date))
+
+colnames(kzz_2023)<-c("代码","转债名称","股票名称","涨跌幅","到期日期","交易量","收盘价","类型","活跃度")
+#更多内容联系我 `r ftext("QuandlFinance", ft_example)`.
+
+flextable(kzz_2023) 
+```
+
+
+# 价格维度 
+
+## 100元以下可转债
+   
+    可转债市场具有弯腰捡钱的机会，可转债价格低于100的时候，因为企业的回购协议是在100基础上加一定利息，因此具有套利的空间。
+
+```{r tab.cap="百元以下可转债", tab.id = "mytab1", tab.cap.style = "Table Caption",echo=FALSE,warning=FALSE,message=FALSE}
+
+library(data.table)
+library(scales)
+kzz_jq<-df1_prices%>%
+  filter(close<100)%>%
+  left_join(df)%>%
+  select(ts_code,bond_short_name,stk_short_name,pct_chg,maturity_date,vol,close,new_type,type)%>%
+  arrange(desc(close))
+
+colnames(kzz_jq)<-c("代码","转债名称","股票名称","涨跌幅","到期日期","交易量","收盘价","类型","活跃度")
+
+colourer <- col_numeric(palette = c("transparent", "red"),domain = c(0, 100))
+
+flextable(kzz_jq) %>%
+  bg(bg = colourer,j =  "收盘价",part = "body")
+
+```
+
+
+##  200元以上可转债
+   
+    风险比较高，进入高度波动，高度活跃阶段的可转债！
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+kzz_200<-df1_prices%>%
+  filter(close>200)%>%
+  left_join(df)%>%
+  select(ts_code,bond_short_name,stk_short_name,pct_chg,maturity_date,vol,close,new_type,type)%>%
+  arrange(desc(pct_chg))
+
+colnames(kzz_200)<-c("代码","转债名称","股票名称","涨跌幅","到期日期","交易量","收盘价","类型","活跃度")
+
+
+flextable(kzz_200)
+# 感谢支持 `r extimg`
+```
+
+
+
+# 投资寄语 
+ 
+    温馨提示投资有风险,投资需要谨慎!
+
+* 投资切莫陷入频繁小战阶段，大战定天下，战争的精髓不在于用兵次数而在于收益，不是收益率；
+
+* 学习投资的生存哲学，龟壳战术，司马懿的坚守之道！
+
+  执业编号：S0770621060006 投资有风险，投资需要谨慎
+
+ 
+
+
+更多内容点击 [QuandlFinance](http://wulixin.github.io//QuandlFinance//home.html) 
+footnotes^[内心的强大才是真的强大]
+
