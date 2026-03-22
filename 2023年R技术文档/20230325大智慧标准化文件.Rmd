@@ -1,0 +1,85 @@
+---
+title: "吃鱼三境界之鱼身 `风浪越大，鱼越贵`"
+author: "WuLinXin 您的专业证券投资顾问"
+date: "`r Sys.Date()`"
+output: officedown::rdocx_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = FALSE,
+    # Table Captioning
+    tab.cap.style = "Table Caption",
+    tab.cap.pre = "Table ",
+    tab.cap.sep = ": ",
+    # Figure Captioning
+    fig.cap.style = "Image Caption",
+    fig.cap.pre = "Figure ",
+    fig.cap.sep = ": "
+)
+# LIBRARIES
+library(officedown)
+library(officer)
+library(tidyverse)
+library(timetk)
+```
+
+## 投资理念
+   
+   长期来看,大部分投资者赚不到钱的原因,不是因为发现不了好的投资机会,而是发现了太多的机会,大部分时间在追逐机会,从而错过了最开始选择的千里马,因此长期看投资做少就是做多。
+   大部分投资者的所处的环境，时间精力有限，资金量有限，后续粮草有限，知识文化认知有限因此需要站在他人的肩膀上,需要依赖于专业研究的分析.
+   一次做一只,一次放一只羊,一只赚钱再做下一只,首战即决战,一战定乾坤,学会耐心持有与做时间的朋友,逆向思维加仓这是能够做到一直赚钱的必备素养。投资有风险,主动沟通也很重要！
+   
+## 投资战略战法战术
+   
+   采用大数据聚类算法研究群体,把握群体共性欲个体差异性,通过金融行为学羊群战略,观察群体动态！羊群战略+黄金坑战法吃鱼头+火山口战法吃鱼身+龙回头战法吃鱼尾! 加上龟壳战术,坚守不出,耐心持有,金字塔比例分布建仓! 全局作战地图与全局战略,战术,战法思维！
+   
+
+\newpage
+
+## 多头策略解读
+  
+   上涨往往超出投资者的预期,表现出来投资者很容易卖飞,下跌往往超出投资者的预期,表现在抄底很容易被套!在目前市场成交量大部分时候在8000亿左右,随着IPO数量接近6000只,未来成交量只能聚焦在少部分股票上,因此出现了很多极端行情,大部分股票50%时间下跌,45%的时间震荡,5%的时间能够把一年或者几年的跌幅涨回来,因此是慢跌快涨,体现在要多关注多头策略个股,也就是上升趋势,上升阶段的股票,敢于追高,缓于抄底!加上信息传播速度加快,加剧了盲从效应,羊群效应,跟风投资!
+
+```{r}
+block_toc()
+```
+
+## 吃鱼三境界之鱼身
+
+```{r}
+block_toc(style = "Image Caption")
+```
+
+\newpage
+
+## 鱼身股走势图
+
+   全局走势图,拥有全局视野,把握结构性机会！
+
+```{r fig.cap="economics plot", fig.id = "tsplot", fig.cap.style = "Image Caption"}
+economics %>%
+    plot_time_series(
+        .date_var    = date, 
+        .value       = unemploy / pop,
+        .interactive = FALSE
+    )
+```
+
+
+## 风险提示与注意事项
+   
+   投资有风险,入市需谨慎,良好的沟通与交流是成功的一半!学会分布建仓,控制住持仓就控制住了风险,把握全局最优与局部最优解!
+   
+```{r tab.cap="economics table", tab.id = "econtab", tab.cap.style = "Table Caption"}
+head(economics)
+```
+
+## 作者简介解锁更多的服务内容
+   
+   一个擅长用模型预测个股走势，算法研究群体共性的投顾老师，致力于帮助投资者养成良好的投资习惯。基于聚类算法反欺诈算法驱动投资，羊群战略➕黄金坑战法➕火山口战法➕龟壳战术➕智能持仓系统的大投研体系。
+   
+   
+   
+   
+    
