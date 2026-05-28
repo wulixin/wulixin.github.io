@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>初中物理常识训练 · 1000题</title>
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  --primary: #4F46E5;
+  --primary-light: #818CF8;
+  --primary-dark: #3730A3;
+  --success: #10B981;
+  --success-light: #D1FAE5;
+  --danger: #EF4444;
+  --danger-light: #FEE2E2;
+  --warning: #F59E0B;
+  --warning-light: #FEF3C7;
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --text: #1E293B;
+  --text-secondary: #64748B;
+  --border: #E2E8F0;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== Header ===== */
+.header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  padding: 24px 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.header h1 span {
+  opacity: 0.7;
+  font-weight: 400;
+  font-size: 0.9rem;
+  margin-left: 8px;
+}
+
+.header-stats {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 6px 16px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===== Controls Bar ===== */
+.controls {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.chip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: var(--card);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.chip.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.chip.active:hover {
+  background: var(--primary-dark);
+}
+
+.chip .count {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  margin-left: 4px;
+}
+
+.chip:not(.active) .count {
+  background: var(--bg);
+  color: var(--text-secondary);
+}
+
+/* ===== Main Content ===== */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ===== Welcome Screen ===== */
+.welcome {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.welcome-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.welcome h2 {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+  color: var(--primary);
+}
+
+.welcome p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 500px;
+  margin: 0 auto 32px;
+  line-height: 1.7;
+}
+
+.start-btn {
+  padding: 14px 48px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+}
+
+.start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+}
+
+/* ===== Question Card ===== */
+.question-area {
+  display: none;
+}
+
+.question-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.question-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge-choice {
+  background: #EEF2FF;
+  color: var(--primary);
+}
+
+.badge-fill {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.badge-category {
+  background: #F0FDF4;
+  color: #166534;
+  margin-left: 8px;
+}
+
+.question-number {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.question-text {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  margin-bottom: 24px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* ===== Options ===== */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 1rem;
+  text-align: left;
+  width: 100%;
+}
+
+.option-btn:hover:not(.disabled) {
+  border-color: var(--primary-light);
+  background: #F5F3FF;
+}
+
+.option-btn .option-letter {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background: var(--bg);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+
+.option-btn:hover:not(.disabled) .option-letter {
+  background: var(--primary);
+  color: white;
+}
+
+.option-btn.selected {
+  border-color: var(--primary);
+  background: #EEF2FF;
+}
+
+.option-btn.selected .option-letter {
+  background: var(--primary);
+  color: white;
+}
+
+.option-btn.correct {
+  border-color: var(--success);
+  background: var(--success-light);
+}
+
+.option-btn.correct .option-letter {
+  background: var(--success);
+  color: white;
+}
+
+.option-btn.wrong {
+  border-color: var(--danger);
+  background: var(--danger-light);
+}
+
+.option-btn.wrong .option-letter {
+  background: var(--danger);
+  color: white;
+}
+
+.option-btn.disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+/* ===== Fill-in Input ===== */
+.fill-input-area {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.fill-input {
+  flex: 1;
+  padding: 14px 20px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  outline: none;
+  transition: var(--transition);
+}
+
+.fill-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.fill-input.correct {
+  border-color: var(--success);
+  background: var(--success-light);
+}
+
+.fill-input.wrong {
+  border-color: var(--danger);
+  background: var(--danger-light);
+}
+
+/* ===== Submit Button ===== */
+.submit-btn {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== Explanation ===== */
+.explanation {
+  display: none;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.explanation.correct-exp {
+  background: var(--success-light);
+  border-left: 4px solid var(--success);
+}
+
+.explanation.wrong-exp {
+  background: var(--danger-light);
+  border-left: 4px solid var(--danger);
+}
+
+.explanation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.explanation.correct-exp .explanation-header { color: #065F46; }
+.explanation.wrong-exp .explanation-header { color: #991B1B; }
+
+.explanation-body {
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.explanation .correct-answer {
+  margin-top: 8px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+/* ===== Navigation ===== */
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.nav-btn {
+  padding: 10px 24px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.nav-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.nav-btn.primary {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.nav-btn.primary:hover {
+  background: var(--primary-dark);
+}
+
+.progress-bar {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progress-track {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ===== Wrong Questions Panel ===== */
+.wrong-panel {
+  display: none;
+  margin-top: 24px;
+}
+
+.wrong-panel h3 {
+  font-size: 1.2rem;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wrong-item {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--danger);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.wrong-item .wrong-q {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.wrong-item .wrong-info {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.wrong-item .wrong-info span {
+  margin-right: 16px;
+}
+
+/* ===== Results Screen ===== */
+.results {
+  display: none;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.results-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 48px;
+  box-shadow: var(--shadow-lg);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.results-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.results h2 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.results .score {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 16px 0;
+}
+
+.results .score-detail {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  line-height: 1.8;
+}
+
+.results-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===== Bookmarks ===== */
+.bookmark-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: var(--transition);
+}
+
+.bookmark-btn:hover, .bookmark-btn.active {
+  opacity: 1;
+}
+
+.bookmark-btn.active {
+  color: var(--warning);
+}
+
+/* ===== Mode Toggle ===== */
+.mode-toggle {
+  display: flex;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+
+.mode-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.mode-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .header { padding: 16px 20px; }
+  .header h1 { font-size: 1.2rem; }
+  .header h1 span { display: none; }
+  .controls { padding: 0 16px; }
+  .main { padding: 0 16px 60px; }
+  .question-card { padding: 20px; }
+  .question-text { font-size: 1rem; }
+  .nav-bar { flex-direction: column; align-items: stretch; }
+  .progress-bar { order: -1; }
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+/* ===== Mode: Practice vs Exam ===== */
+.timer-bar {
+  display: none;
+  background: var(--danger-light);
+  padding: 8px 16px;
+  text-align: center;
+  font-weight: 600;
+  color: #991B1B;
+}
+
+/* ===== Empty state ===== */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--text);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== Category Summary Grid ===== */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.category-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 2px solid transparent;
+}
+
+.category-card:hover {
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.category-card .cat-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.category-card .cat-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.category-card .cat-count {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.category-card .cat-progress {
+  margin-top: 10px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.category-card .cat-progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <h1>⚡ 初中物理常识训练 <span>1000题强化练习</span></h1>
+    <div class="header-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="totalDone">0</div>
+        <div class="stat-label">已做</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalCorrect">0%</div>
+        <div class="stat-label">正确率</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="totalWrong">0</div>
+        <div class="stat-label">错题</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <div class="filter-group">
+    <span class="filter-label">板块：</span>
+    <div class="chip active" data-category="all" onclick="filterCategory('all')">全部<span class="count">1000</span></div>
+    <div class="chip" data-category="sound" onclick="filterCategory('sound')">🔊 声学<span class="count">130</span></div>
+    <div class="chip" data-category="optics" onclick="filterCategory('optics')">💡 光学<span class="count">130</span></div>
+    <div class="chip" data-category="heat" onclick="filterCategory('heat')">🔥 热学<span class="count">130</span></div>
+    <div class="chip" data-category="mechanics" onclick="filterCategory('mechanics')">⚙️ 力学<span class="count">200</span></div>
+    <div class="chip" data-category="electricity" onclick="filterCategory('electricity')">⚡ 电学<span class="count">200</span></div>
+    <div class="chip" data-category="magnetism" onclick="filterCategory('magnetism')">🧲 磁学<span class="count">70</span></div>
+    <div class="chip" data-category="energy" onclick="filterCategory('energy')">🌍 能源信息<span class="count">70</span></div>
+    <div class="chip" data-category="experiment" onclick="filterCategory('experiment')">🔬 实验探究<span class="count">70</span></div>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">题型：</span>
+    <div class="chip active" data-type="all" onclick="filterType('all')">全部</div>
+    <div class="chip" data-type="choice" onclick="filterType('choice')">选择题</div>
+    <div class="chip" data-type="fill" onclick="filterType('fill')">填空题</div>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">模式：</span>
+    <div class="mode-toggle">
+      <button class="mode-btn active" onclick="setMode('practice')">练习</button>
+      <button class="mode-btn" onclick="setMode('exam')">测验</button>
+    </div>
+  </div>
+  <button class="nav-btn" onclick="showWrongBook()" style="margin-left:auto;">📋 错题本 (<span id="wrongCount">0</span>)</button>
+  <button class="nav-btn" onclick="resetProgress()" style="color:var(--danger);">🔄 重置</button>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+  <!-- Welcome / Category Select -->
+  <div id="welcomeScreen" class="welcome">
+    <div class="welcome-icon">⚡</div>
+    <h2>初中物理常识训练</h2>
+    <p>1000道精选题目，涵盖声学、光学、热学、力学、电学、磁学、能源信息与实验探究八大板块，做完即显对错与解析，助你强化记忆与理解。</p>
+    <div class="category-grid" id="categoryGrid"></div>
+    <button class="start-btn" onclick="startQuiz()">🎯 开始训练</button>
+  </div>
+
+  <!-- Question Area -->
+  <div id="questionArea" class="question-area">
+    <div class="question-card" id="questionCard" style="position:relative;">
+      <button class="bookmark-btn" id="bookmarkBtn" onclick="toggleBookmark()">☆</button>
+      <div class="question-header">
+        <div>
+          <span class="question-badge badge-choice" id="typeBadge">选择题</span>
+          <span class="question-badge badge-category" id="catBadge">声学</span>
+        </div>
+        <div class="question-number" id="qNumber">1 / 1000</div>
+      </div>
+      <div class="question-text" id="questionText"></div>
+
+      <!-- Choice Options -->
+      <div class="options-list" id="optionsList"></div>
+
+      <!-- Fill Input -->
+      <div class="fill-input-area" id="fillArea" style="display:none;">
+        <input type="text" class="fill-input" id="fillInput" placeholder="请输入答案..." autocomplete="off">
+        <button class="submit-btn" id="fillSubmit" onclick="checkFillAnswer()">提交</button>
+      </div>
+
+      <!-- Explanation -->
+      <div class="explanation" id="explanation">
+        <div class="explanation-header" id="expHeader"></div>
+        <div class="explanation-body" id="expBody"></div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-btn" id="prevBtn" onclick="prevQuestion()">⬅ 上一题</button>
+      <div class="progress-bar">
+        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <span class="progress-text" id="progressText">0 / 0</span>
+      </div>
+      <button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()">下一题 ➡</button>
+    </div>
+  </div>
+
+  <!-- Wrong Book -->
+  <div id="wrongPanel" class="wrong-panel">
+    <h3>📋 错题本</h3>
+    <div id="wrongList"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="resultsScreen" class="results">
+    <div class="results-card">
+      <div class="results-icon">🎉</div>
+      <h2>训练完成！</h2>
+      <div class="score" id="finalScore">0%</div>
+      <div class="score-detail" id="scoreDetail"></div>
+      <div class="results-actions">
+        <button class="nav-btn primary" onclick="restartQuiz()">再来一轮</button>
+        <button class="nav-btn" onclick="showWrongBook()">查看错题</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Load question data -->
+<script src="data/sound.js"></script>
+<script src="data/optics.js"></script>
+<script src="data/heat.js"></script>
+<script src="data/mechanics.js"></script>
+<script src="data/electricity.js"></script>
+<script src="data/magnetism.js"></script>
+<script src="data/energy.js"></script>
+<script src="data/experiment.js"></script>
+
+<script>
+// ===== App State =====
+const APP = {
+  questions: [],        // current filtered questions
+  currentIndex: 0,
+  category: 'all',
+  typeFilter: 'all',
+  mode: 'practice',     // practice or exam
+  answers: {},          // { globalIndex: { userAnswer, correct, revealed } }
+  wrongBook: [],        // array of question objects
+  bookmarks: new Set(),
+  stats: { total: 0, correct: 0 },
+  // Category definitions
+  categories: {
+    sound:      { name: '声学',     icon: '🔊', data: null },
+    optics:     { name: '光学',     icon: '💡', data: null },
+    heat:       { name: '热学',     icon: '🔥', data: null },
+    mechanics:  { name: '力学',     icon: '⚙️', data: null },
+    electricity:{ name: '电学',     icon: '⚡', data: null },
+    magnetism:  { name: '磁学',     icon: '🧲', data: null },
+    energy:     { name: '能源信息', icon: '🌍', data: null },
+    experiment: { name: '实验探究', icon: '🔬', data: null }
+  }
+};
+
+// ===== Initialize =====
+function init() {
+  // Load data from the JS files
+  APP.categories.sound.data = typeof SOUND_QUESTIONS !== 'undefined' ? SOUND_QUESTIONS : [];
+  APP.categories.optics.data = typeof OPTICS_QUESTIONS !== 'undefined' ? OPTICS_QUESTIONS : [];
+  APP.categories.heat.data = typeof HEAT_QUESTIONS !== 'undefined' ? HEAT_QUESTIONS : [];
+  APP.categories.mechanics.data = typeof MECHANICS_QUESTIONS !== 'undefined' ? MECHANICS_QUESTIONS : [];
+  APP.categories.electricity.data = typeof ELECTRICITY_QUESTIONS !== 'undefined' ? ELECTRICITY_QUESTIONS : [];
+  APP.categories.magnetism.data = typeof MAGNETISM_QUESTIONS !== 'undefined' ? MAGNETISM_QUESTIONS : [];
+  APP.categories.energy.data = typeof ENERGY_QUESTIONS !== 'undefined' ? ENERGY_QUESTIONS : [];
+  APP.categories.experiment.data = typeof EXPERIMENT_QUESTIONS !== 'undefined' ? EXPERIMENT_QUESTIONS : [];
+
+  // Add category tags to questions
+  Object.keys(APP.categories).forEach(cat => {
+    const data = APP.categories[cat].data;
+    data.forEach(q => {
+      q.category = cat;
+      q.categoryName = APP.categories[cat].name;
+    });
+  });
+
+  // Load saved state
+  loadState();
+
+  // Build category grid
+  buildCategoryGrid();
+
+  // Update counts
+  updateCounts();
+
+  // Apply filters
+  applyFilters();
+}
+
+function buildCategoryGrid() {
+  const grid = document.getElementById('categoryGrid');
+  grid.innerHTML = '';
+  Object.keys(APP.categories).forEach(cat => {
+    const c = APP.categories[cat];
+    const data = c.data || [];
+    const done = data.filter(q => APP.answers[getGlobalId(q)]).length;
+    const pct = data.length > 0 ? (done / data.length * 100) : 0;
+    grid.innerHTML += `
+      <div class="category-card" onclick="filterCategory('${cat}');startQuiz();">
+        <div class="cat-icon">${c.icon}</div>
+        <div class="cat-name">${c.name}</div>
+        <div class="cat-count">${data.length} 道题 · 已做 ${done} 道</div>
+        <div class="cat-progress"><div class="cat-progress-fill" style="width:${pct}%"></div></div>
+      </div>
+    `;
+  });
+}
+
+// ===== Global ID for answers tracking =====
+function getGlobalId(q) {
+  return q.category + '_' + q.id;
+}
+
+// ===== Filtering =====
+function filterCategory(cat) {
+  APP.category = cat;
+  document.querySelectorAll('[data-category]').forEach(el => {
+    el.classList.toggle('active', el.dataset.category === cat);
+  });
+  applyFilters();
+}
+
+function filterType(type) {
+  APP.typeFilter = type;
+  document.querySelectorAll('[data-type]').forEach(el => {
+    el.classList.toggle('active', el.dataset.type === type);
+  });
+  applyFilters();
+}
+
+function applyFilters() {
+  let all = [];
+  if (APP.category === 'all') {
+    Object.keys(APP.categories).forEach(cat => {
+      all = all.concat(APP.categories[cat].data || []);
+    });
+  } else {
+    all = APP.categories[APP.category]?.data || [];
+  }
+
+  if (APP.typeFilter !== 'all') {
+    all = all.filter(q => q.type === APP.typeFilter);
+  }
+
+  // Shuffle with seed for consistency within a session
+  APP.questions = shuffleArray(all);
+  APP.currentIndex = 0;
+  updateProgress();
+}
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ===== Mode =====
+function setMode(mode) {
+  APP.mode = mode;
+  document.querySelectorAll('.mode-btn').forEach(el => {
+    el.classList.toggle('active', el.textContent.includes(mode === 'practice' ? '练习' : '测验'));
+  });
+}
+
+// ===== Start Quiz =====
+function startQuiz() {
+  if (APP.questions.length === 0) {
+    showToast('当前筛选条件下没有题目');
+    return;
+  }
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('wrongPanel').style.display = 'none';
+  document.getElementById('resultsScreen').style.display = 'none';
+  document.getElementById('questionArea').style.display = 'block';
+  APP.currentIndex = 0;
+  renderQuestion();
+}
+
+// ===== Render Question =====
+function renderQuestion() {
+  const q = APP.questions[APP.currentIndex];
+  if (!q) return;
+
+  const gid = getGlobalId(q);
+  const answered = APP.answers[gid];
+
+  // Type badge
+  const typeBadge = document.getElementById('typeBadge');
+  if (q.type === 'choice') {
+    typeBadge.textContent = '选择题';
+    typeBadge.className = 'question-badge badge-choice';
+  } else {
+    typeBadge.textContent = '填空题';
+    typeBadge.className = 'question-badge badge-fill';
+  }
+
+  // Category badge
+  document.getElementById('catBadge').textContent = q.categoryName;
+
+  // Question number
+  document.getElementById('qNumber').textContent = `${APP.currentIndex + 1} / ${APP.questions.length}`;
+
+  // Question text
+  document.getElementById('questionText').textContent = q.question;
+
+  // Bookmark
+  const bmBtn = document.getElementById('bookmarkBtn');
+  bmBtn.textContent = APP.bookmarks.has(gid) ? '★' : '☆';
+  bmBtn.classList.toggle('active', APP.bookmarks.has(gid));
+
+  // Options or fill
+  const optionsList = document.getElementById('optionsList');
+  const fillArea = document.getElementById('fillArea');
+
+  if (q.type === 'choice') {
+    optionsList.style.display = 'flex';
+    fillArea.style.display = 'none';
+    renderOptions(q, answered);
+  } else {
+    optionsList.style.display = 'none';
+    fillArea.style.display = 'flex';
+    renderFill(q, answered);
+  }
+
+  // Explanation
+  const expEl = document.getElementById('explanation');
+  if (answered && answered.revealed) {
+    showExplanation(q, answered);
+  } else {
+    expEl.style.display = 'none';
+  }
+
+  // Navigation
+  document.getElementById('prevBtn').disabled = APP.currentIndex === 0;
+  updateProgress();
+}
+
+function renderOptions(q, answered) {
+  const optionsList = document.getElementById('optionsList');
+  optionsList.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt.replace(/^[A-D][.、．]\s*/, '')}</span>`;
+
+    if (answered && answered.revealed) {
+      btn.classList.add('disabled');
+      if (letters[i] === q.answer) {
+        btn.classList.add('correct');
+      }
+      if (answered.userAnswer === letters[i] && letters[i] !== q.answer) {
+        btn.classList.add('wrong');
+      }
+    } else {
+      btn.onclick = () => selectOption(letters[i], q);
+      if (answered && answered.userAnswer === letters[i]) {
+        btn.classList.add('selected');
+      }
+    }
+
+    optionsList.appendChild(btn);
+  });
+}
+
+function renderFill(q, answered) {
+  const input = document.getElementById('fillInput');
+  const submitBtn = document.getElementById('fillSubmit');
+
+  if (answered && answered.revealed) {
+    input.value = answered.userAnswer || '';
+    input.classList.add(answered.correct ? 'correct' : 'wrong');
+    input.readOnly = true;
+    submitBtn.disabled = true;
+  } else {
+    input.value = answered ? answered.userAnswer || '' : '';
+    input.className = 'fill-input';
+    input.readOnly = false;
+    submitBtn.disabled = false;
+    input.onkeydown = (e) => {
+      if (e.key === 'Enter') checkFillAnswer();
+    };
+  }
+}
+
+// ===== Answer Handling =====
+function selectOption(letter, q) {
+  const gid = getGlobalId(q);
+  if (APP.answers[gid]?.revealed) return;
+
+  const correct = letter === q.answer;
+  APP.answers[gid] = { userAnswer: letter, correct, revealed: true };
+  APP.stats.total++;
+  if (correct) APP.stats.correct++;
+  if (!correct) addToWrongBook(q);
+
+  saveState();
+  renderQuestion();
+  updateHeaderStats();
+}
+
+function checkFillAnswer() {
+  const q = APP.questions[APP.currentIndex];
+  if (!q) return;
+  const gid = getGlobalId(q);
+  if (APP.answers[gid]?.revealed) return;
+
+  const input = document.getElementById('fillInput');
+  const userAnswer = input.value.trim();
+  if (!userAnswer) {
+    showToast('请输入答案');
+    return;
+  }
+
+  // Flexible matching: case-insensitive, trim, allow common variations
+  const correctAnswers = Array.isArray(q.answer) ? q.answer : [q.answer];
+  const correct = correctAnswers.some(a =>
+    userAnswer.toLowerCase().replace(/\s/g, '') === a.toLowerCase().replace(/\s/g, '')
+  );
+
+  APP.answers[gid] = { userAnswer, correct, revealed: true };
+  APP.stats.total++;
+  if (correct) APP.stats.correct++;
+  if (!correct) addToWrongBook(q);
+
+  saveState();
+  renderQuestion();
+  updateHeaderStats();
+}
+
+function showExplanation(q, answered) {
+  const expEl = document.getElementById('explanation');
+  const expHeader = document.getElementById('expHeader');
+  const expBody = document.getElementById('expBody');
+
+  expEl.style.display = 'block';
+  expEl.className = 'explanation ' + (answered.correct ? 'correct-exp' : 'wrong-exp');
+
+  expHeader.textContent = answered.correct ? '✅ 回答正确！' : '❌ 回答错误';
+
+  let body = q.explanation;
+  if (!answered.correct) {
+    body += `<div class="correct-answer">正确答案：${q.answer}</div>`;
+  }
+  expBody.innerHTML = body;
+}
+
+// ===== Navigation =====
+function nextQuestion() {
+  if (APP.currentIndex < APP.questions.length - 1) {
+    APP.currentIndex++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function prevQuestion() {
+  if (APP.currentIndex > 0) {
+    APP.currentIndex--;
+    renderQuestion();
+  }
+}
+
+function updateProgress() {
+  const total = APP.questions.length;
+  const current = APP.currentIndex + 1;
+  const pct = total > 0 ? (current / total * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${current} / ${total}`;
+}
+
+// ===== Stats =====
+function updateHeaderStats() {
+  const done = Object.keys(APP.answers).length;
+  const total = APP.stats.total;
+  const correct = APP.stats.correct;
+  const rate = total > 0 ? Math.round(correct / total * 100) : 0;
+
+  document.getElementById('totalDone').textContent = done;
+  document.getElementById('totalCorrect').textContent = rate + '%';
+  document.getElementById('totalWrong').textContent = APP.wrongBook.length;
+  document.getElementById('wrongCount').textContent = APP.wrongBook.length;
+}
+
+function updateCounts() {
+  // Update chip counts
+  let total = 0;
+  Object.keys(APP.categories).forEach(cat => {
+    const len = (APP.categories[cat].data || []).length;
+    total += len;
+    const chip = document.querySelector(`[data-category="${cat}"] .count`);
+    if (chip) chip.textContent = len;
+  });
+  const allChip = document.querySelector('[data-category="all"] .count');
+  if (allChip) allChip.textContent = total;
+
+  updateHeaderStats();
+}
+
+// ===== Wrong Book =====
+function addToWrongBook(q) {
+  const gid = getGlobalId(q);
+  if (!APP.wrongBook.find(w => getGlobalId(w) === gid)) {
+    APP.wrongBook.push(q);
+  }
+}
+
+function showWrongBook() {
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.getElementById('questionArea').style.display = 'none';
+  document.getElementById('resultsScreen').style.display = 'none';
+  document.getElementById('wrongPanel').style.display = 'block';
+
+  const list = document.getElementById('wrongList');
+  if (APP.wrongBook.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">🎉</div><p>暂无错题，继续加油！</p></div>';
+    return;
+  }
+
+  list.innerHTML = APP.wrongBook.map(q => `
+    <div class="wrong-item">
+      <div class="wrong-q">${q.question}</div>
+      <div class="wrong-info">
+        <span>📂 ${q.categoryName}</span>
+        <span>✅ 答案：${q.answer}</span>
+        <span>📝 ${q.explanation}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== Bookmark =====
+function toggleBookmark() {
+  const q = APP.questions[APP.currentIndex];
+  if (!q) return;
+  const gid = getGlobalId(q);
+  if (APP.bookmarks.has(gid)) {
+    APP.bookmarks.delete(gid);
+    showToast('已取消收藏');
+  } else {
+    APP.bookmarks.add(gid);
+    showToast('已收藏');
+  }
+  saveState();
+  renderQuestion();
+}
+
+// ===== Results =====
+function showResults() {
+  document.getElementById('questionArea').style.display = 'none';
+  document.getElementById('resultsScreen').style.display = 'block';
+
+  const total = APP.stats.total;
+  const correct = APP.stats.correct;
+  const rate = total > 0 ? Math.round(correct / total * 100) : 0;
+
+  document.getElementById('finalScore').textContent = rate + '%';
+  document.getElementById('scoreDetail').innerHTML = `
+    共答 ${total} 题，正确 ${correct} 题，错误 ${total - correct} 题<br>
+    错题已收录到错题本，可随时回顾
+  `;
+}
+
+function restartQuiz() {
+  APP.currentIndex = 0;
+  applyFilters();
+  document.getElementById('resultsScreen').style.display = 'none';
+  document.getElementById('welcomeScreen').style.display = 'block';
+  buildCategoryGrid();
+}
+
+// ===== Reset =====
+function resetProgress() {
+  if (!confirm('确定要重置所有进度吗？此操作不可撤销。')) return;
+  APP.answers = {};
+  APP.wrongBook = [];
+  APP.bookmarks = new Set();
+  APP.stats = { total: 0, correct: 0 };
+  APP.currentIndex = 0;
+  saveState();
+  updateHeaderStats();
+  applyFilters();
+  document.getElementById('questionArea').style.display = 'none';
+  document.getElementById('wrongPanel').style.display = 'none';
+  document.getElementById('resultsScreen').style.display = 'none';
+  document.getElementById('welcomeScreen').style.display = 'block';
+  buildCategoryGrid();
+  showToast('进度已重置');
+}
+
+// ===== Toast =====
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ===== LocalStorage =====
+function saveState() {
+  try {
+    localStorage.setItem('physics_quiz_answers', JSON.stringify(APP.answers));
+    localStorage.setItem('physics_quiz_wrong', JSON.stringify(APP.wrongBook.map(q => getGlobalId(q))));
+    localStorage.setItem('physics_quiz_bookmarks', JSON.stringify([...APP.bookmarks]));
+    localStorage.setItem('physics_quiz_stats', JSON.stringify(APP.stats));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const answers = localStorage.getItem('physics_quiz_answers');
+    if (answers) APP.answers = JSON.parse(answers);
+
+    const wrongIds = localStorage.getItem('physics_quiz_wrong');
+    if (wrongIds) {
+      const ids = JSON.parse(wrongIds);
+      // Rebuild wrong book from all questions
+      const allQ = [];
+      Object.keys(APP.categories).forEach(cat => {
+        allQ.push(...(APP.categories[cat].data || []));
+      });
+      APP.wrongBook = ids.map(id => allQ.find(q => getGlobalId(q) === id)).filter(Boolean);
+    }
+
+    const bookmarks = localStorage.getItem('physics_quiz_bookmarks');
+    if (bookmarks) APP.bookmarks = new Set(JSON.parse(bookmarks));
+
+    const stats = localStorage.getItem('physics_quiz_stats');
+    if (stats) APP.stats = JSON.parse(stats);
+  } catch(e) {}
+}
+
+// ===== Keyboard shortcuts =====
+document.addEventListener('keydown', (e) => {
+  if (document.getElementById('questionArea').style.display === 'none') return;
+  const q = APP.questions[APP.currentIndex];
+  if (!q) return;
+
+  if (e.key === 'ArrowRight' || e.key === 'n') nextQuestion();
+  if (e.key === 'ArrowLeft' || e.key === 'p') prevQuestion();
+
+  if (q.type === 'choice' && !APP.answers[getGlobalId(q)]?.revealed) {
+    if (['a','b','c','d','A','B','C','D'].includes(e.key)) {
+      selectOption(e.key.toUpperCase(), q);
+    }
+  }
+});
+
+// ===== Start =====
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
