@@ -617,7 +617,7 @@
     <h1>🎯 英语词汇闯关</h1>
     <p>介词 · 动词 · 时态 · 短语组合 · 每天进步一点点</p>
     <div style="display:flex;justify-content:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
-      <span style="background:rgba(255,255,255,0.2);color:#fff;padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:600;">📚 120题词库</span>
+      <span id="hero-question-count" style="background:rgba(255,255,255,0.2);color:#fff;padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:600;">📚 加载题库中...</span>
       <span style="background:rgba(255,255,255,0.2);color:#fff;padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:600;">🎯 10大语法类型</span>
       <span style="background:rgba(255,255,255,0.2);color:#fff;padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:600;">⭐ 5档难度</span>
     </div>
@@ -828,10 +828,72 @@
 
 <script>
 // =====================================================
-//  DATA: VOCABULARY + PHRASE + SENTENCE DATABASE
+//  DATA: DYNAMIC JSON QUESTION BANK LOADER
 // =====================================================
-const QUESTIONS = [
-  // ========== PREPOSITIONS 介词 ==========
+// 题库从 data/*.json 动态加载
+// 映射: cat → JSON filename
+const CAT_FILE_MAP = {
+  'preposition': 'prepositions.json',
+  'article': 'articles.json',
+  'noun': 'nouns.json',
+  'verb': 'verbs.json',
+  'adjective': 'adjectives.json',
+  'tense_present': 'tenses.json',
+  'tense_past': 'tenses.json',
+  'tense_future': 'tenses.json',
+  'phrase': 'phrases.json',
+  'collocation': 'collocations.json'
+};
+
+let QUESTIONS = [];
+let QUESTIONS_LOADED = false;
+
+async function loadAllQuestions() {
+  if (QUESTIONS_LOADED) return QUESTIONS;
+  const filesToLoad = [...new Set(Object.values(CAT_FILE_MAP))];
+  const fetches = filesToLoad.map(f =>
+    fetch('data/' + f).then(r => r.json()).catch(() => [])
+  );
+  const results = await Promise.all(fetches);
+  // Merge all questions with unique IDs
+  const seen = new Set();
+  QUESTIONS = [];
+  for (const arr of results) {
+    for (const q of arr) {
+      const key = q.q + '|' + q.cat + '|' + q.type;
+      if (!seen.has(key)) {
+        seen.add(key);
+        QUESTIONS.push(q);
+      }
+    }
+  }
+  // Also load standalone CET4/CET6 files
+  try {
+    const cet4 = await fetch('data/cet4.json').then(r => r.json());
+    for (const q of cet4) {
+      const key = q.q + '|' + q.cat + '|' + q.type;
+      if (!seen.has(key)) { seen.add(key); QUESTIONS.push(q); }
+    }
+  } catch(e) {}
+  try {
+    const cet6 = await fetch('data/cet6.json').then(r => r.json());
+    for (const q of cet6) {
+      const key = q.q + '|' + q.cat + '|' + q.type;
+      if (!seen.has(key)) { seen.add(key); QUESTIONS.push(q); }
+    }
+  } catch(e) {}
+  QUESTIONS_LOADED = true;
+  console.log(`✅ 题库加载完成: ${QUESTIONS.length} 题`);
+  // Update hero badge
+  const badge = document.getElementById('hero-question-count');
+  if (badge) badge.textContent = `📚 ${QUESTIONS.length}题词库`;
+  return QUESTIONS;
+}
+
+// =====================================================
+//  LEGACY DATA (保留用于本地回退)
+// =====================================================
+const LEGACY_QUESTIONS = [
   {id:1, cat:'preposition', diff:'easy', type:'mc',
    q:'She is sitting ___ the chair.',
    hint:'表示"在…上面（接触表面）"',
@@ -1828,8 +1890,10 @@ const QUESTIONS = [
    mnemonic:'contradiction（自相矛盾）vs contrast（对比差异）vs contention（争论）'
   }
 ];
+// 初始化：先加载本地题，再尝试加载远程JSON
+QUESTIONS = LEGACY_QUESTIONS;
 
-// =====================================================
+// ====================================================
 //  STATE
 // =====================================================
 let state = {
@@ -2002,11 +2066,11 @@ function buildPool() {
   // Filter by difficulty
   if (session.diff !== 'all') {
     if (session.diff === 'cet4') {
-      // 四级：包含 cet4 标记 + hard 难度题目
-      pool = pool.filter(q => q.diff === 'cet4' || q.diff === 'hard');
+      // 四级：cat=cet4 或 diff=cet4（兼容旧数据）
+      pool = pool.filter(q => q.cat === 'cet4' || q.diff === 'cet4');
     } else if (session.diff === 'cet6') {
-      // 六级：包含 cet6 + cet4 + hard
-      pool = pool.filter(q => q.diff === 'cet6' || q.diff === 'cet4' || q.diff === 'hard');
+      // 六级：cat=cet6 或 diff=cet6（兼容旧数据）
+      pool = pool.filter(q => q.cat === 'cet6' || q.diff === 'cet6');
     } else {
       pool = pool.filter(q => q.diff === session.diff);
     }
@@ -2037,24 +2101,26 @@ function startQuiz() {
 }
 
 function startFromTab() {
-  session.questions = buildPool();
-  if (session.questions.length === 0) {
-    alert('该难度/类型暂无题目，已自动切换到全部题目！');
-    session.cats = ['all'];
-    session.diff = 'easy';
+  loadAllQuestions().then(() => {
     session.questions = buildPool();
-  }
-  session.current = 0;
-  session.score = 0;
-  session.combo = 0;
-  session.answered = [];
-  session.wrongQuestions = [];
+    if (session.questions.length === 0) {
+      alert('该难度/类型暂无题目，已自动切换到全部题目！');
+      session.cats = ['all'];
+      session.diff = 'easy';
+      session.questions = buildPool();
+    }
+    session.current = 0;
+    session.score = 0;
+    session.combo = 0;
+    session.answered = [];
+    session.wrongQuestions = [];
 
-  document.getElementById('quiz-settings').style.display = 'none';
-  document.getElementById('quiz-area').style.display = 'block';
-  document.getElementById('result-area').style.display = 'none';
+    document.getElementById('quiz-settings').style.display = 'none';
+    document.getElementById('quiz-area').style.display = 'block';
+    document.getElementById('result-area').style.display = 'none';
 
-  renderQuestion();
+    renderQuestion();
+  });
 }
 
 // =====================================================
@@ -2366,6 +2432,13 @@ document.getElementById('quiz-tab-area').style.display = 'none';
 document.getElementById('stats-area').style.display = 'none';
 document.getElementById('board-area').style.display = 'none';
 document.getElementById('home-area').style.display = 'block';
+
+// 预加载题库（后台加载，不阻塞页面）
+loadAllQuestions().then(() => {
+  const badge = document.getElementById('hero-question-count');
+  if (badge) badge.textContent = `📚 ${QUESTIONS.length}题词库`;
+  console.log('✅ 题库已就绪: ' + QUESTIONS.length + ' 题');
+});
 </script>
 </body>
 </html>
