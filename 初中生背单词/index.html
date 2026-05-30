@@ -616,6 +616,11 @@
   <div class="hero">
     <h1>🎯 英语词汇闯关</h1>
     <p>介词 · 动词 · 时态 · 短语组合 · 每天进步一点点</p>
+    <div style="display:flex;justify-content:center;gap:12px;margin-top:10px;flex-wrap:wrap;">
+      <span style="background:rgba(255,255,255,0.2);color:#fff;padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:600;">📚 120题词库</span>
+      <span style="background:rgba(255,255,255,0.2);color:#fff;padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:600;">🎯 10大语法类型</span>
+      <span style="background:rgba(255,255,255,0.2);color:#fff;padding:4px 14px;border-radius:20px;font-size:0.82rem;font-weight:600;">⭐ 5档难度</span>
+    </div>
   </div>
 
   <!-- TABS -->
@@ -1197,6 +1202,630 @@ const QUESTIONS = [
    explain:'"hold sb accountable/account for sth" = 让某人为某事负责。被动式：be held accountable/to account。这是高频六级/考研短语。',
    examples:['Companies must <strong>be held accountable</strong> for their environmental impact. 企业必须为其环境影响负责。','The manager was <strong>held to account</strong> for the failure. 经理为失败负了责任。'],
    mnemonic:'hold sb accountable = 让人负责（主动）；be held accountable = 被追责（被动）'
+  },
+
+  // ========== 动词短语扩展 VERB PHRASES ==========
+  {id:46, cat:'phrase', diff:'easy', type:'mc',
+   q:'Could you please ___ the music? It\'s too loud.',
+   hint:'"把音量调低/关小"',
+   options:['turn down','turn off','turn up','turn on'], answer:0,
+   explain:'"turn down" = 调低（音量/温度）；turn up = 调高；turn off = 关掉；turn on = 打开。"turn down"也可表示"拒绝（邀请/申请）"。',
+   examples:['Please <strong>turn down</strong> the TV. 请把电视声音调低。','She <strong>turned down</strong> the job offer. 她拒绝了这份工作邀请。'],
+   mnemonic:'turn down = 向下调低；turn up = 向上调高'
+  },
+  {id:47, cat:'phrase', diff:'easy', type:'mc',
+   q:'I need to ___ this form before submitting it.',
+   hint:'"填写"表格',
+   options:['fill in','fill up','fill out','both A and C'], answer:3,
+   explain:'"fill in" 和 "fill out" 都表示"填写（表格）"，是同义短语。fill up = 装满（油箱/杯子）。考试中 fill in/fill out a form 都是正确表达。',
+   examples:['Please <strong>fill in</strong> all the blanks. 请填写所有空格。','<strong>Fill out</strong> this application form. 填写这份申请表。'],
+   mnemonic:'fill in/out a form = 填写表格（两者均可）'
+  },
+  {id:48, cat:'phrase', diff:'easy', type:'mc',
+   q:'I\'m looking ___ my glasses. Have you seen them?',
+   hint:'"寻找"某物',
+   options:['for','at','after','into'], answer:0,
+   explain:'"look for" = 寻找（search for）；look at = 看；look after = 照顾；look into = 调查。注意这4个搭配意思完全不同！',
+   examples:['The police are <strong>looking for</strong> the missing child. 警察在寻找失踪的孩子。','Can you <strong>look after</strong> my dog this weekend? 这周末你能帮我照看狗吗？'],
+   mnemonic:'look for=找；look at=看；look after=照顾；look into=调查'
+  },
+  {id:49, cat:'phrase', diff:'medium', type:'mc',
+   q:'She had to ___ the meeting because she was sick.',
+   hint:'"取消/推迟"会议',
+   options:['call off','call out','call up','call for'], answer:0,
+   explain:'"call off" = 取消（会议/比赛/婚礼）；call out = 大声呼喊/出动（警察）；call up = 打电话/征召入伍；call for = 需要/呼吁/接送。',
+   examples:['The match was <strong>called off</strong> due to rain. 比赛因雨取消。','The government <strong>called for</strong> immediate action. 政府呼吁立即采取行动。'],
+   mnemonic:'call off = 取消（像把计划叫停）'
+  },
+  {id:50, cat:'phrase', diff:'medium', type:'mc',
+   q:'The fire ___ quickly in the dry weather.',
+   hint:'"蔓延、扩大"',
+   options:['spread out','broke out','died out','put out'], answer:1,
+   explain:'"break out" = （战争/火灾/疾病）突然爆发；spread out = 展开/蔓延；die out = 灭绝/消亡；put out = 扑灭/伸出。',
+   examples:['A fire <strong>broke out</strong> in the factory last night. 昨晚工厂发生了火灾。','The disease <strong>broke out</strong> in several cities. 这种疾病在几个城市爆发了。'],
+   mnemonic:'break out = 突然爆发（像打破容器冲出来）'
+  },
+  {id:51, cat:'phrase', diff:'medium', type:'fill',
+   q:'Don\'t give ___. Keep trying! (放弃)',
+   hint:'"放弃"的短语动词',
+   answer:'up',
+   explain:'"give up" = 放弃（不再尝试）。注意：give up doing sth（放弃做某事）。同义词：quit, abandon。反义：keep on, carry on。',
+   examples:['Never <strong>give up</strong> on your dreams. 永远不要放弃你的梦想。','He <strong>gave up</strong> smoking last year. 他去年戒烟了。'],
+   mnemonic:'give up = 举手投降式放弃'
+  },
+  {id:52, cat:'phrase', diff:'hard', type:'mc',
+   q:'The new law was designed to ___ corruption.',
+   hint:'"打击/制止"腐败',
+   options:['crack down on','break down','put down','wear down'], answer:0,
+   explain:'"crack down on" = 严厉打击、严肃查处（违法行为）。这是正式/新闻英语常用表达。break down = 故障/分解；put down = 镇压/记下；wear down = 磨损/使疲惫。',
+   examples:['The government <strong>cracked down on</strong> tax evasion. 政府严厉打击逃税行为。','Police are <strong>cracking down on</strong> speeding drivers. 警察正在严查超速驾驶员。'],
+   mnemonic:'crack down on = 严厉打击（crack = 裂开 = 用力打）'
+  },
+  {id:53, cat:'phrase', diff:'hard', type:'mc',
+   q:'It\'s difficult to ___ the implications of this research.',
+   hint:'"充分理解/掌握"复杂概念',
+   options:['grasp','catch','grab','grip'], answer:0,
+   explain:'"grasp" = 充分理解、掌握（抽象概念）；也有"抓住"的字面意思。用法：grasp the concept/idea/implications。catch也有理解的意思，但不如grasp正式。',
+   examples:['Children can easily <strong>grasp</strong> new languages. 孩子们很容易掌握新语言。','I couldn\'t fully <strong>grasp</strong> what she meant. 我无法完全理解她的意思。'],
+   mnemonic:'grasp = 抓住（字面）= 掌握/理解（引申）'
+  },
+
+  // ========== 形容词/副词扩展 ADJECTIVES/ADVERBS ==========
+  {id:54, cat:'adjective', diff:'easy', type:'mc',
+   q:'The weather is getting ___ and ___.',
+   hint:'"越来越..."的比较级结构',
+   options:['more warm / warm','warmer / warmer','most warm / most warm','warm / warmer'], answer:1,
+   explain:'"越来越..."用"比较级 + and + 比较级"结构。短词加 -er：warm → warmer。长词用 more and more + 形容词：more and more beautiful。',
+   examples:['The days are getting <strong>shorter and shorter</strong>. 白天越来越短了。','Life is becoming <strong>more and more</strong> convenient. 生活越来越便利了。'],
+   mnemonic:'短词：-er and -er；长词：more and more + adj'
+  },
+  {id:55, cat:'adjective', diff:'easy', type:'mc',
+   q:'This coffee is ___ hot to drink.',
+   hint:'"太...以至于不能..."',
+   options:['very','too','so','such'], answer:1,
+   explain:'"too + adj + to do" = 太...以至于不能...。区别：very + adj 只是程度副词，没有"不能"的含义。too hot to drink = 太烫以至于无法喝。',
+   examples:['The box is <strong>too heavy to</strong> lift. 这个箱子太重，搬不起来。','She was <strong>too tired to</strong> continue. 她太累了，无法继续。'],
+   mnemonic:'too...to... = 太...不能...（负面结果）'
+  },
+  {id:56, cat:'adjective', diff:'medium', type:'mc',
+   q:'She is ___ enough to solve this problem.',
+   hint:'"足够聪明以至于能做某事"',
+   options:['smart enough','enough smart','smartly enough','very smart'], answer:0,
+   explain:'"enough"修饰形容词时必须放在形容词之后：smart enough（正确），enough smart（错误）。结构：adj + enough + to do。',
+   examples:['He is <strong>old enough</strong> to make his own decisions. 他年纪够大，可以自己做决定。','Is the room <strong>big enough</strong> for all of us? 这个房间够大，能容纳我们所有人吗？'],
+   mnemonic:'enough在形容词后：adj + enough + to do'
+  },
+  {id:57, cat:'adjective', diff:'medium', type:'mc',
+   q:'The patient\'s condition is ___ serious.',
+   hint:'"极其、非常"（比very更强调）',
+   options:['very','extremely','really','fairly'], answer:1,
+   explain:'程度副词强弱：extremely（极其）> very（非常）> fairly（相当）> rather（有点儿）> slightly（略微）。句中强调"极其严重"，用 extremely。',
+   examples:['The exam was <strong>extremely</strong> difficult. 这次考试极其困难。','I\'m <strong>fairly</strong> confident about the results. 我对结果相当有信心。'],
+   mnemonic:'程度：extremely > very > fairly > slightly'
+  },
+  {id:58, cat:'adjective', diff:'hard', type:'mc',
+   q:'His ___ remarks offended many people.',
+   hint:'"轻率的、不假思索的"，贬义词',
+   options:['thoughtless','thoughtful','thinking','thoughtfully'], answer:0,
+   explain:'"thoughtless" = 欠考虑的、粗心的、不体贴的（贬义）；"thoughtful" = 体贴的、深思熟虑的（褒义）。-less 后缀表示"缺乏"，-ful 表示"充满"。',
+   examples:['It was <strong>thoughtless</strong> of him to forget her birthday. 他忘记了她的生日，真是太不体贴了。','She is always so <strong>thoughtful</strong> of others. 她总是那么体贴别人。'],
+   mnemonic:'-less = 缺少（thoughtless=无思虑）；-ful = 充满（thoughtful=有思虑）'
+  },
+
+  // ========== 名词扩展 NOUNS ==========
+  {id:59, cat:'noun', diff:'easy', type:'mc',
+   q:'Let me give you a ___ of good news.',
+   hint:'"一则"好消息，不可数名词的量词',
+   options:['piece','bar','pair','cup'], answer:0,
+   explain:'news（新闻/消息）是不可数名词，量词用 piece：a piece of news。其他量词：a bar of soap/chocolate（一块皂/巧克力），a pair of shoes（一双鞋）。',
+   examples:['I have a piece of <strong>good news</strong> for you. 我有一个好消息告诉你。','Three pieces of <strong>information</strong> were missing. 三条信息丢失了。'],
+   mnemonic:'piece of: news/advice/information/music/furniture（不可数名词量词）'
+  },
+  {id:60, cat:'noun', diff:'easy', type:'mc',
+   q:'She has made great ___ in her English.',
+   hint:'"取得进步"，不可数名词',
+   options:['progress','progresses','a progress','progressions'], answer:0,
+   explain:'"progress"（进步、进展）是不可数名词，不加冠词a，不加复数-s。make progress = 取得进步（固定搭配）。',
+   examples:['The patient is making good <strong>progress</strong>. 病人恢复得很好。','We\'ve made significant <strong>progress</strong> in this area. 我们在这一领域取得了重大进展。'],
+   mnemonic:'make progress（不可数，不加a/s）'
+  },
+  {id:61, cat:'noun', diff:'medium', type:'mc',
+   q:'The company requires all employees to wear ___ at work.',
+   hint:'"制服/工作服"',
+   options:['a uniform','uniforms','the uniform','uniform'], answer:1,
+   explain:'"uniform"（制服）通常用复数 uniforms 指全体员工穿的制服。wear uniforms = 穿制服。注意：in uniform = 穿着制服（介词结构，无冠词）。',
+   examples:['Students must wear <strong>uniforms</strong> at school. 学生在学校必须穿校服。','The soldiers were dressed <strong>in uniform</strong>. 士兵们穿着军装。'],
+   mnemonic:'wear uniforms（复数，全体）；in uniform（穿着制服，无冠词）'
+  },
+  {id:62, cat:'noun', diff:'medium', type:'fill',
+   q:'The new policy has received a lot of ___ from the public. (批评)',
+   hint:'一大堆批评，不可数名词',
+   answer:'criticism',
+   explain:'"criticism"（批评）是不可数名词。receive criticism = 受到批评。constructive criticism = 建设性批评。face criticism = 面对批评。',
+   examples:['His work received heavy <strong>criticism</strong>. 他的作品受到严厉批评。','She offered some constructive <strong>criticism</strong>. 她提出了一些建设性批评。'],
+   mnemonic:'criticize（动词）→ criticism（名词，不可数）'
+  },
+  {id:63, cat:'noun', diff:'hard', type:'mc',
+   q:'Her ___ to detail is what makes her work stand out.',
+   hint:'"对...的关注/重视"，名词形式',
+   options:['attention','attentive','attentively','attentiveness'], answer:0,
+   explain:'"attention to detail" = 对细节的关注，这是固定名词短语。her attention to detail = 她对细节的注重。pay attention to（动词短语）vs attention（名词）。',
+   examples:['His <strong>attention to</strong> grammar improved his writing. 他对语法的关注改善了他的写作。','Please give this matter your full <strong>attention</strong>. 请全力关注此事。'],
+   mnemonic:'pay attention to（动词）= attention to（名词）—— 注意力放在...上'
+  },
+
+  // ========== 介词短语扩展 ==========
+  {id:64, cat:'preposition', diff:'easy', type:'mc',
+   q:'He learned English ___ watching movies.',
+   hint:'"通过某种方式"做某事',
+   options:['by','with','through','in'], answer:0,
+   explain:'"by + V-ing" = 通过...方式（表示手段/方法）。by watching movies = 通过看电影。注意：by 后接动名词（-ing），不接不定式。',
+   examples:['She improved her skills <strong>by</strong> practicing every day. 她通过每天练习提高了技能。','You can learn a lot <strong>by</strong> reading widely. 你可以通过广泛阅读学到很多。'],
+   mnemonic:'by + V-ing = 通过...方式（手段方法）'
+  },
+  {id:65, cat:'preposition', diff:'easy', type:'mc',
+   q:'The store is open ___ 9 a.m. ___ 6 p.m.',
+   hint:'"从...到..."时间段',
+   options:['from / to','from / until','both A and B','at / to'], answer:2,
+   explain:'"from...to..." 和 "from...until..." 都表示从某时间到某时间，两者均可用。from 9 a.m. to/until 6 p.m. = 从早9点到下午6点。',
+   examples:['The library is open <strong>from</strong> 8 am <strong>to</strong> 10 pm. 图书馆从早8点开放至晚10点。','I work <strong>from</strong> Monday <strong>until</strong> Friday. 我从周一工作到周五。'],
+   mnemonic:'from...to/until... = 从...到...(时间段)'
+  },
+  {id:66, cat:'preposition', diff:'medium', type:'mc',
+   q:'He succeeded ___ hard work and determination.',
+   hint:'"由于、凭借"（积极原因）',
+   options:['because of','due to','thanks to','owing to'], answer:2,
+   explain:'thanks to = 幸亏、多亏（常用于积极结果或带讽刺意味）；because of/due to/owing to = 由于（中性或消极）。此句是积极结果（成功），用 thanks to 最地道。',
+   examples:['<strong>Thanks to</strong> your help, we finished on time. 多亏了你的帮助，我们按时完成了。','<strong>Due to</strong> heavy traffic, the bus was late. 由于交通堵塞，公共汽车晚点了。'],
+   mnemonic:'thanks to = 多亏了（积极/正面）；due to = 由于（中性）'
+  },
+  {id:67, cat:'preposition', diff:'medium', type:'mc',
+   q:'The decision was made ___ his knowledge.',
+   hint:'"在他不知情的情况下"',
+   options:['without','against','beyond','behind'], answer:0,
+   explain:'"without sb\'s knowledge" = 在某人不知情的情况下，等同于"without telling sb"。without = 没有、在没有...的情况下。',
+   examples:['They sold the house <strong>without</strong> his knowledge. 他们在他不知情的情况下卖掉了房子。','She left <strong>without</strong> saying goodbye. 她不告而别。'],
+   mnemonic:'without = 在没有...的情况下（缺少、不具备）'
+  },
+  {id:68, cat:'preposition', diff:'hard', type:'mc',
+   q:'___ the risk of failure, he launched the startup.',
+   hint:'"冒着...的风险"',
+   options:['At','With','Under','By'], answer:0,
+   explain:'"at the risk of" = 冒着...的风险。类似：at the expense of（以...为代价），at the cost of（以...为代价），at the risk of one\'s life（冒着生命危险）。',
+   examples:['He saved the child <strong>at the risk of</strong> his own life. 他冒着生命危险救了那个孩子。','She spoke out <strong>at the risk of</strong> losing her job. 她冒着失业的风险直言不讳。'],
+   mnemonic:'at the risk of = 冒着...的风险（at表示状态/代价）'
+  },
+
+  // ========== 冠词扩展 ==========
+  {id:69, cat:'article', diff:'medium', type:'mc',
+   q:'She went to ___ hospital after the accident.',
+   hint:'英国英语中，go to hospital 表示就医',
+   options:['a','the','—(无)','an'], answer:2,
+   explain:'英式英语中某些机构前不用冠词（表示功能目的）：go to hospital（就医），go to school（上学），go to prison（坐牢），go to bed（睡觉）。若特指某具体建筑，则加 the。',
+   examples:['She goes to <strong>school</strong> every day. 她每天上学。','The new <strong>hospital</strong> was built last year. 这家新医院是去年建的。（特指）'],
+   mnemonic:'去医院/学校/监狱（目的）→ 无冠词；特指某建筑 → the'
+  },
+  {id:70, cat:'article', diff:'hard', type:'mc',
+   q:'___ Amazon is ___ longest river in South America.',
+   hint:'河流名前用什么冠词？',
+   options:['The / the','A / the','The / a','— / —'], answer:0,
+   explain:'河流、山脉、海洋、群岛、新闻报纸名前通常用 the：the Amazon（亚马逊河），the Nile（尼罗河），the Alps（阿尔卑斯山），the Pacific（太平洋）。',
+   examples:['<strong>The</strong> Yangtze River is the longest in China. 长江是中国最长的河流。','<strong>The</strong> Himalayas are in Asia. 喜马拉雅山脉在亚洲。'],
+   mnemonic:'the + 河流/山脉/海洋/群岛/报纸（唯一性/专有组合）'
+  },
+
+  // ========== 动词时态扩展 ==========
+  {id:71, cat:'tense_present', diff:'medium', type:'mc',
+   q:'The train to Beijing ___ at 8 every morning.',
+   hint:'时刻表/计划安排（固定时间表）',
+   options:['leave','is leaving','will leave','leaves'], answer:3,
+   explain:'根据时刻表、日程表安排的未来动作用一般现在时（而非将来时）：trains/buses/flights schedules。The train leaves at 8 = 列车8点出发（固定时刻表）。',
+   examples:['The class <strong>starts</strong> at 8:30 tomorrow. 明天课从8:30开始（课表）。','The flight <strong>departs</strong> at 6 p.m. 航班下午6点起飞（时刻表）。'],
+   mnemonic:'时刻表/课程表安排 → 一般现在时（表将来）'
+  },
+  {id:72, cat:'tense_present', diff:'hard', type:'mc',
+   q:'I ___ to the gym three times a week recently.',
+   hint:'近期规律性习惯，有"最近"含义',
+   options:['go','am going','have been going','went'], answer:2,
+   explain:'"现在完成进行时"= have/has been + V-ing，表示从过去开始、持续到现在的行为（尤其与 recently/lately/these days 搭配）。强调动作的持续性。',
+   examples:['She <strong>has been studying</strong> for 3 hours. 她已经学习了3个小时（还在继续）。','I <strong>have been feeling</strong> tired lately. 最近我一直感到疲倦。'],
+   mnemonic:'have been + V-ing = 一直在做（持续到现在，强调过程）'
+  },
+  {id:73, cat:'tense_past', diff:'medium', type:'mc',
+   q:'She ___ for the company for 10 years when she retired.',
+   hint:'退休时已经工作了10年，在过去某时间点之前的持续',
+   options:['worked','had worked','has worked','was working'], answer:1,
+   explain:'"过去完成时"had + p.p. 表示在过去某时间点之前已持续的动作。"when she retired"是过去的时间点，工作了10年在退休之前，所以用过去完成时。',
+   examples:['By the time he graduated, he <strong>had studied</strong> English for 12 years. 毕业时，他已经学了12年英语。','She <strong>had lived</strong> abroad for 5 years before returning. 她回国前在海外住了5年。'],
+   mnemonic:'by the time / when（过去）+ 过去完成时 had done'
+  },
+  {id:74, cat:'tense_future', diff:'medium', type:'mc',
+   q:'By this time next year, she ___ her degree.',
+   hint:'"到明年此时，将已经..."——将来完成时',
+   options:['will finish','will have finished','is finishing','finishes'], answer:1,
+   explain:'"将来完成时" will have + p.p.，表示在将来某时间点之前将已经完成的动作。"By this time next year"是将来的时间点，"完成学位"在那之前会完成。',
+   examples:['By Friday, I <strong>will have submitted</strong> my report. 到周五，我将已提交报告。','By 2030, scientists <strong>will have found</strong> a cure. 到2030年，科学家将已找到治疗方法。'],
+   mnemonic:'by + 将来时间 + will have done = 将来完成时'
+  },
+  {id:75, cat:'tense_future', diff:'hard', type:'mc',
+   q:'If you ___ hard, you will succeed.',
+   hint:'真实条件句，条件从句用什么时态？',
+   options:['will work','work','worked','are working'], answer:1,
+   explain:'"真实条件句（第一条件句）"：if从句用一般现在时，主句用will + 动词原形。if + 一般现在时，主句 + will do。（注意：条件从句不用 will！）',
+   examples:['If it <strong>rains</strong> tomorrow, I will stay home. 如果明天下雨，我就待在家里。','If you <strong>study</strong> hard, you will pass. 如果你努力学习，你就会通过。'],
+   mnemonic:'真实条件句：if + 一般现在时（≠will），主句 + will do'
+  },
+
+  // ========== 词语搭配扩展 COLLOCATIONS ==========
+  {id:76, cat:'collocation', diff:'easy', type:'mc',
+   q:'He ___ a lot of money on his new car.',
+   hint:'"花费（钱）"，主语是人',
+   options:['spent','cost','paid','took'], answer:0,
+   explain:'"spend + 钱/时间 + on sth" = 花费（主语是人）；cost + 人 + 钱（主语是物）；pay + 钱 + for sth（付钱）。He spent money = 他花了钱（人做主语）。',
+   examples:['I <strong>spent</strong> two hours on this homework. 我在这作业上花了两小时。','The book <strong>costs</strong> 30 yuan. 这本书花了30元。（物做主语）'],
+   mnemonic:'spend（人花费）vs cost（物花费）vs pay（付款给某人）'
+  },
+  {id:77, cat:'collocation', diff:'easy', type:'mc',
+   q:'Can you ___ me a favor and close the window?',
+   hint:'"帮某人一个忙"',
+   options:['do','make','give','take'], answer:0,
+   explain:'"do sb a favor" = 帮某人一个忙（固定搭配）。区分：do homework/exercise/a favor/damage；make a decision/mistake/progress/a speech。',
+   examples:['Could you <strong>do</strong> me a favor? 你能帮我个忙吗？','She <strong>made</strong> a terrible mistake. 她犯了一个可怕的错误。'],
+   mnemonic:'do: favor/homework/damage；make: mistake/decision/speech/progress'
+  },
+  {id:78, cat:'collocation', diff:'medium', type:'mc',
+   q:'The doctor told him to ___ a healthy diet.',
+   hint:'"保持/维持"健康饮食',
+   options:['keep','maintain','hold','stay'], answer:1,
+   explain:'"maintain a healthy diet" = 保持健康饮食（正式表达）。maintain = 维持（保持某种状态/水平）。也可用 keep a healthy diet，但 maintain 更正式。',
+   examples:['It\'s important to <strong>maintain</strong> a balanced lifestyle. 保持平衡的生活方式很重要。','She <strong>maintains</strong> a positive attitude. 她保持积极的态度。'],
+   mnemonic:'maintain = 维持/保持（水平、状态、关系）'
+  },
+  {id:79, cat:'collocation', diff:'medium', type:'mc',
+   q:'The new bridge will ___ the traffic problem in this area.',
+   hint:'"解决"问题/困难',
+   options:['resolve','solve','settle','address'], answer:3,
+   explain:'"address a problem/issue" = 处理/解决问题（正式）；solve a problem = 解决（数学、具体问题）；resolve = 解决（争端、矛盾）；settle = 解决（争议、账单）。address 强调"着手处理"。',
+   examples:['We need to <strong>address</strong> this issue urgently. 我们需要紧急处理这个问题。','Can you <strong>solve</strong> this math problem? 你能解这道数学题吗？'],
+   mnemonic:'address（着手处理）vs solve（找到答案）vs resolve（化解矛盾）'
+  },
+  {id:80, cat:'collocation', diff:'medium', type:'fill',
+   q:'She ___ a deep breath before speaking. (深吸一口气)',
+   hint:'"深吸一口气"的固定搭配',
+   answer:'took',
+   explain:'"take a deep breath" = 深吸一口气（固定搭配）。take 的常见搭配：take a breath/rest/break/risk/step/photo/note/part。',
+   examples:['<strong>Take</strong> a deep breath and calm down. 深吸一口气，冷静下来。','Let\'s <strong>take</strong> a short break. 让我们休息一会儿。'],
+   mnemonic:'take: breath/rest/break/risk/step/photo/note/part（take+行为名词）'
+  },
+  {id:81, cat:'collocation', diff:'hard', type:'mc',
+   q:'The chairman\'s speech ___ a heated debate.',
+   hint:'"引发/激起"一场辩论',
+   options:['sparked','made','caused','gave'], answer:0,
+   explain:'"spark a debate/controversy/discussion" = 引发/激起（辩论/争议/讨论）。spark 字面意思是"点燃火花"，引申为"引发"事件。',
+   examples:['The article <strong>sparked</strong> a nationwide debate. 这篇文章引发了全国范围的讨论。','His comments <strong>sparked</strong> controversy. 他的评论引发了争议。'],
+   mnemonic:'spark = 点燃火花 → 引发（辩论/争议/讨论）'
+  },
+  {id:82, cat:'collocation', diff:'hard', type:'mc',
+   q:'She ___ her composure throughout the difficult interview.',
+   hint:'"保持镇定/沉着"',
+   options:['maintained','kept','held','retained'], answer:1,
+   explain:'"keep one\'s composure" = 保持镇定/沉着（固定搭配）。composure = 沉着冷静。也可说 maintain composure（但 keep 是最常见搭配）。lose one\'s composure = 失去镇定。',
+   examples:['He <strong>kept</strong> his composure under pressure. 他在压力下保持了沉着。','She <strong>lost</strong> her composure and started crying. 她失去了镇定，开始哭泣。'],
+   mnemonic:'keep composure = 保持冷静；lose composure = 失去冷静'
+  },
+
+  // ========== 连接词/句型 CONJUNCTIONS & SENTENCE PATTERNS ==========
+  {id:83, cat:'collocation', diff:'easy', type:'mc',
+   q:'She is not only beautiful ___ also intelligent.',
+   hint:'"不仅...而且..."的连词对',
+   options:['but','and','or','nor'], answer:0,
+   explain:'"not only...but also..." = 不仅...而且...（固定连词对）。注意 but（不是 and）。结构：not only A but also B。主谓一致以 B 为准（就近原则）。',
+   examples:['He is not only smart <strong>but also</strong> hardworking. 他不仅聪明，而且努力。','The trip was not only fun <strong>but also</strong> educational. 这次旅行不仅有趣，而且有教育意义。'],
+   mnemonic:'not only...but (also)... = 不仅...而且...'
+  },
+  {id:84, cat:'collocation', diff:'medium', type:'mc',
+   q:'___ interesting the book is, I don\'t have time to read it.',
+   hint:'"不管多么..."让步从句',
+   options:['However','Whatever','Wherever','Whenever'], answer:0,
+   explain:'"however + adj/adv + 主谓" = 不管多么...（让步从句）。However interesting = No matter how interesting。注意词序：however 后紧跟形容词/副词。',
+   examples:['<strong>However</strong> tired I am, I always finish my work. 不管多累，我总是完成工作。','<strong>However</strong> hard she tried, she couldn\'t solve it. 不管她多努力，都解不了。'],
+   mnemonic:'however + adj/adv + S + V = 不管多么...（让步）'
+  },
+  {id:85, cat:'collocation', diff:'medium', type:'mc',
+   q:'He finished the race ___ he had injured his leg.',
+   hint:'"尽管...，但是..."（与 although 同义）',
+   options:['even though','so that','in order that','now that'], answer:0,
+   explain:'"even though/even if" = 即使，尽管（强调让步，语气比 although 更强烈）。even though + 事实；even if + 假设情况。so that = 为了（目的）。',
+   examples:['<strong>Even though</strong> it was raining, they played football. 尽管在下雨，他们还是踢了足球。','<strong>Even if</strong> I were rich, I wouldn\'t buy that. 即使我很有钱，我也不会买那个。'],
+   mnemonic:'even though（虽然，事实让步）vs even if（即使，假设让步）'
+  },
+  {id:86, cat:'collocation', diff:'hard', type:'mc',
+   q:'___ was she tired, ___ she was hungry.',
+   hint:'"不仅...而且..."（倒装强调结构）',
+   options:['Not only / but','Neither / nor','Either / or','Both / and'], answer:0,
+   explain:'"Not only...but (also)..." 句首倒装：Not only was she tired = 她不仅累...（主谓倒装）。这是正式书面语的强调用法，not only 位于句首引发倒装。',
+   examples:['<strong>Not only</strong> did he win, but he also broke the record. 他不仅赢了，还打破了记录。','<strong>Not only</strong> is she talented, but she is also humble. 她不仅有才华，而且谦虚。'],
+   mnemonic:'Not only + 倒装（助动词前置）+ but also（正式强调）'
+  },
+
+  // ========== 近义词辨析 NEAR-SYNONYMS ==========
+  {id:87, cat:'verb', diff:'medium', type:'mc',
+   q:'The news ___ me completely. I couldn\'t believe it.',
+   hint:'"使某人震惊"（消极惊讶）',
+   options:['surprised','shocked','astonished','amazed'], answer:1,
+   explain:'程度递增：surprised（惊讶）< shocked（震惊，通常含消极）< astonished/amazed（大为惊讶）。shocked 常用于坏消息；amazed/astonished 用于好消息或难以置信。此句"无法相信"偏消极，用 shocked。',
+   examples:['I was <strong>shocked</strong> by the bad news. 我被这个坏消息震惊了。','She was <strong>amazed</strong> by his performance. 她对他的表演感到惊叹。'],
+   mnemonic:'shocked（坏事震惊）vs amazed/astonished（好事惊叹）'
+  },
+  {id:88, cat:'verb', diff:'medium', type:'mc',
+   q:'I\'m sorry to ___ you, but could I ask a quick question?',
+   hint:'"打扰"某人',
+   options:['disturb','bother','interrupt','intrude'], answer:1,
+   explain:'"bother sb" = 麻烦、打扰某人（礼貌用语，如 sorry to bother you）；disturb = 打扰（更正式，如 do not disturb）；interrupt = 打断（谈话/行动）；intrude = 闯入/侵扰。',
+   examples:['I\'m sorry to <strong>bother</strong> you with this. 很抱歉用这件事麻烦你。','Please do not <strong>disturb</strong> the guests. 请勿打扰客人。'],
+   mnemonic:'sorry to bother you（日常礼貌打扰）；do not disturb（请勿打扰，正式）'
+  },
+  {id:89, cat:'verb', diff:'hard', type:'mc',
+   q:'He tried to ___ his fear and speak in public.',
+   hint:'"克服/战胜"恐惧',
+   options:['overcome','overlook','overtake','overwhelm'], answer:0,
+   explain:'"overcome" = 克服（困难、恐惧、障碍）；overlook = 忽视/俯瞰；overtake = 超过/超车；overwhelm = 压倒/使不知所措。overcome fear/difficulty/obstacle 是固定用法。',
+   examples:['She <strong>overcame</strong> many obstacles to succeed. 她克服了许多障碍取得了成功。','Don\'t let fear <strong>overwhelm</strong> you. 不要让恐惧压倒你。'],
+   mnemonic:'overcome = 克服（over = 越过 + come = 来）；overwhelm = 压倒'
+  },
+  {id:90, cat:'adjective', diff:'medium', type:'mc',
+   q:'The old professor gave a very ___ lecture.',
+   hint:'"引人入胜、令人着迷"（褒义）',
+   options:['fascinating','boring','dull','tedious'], answer:0,
+   explain:'"fascinating" = 极为有趣的、迷人的（强烈褒义）；boring/dull/tedious 都表示无聊、乏味（贬义）。fascinate（动词）→ fascinating（令人着迷的）→ fascinated（感到着迷的）。',
+   examples:['What a <strong>fascinating</strong> documentary! 多么精彩的纪录片！','The lecture was so <strong>boring</strong> that I fell asleep. 讲座太无聊了，我睡着了。'],
+   mnemonic:'fascinating（令人着迷）vs fascinated（感到着迷）'
+  },
+
+  // ========== 四级重点词汇 CET4 ==========
+  {id:91, cat:'collocation', diff:'cet4', type:'mc',
+   q:'The company decided to ___ its operations to Asia.',
+   hint:'"扩展/拓展"业务到某地',
+   options:['expand','extend','enlarge','enhance'], answer:0,
+   explain:'"expand operations/business" = 拓展业务（expand = 在规模上扩大）；extend = 延伸/延长（时间或空间）；enlarge = 增大（尺寸）；enhance = 提升（质量/价值）。',
+   examples:['The company plans to <strong>expand</strong> into new markets. 该公司计划进入新市场。','We need to <strong>enhance</strong> the quality of our products. 我们需要提升产品质量。'],
+   mnemonic:'expand（规模扩大）vs extend（延伸延长）vs enhance（质量提升）'
+  },
+  {id:92, cat:'verb', diff:'cet4', type:'mc',
+   q:'The teacher\'s kind words ___ the student to study harder.',
+   hint:'"激励、鼓励某人做某事"',
+   options:['encouraged','inspired','motivated','all of the above'], answer:3,
+   explain:'encourage/inspire/motivate sb to do sth 三者都有"激励某人做某事"的意思，但侧重不同：encourage = 鼓励（给予信心）；inspire = 激发灵感/热情；motivate = 提供动力。三者在此语境均正确。',
+   examples:['Her speech <strong>inspired</strong> thousands of people. 她的演讲激励了成千上万的人。','He <strong>motivated</strong> his team to work harder. 他激励团队更加努力工作。'],
+   mnemonic:'encourage（给信心）/ inspire（激发灵感）/ motivate（提供动力）'
+  },
+  {id:93, cat:'collocation', diff:'cet4', type:'mc',
+   q:'This decision will have a significant ___ on the environment.',
+   hint:'"对...产生影响"，名词',
+   options:['impact','effect','affect','influence'], answer:0,
+   explain:'"impact on" = 对...的冲击/影响（名词，强调深刻影响）；effect on = 对...的效果/影响（名词）；affect = 影响（动词）；influence = 影响（名词/动词，较温和）。have an impact/effect/influence on 都是固定搭配。',
+   examples:['The decision had a major <strong>impact on</strong> the economy. 这一决定对经济产生了重大影响。','Stress can <strong>affect</strong> your health. 压力会影响你的健康。（动词）'],
+   mnemonic:'have an impact/effect/influence on（对...产生影响，名词+on）；affect（动词直接接宾语）'
+  },
+  {id:94, cat:'phrase', diff:'cet4', type:'fill',
+   q:'You should ___ advantage of every learning opportunity. (利用)',
+   hint:'"充分利用"机会的固定搭配',
+   answer:'take',
+   explain:'"take advantage of" = 利用（机会/资源/某人弱点）。区分：make use of（利用，更中性）；take advantage of 既可积极（利用机会）也可消极（利用某人）。',
+   examples:['You should <strong>take advantage of</strong> this opportunity. 你应该充分利用这个机会。','He <strong>took advantage of</strong> her kindness. 他利用了她的善良。（消极）'],
+   mnemonic:'take advantage of = 利用（机会/弱点）'
+  },
+  {id:95, cat:'verb', diff:'cet4', type:'mc',
+   q:'Scientists are trying to ___ a vaccine for the disease.',
+   hint:'"研发"疫苗/产品',
+   options:['develop','invent','discover','create'], answer:0,
+   explain:'"develop a vaccine/product/technology" = 研发（疫苗/产品）；invent = 发明（全新的事物）；discover = 发现（已存在的事物）；create = 创造（艺术品/内容）。develop 用于逐步研发的过程。',
+   examples:['Scientists <strong>developed</strong> a new drug for cancer. 科学家研发了一种新的抗癌药物。','Edison <strong>invented</strong> the light bulb. 爱迪生发明了电灯泡。'],
+   mnemonic:'develop（研发，过程）vs invent（发明，全新）vs discover（发现，已存在）'
+  },
+
+  // ========== 六级重点词汇 CET6 ==========
+  {id:96, cat:'collocation', diff:'cet6', type:'mc',
+   q:'The company\'s profits have ___ dramatically this year.',
+   hint:'"大幅下降/骤降"',
+   options:['plummeted','declined','decreased','reduced'], answer:0,
+   explain:'"plummet" = 骤降、急剧下跌（最强烈）；decline = 逐渐下降（中性）；decrease = 减少（数量）；reduce = 减少（通常是主动行为）。dramatically + plummeted 表示"急剧骤降"。',
+   examples:['Stock prices <strong>plummeted</strong> after the news. 消息传出后股价骤跌。','Sales have <strong>declined</strong> steadily this quarter. 本季度销售额持续下滑。'],
+   mnemonic:'plummet（骤降如石头落水）> decline（缓慢下降）> decrease（数量减少）'
+  },
+  {id:97, cat:'collocation', diff:'cet6', type:'mc',
+   q:'His explanation was ___ and hard to follow.',
+   hint:'"含糊不清、令人困惑"',
+   options:['ambiguous','vague','obscure','convoluted'], answer:3,
+   explain:'"convoluted" = （表达/逻辑）复杂混乱、令人费解；vague = 模糊不清晰（语义模糊）；ambiguous = 有歧义、可作多种解读；obscure = 晦涩难懂（不为人知）。"hard to follow"强调逻辑复杂，用 convoluted 最准确。',
+   examples:['His <strong>convoluted</strong> argument confused everyone. 他复杂混乱的论证让所有人都困惑不已。','The meaning is <strong>ambiguous</strong> — it could mean two different things. 含义有歧义——可以有两种不同理解。'],
+   mnemonic:'convoluted（逻辑复杂）vs vague（语义模糊）vs ambiguous（有歧义）'
+  },
+  {id:98, cat:'verb', diff:'cet6', type:'mc',
+   q:'The government plans to ___ new taxes on luxury goods.',
+   hint:'"征收/强加"税收（正式用词）',
+   options:['impose','charge','collect','levy'], answer:0,
+   explain:'"impose taxes/restrictions/sanctions on" = 征收（税）/强加（限制/制裁）（正式用词）；charge = 收取（费用）；collect taxes = 收税；levy = 征收（与impose同义，更正式）。impose 强调"强制施加"。',
+   examples:['The government <strong>imposed</strong> heavy taxes on cigarettes. 政府对香烟征收重税。','New <strong>sanctions</strong> were <strong>imposed</strong> on the country. 新制裁被强加于该国。'],
+   mnemonic:'impose on = 强制施加于（taxes/restrictions/sanctions）'
+  },
+  {id:99, cat:'adjective', diff:'cet6', type:'mc',
+   q:'The company\'s financial situation is ___. They may go bankrupt.',
+   hint:'"危急的、岌岌可危的"',
+   options:['critical','crucial','precarious','vulnerable'], answer:2,
+   explain:'"precarious" = 不稳定的、岌岌可危的、充满风险的（尤指处境）；critical = 批判性的/危急的；crucial = 至关重要的（积极）；vulnerable = 脆弱的、容易受伤害的。',
+   examples:['Their financial position is extremely <strong>precarious</strong>. 他们的财务状况极其不稳定。','Elderly people are <strong>vulnerable</strong> to this disease. 老年人容易感染这种疾病。'],
+   mnemonic:'precarious = 不稳定岌岌可危；vulnerable = 脆弱易受伤'
+  },
+  {id:100, cat:'collocation', diff:'cet6', type:'fill',
+   q:'The new evidence will ___ the prosecution\'s case. (削弱)',
+   hint:'"削弱/破坏"某人的论据/立场',
+   answer:'undermine',
+   explain:'"undermine" = 削弱、破坏（地位、信心、权威、论点）。字面意思"从底部挖空"，引申为"暗中破坏"。常见搭配：undermine confidence/authority/credibility/health。',
+   examples:['This scandal will <strong>undermine</strong> public trust. 这一丑闻将削弱公众信任。','Poor sleep <strong>undermines</strong> your health. 睡眠不足有损健康。'],
+   mnemonic:'undermine = 从下面挖 → 暗中削弱（权威/信心/健康）'
+  },
+
+  // ========== 初中必学 MIDDLE SCHOOL ESSENTIALS ==========
+  {id:101, cat:'verb', diff:'easy', type:'mc',
+   q:'He ___ a shower every morning.',
+   hint:'"洗澡"的固定搭配',
+   options:['makes','takes','has','does'], answer:1,
+   explain:'"take a shower" = 洗淋浴（固定搭配）。take 的生活用法：take a shower/bath（洗澡），take a walk（散步），take a nap（打盹），take medicine（吃药），take a photo（拍照）。',
+   examples:['I usually <strong>take</strong> a shower before bed. 我通常睡前洗澡。','She <strong>took</strong> a nap after lunch. 她午饭后打了个盹。'],
+   mnemonic:'take: shower/bath/walk/nap/photo/medicine/note'
+  },
+  {id:102, cat:'phrase', diff:'easy', type:'mc',
+   q:'My sister is ___ in music. She plays piano every day.',
+   hint:'"对...感兴趣"',
+   options:['interested','interesting','interest','interestingly'], answer:0,
+   explain:'"be interested in" = 对...感兴趣（-ed结尾，描述人的感受）；interesting = 有趣的（-ing结尾，描述事物）。注意区分：I am interested in music. / Music is interesting.',
+   examples:['Are you <strong>interested in</strong> art? 你对艺术感兴趣吗？','The story is very <strong>interesting</strong>. 这个故事很有趣。'],
+   mnemonic:'-ed（人感受）：interested/excited/bored；-ing（物特质）：interesting/exciting/boring'
+  },
+  {id:103, cat:'phrase', diff:'easy', type:'mc',
+   q:'He is good ___ solving math problems.',
+   hint:'"擅长做某事"',
+   options:['at','in','for','on'], answer:0,
+   explain:'"be good at" = 擅长（做某事）；be good for = 对...有好处；be good to sb = 对某人好。good at + 名词/动名词：good at swimming, good at math。',
+   examples:['She is very <strong>good at</strong> drawing. 她很擅长画画。','Exercise is <strong>good for</strong> your health. 锻炼对健康有好处。'],
+   mnemonic:'good at（擅长）vs good for（有益于）vs good to（对...好'
+  },
+  {id:104, cat:'tense_past', diff:'easy', type:'mc',
+   q:'I ___ in Beijing for three years before moving to Shanghai.',
+   hint:'在过去某时间点之前持续了三年',
+   options:['lived','had lived','was living','have lived'], answer:1,
+   explain:'搬到上海是过去的动作，在那之前已在北京住了三年，用过去完成时 had lived。时间参照点是"moving to Shanghai"（过去），住了三年发生在它之前。',
+   examples:['He <strong>had studied</strong> French before he went to France. 去法国之前他已学过法语。','She <strong>had never flown</strong> before her trip to Japan. 去日本旅行前她从未坐过飞机。'],
+   mnemonic:'before + 过去动作 → 过去完成时 had done'
+  },
+  {id:105, cat:'collocation', diff:'easy', type:'mc',
+   q:'___ your homework before watching TV.',
+   hint:'"完成/做完"作业',
+   options:['Finish','Complete','End','Stop'], answer:0,
+   explain:'"finish homework" = 做完作业（固定搭配）。finish doing sth（完成做某事）。complete 也可用，但更正式；end 通常用于事件的结束；stop 表示停止（不一定完成）。',
+   examples:['Have you <strong>finished</strong> your homework? 你做完作业了吗？','Please <strong>complete</strong> the form. 请填写表格。（正式）'],
+   mnemonic:'finish homework/a task/a meal（完成→finish）'
+  },
+  {id:106, cat:'noun', diff:'easy', type:'mc',
+   q:'She takes ___ in her work.',
+   hint:'"以...为骄傲/自豪"',
+   options:['pride','proud','proudly','priding'], answer:0,
+   explain:'"take pride in" = 以...为荣/骄傲（固定搭配，名词 pride）。be proud of = 为...感到骄傲（形容词 proud）。两者意思相同，用法不同。',
+   examples:['He <strong>takes pride in</strong> his cooking. 他以自己的厨艺为荣。','She is very <strong>proud of</strong> her children. 她非常为她的孩子们感到骄傲。'],
+   mnemonic:'take pride in = be proud of（以...为荣）'
+  },
+  {id:107, cat:'adjective', diff:'easy', type:'mc',
+   q:'The room was ___ clean after they tidied it up.',
+   hint:'"绝对、完全"，副词修饰形容词',
+   options:['absolutely','very','quite','rather'], answer:0,
+   explain:'"absolutely + extreme adjective"（绝对形容词）= 完全、绝对。极性形容词（clean/perfect/brilliant/terrible）用 absolutely，不用 very。very 修饰普通程度形容词（very clean/good/tall）。',
+   examples:['The view was <strong>absolutely</strong> amazing! 景色简直令人惊叹！','I\'m <strong>absolutely</strong> exhausted. 我完全精疲力竭了。'],
+   mnemonic:'absolutely + 极性adj（amazing/perfect/terrible）；very + 普通adj（good/tall/clean）'
+  },
+  {id:108, cat:'phrase', diff:'medium', type:'mc',
+   q:'Would you mind ___ the window?',
+   hint:'"介意..."后接动名词',
+   options:['opening','to open','open','opened'], answer:0,
+   explain:'"Would you mind + V-ing?" = 你介意...吗？（礼貌请求）mind 后接动名词（-ing）。回答：Not at all.（一点也不介意）/ Of course not.（当然不介意）',
+   examples:['Would you mind <strong>turning down</strong> the music? 你介意把音乐调小声点吗？','Do you mind <strong>waiting</strong> a moment? 你介意等一会儿吗？'],
+   mnemonic:'mind + V-ing（动名词）；回答"不介意"→ Not at all / Of course not'
+  },
+  {id:109, cat:'phrase', diff:'medium', type:'mc',
+   q:'I prefer tea ___ coffee.',
+   hint:'"更喜欢A而非B"',
+   options:['to','than','over','rather than'], answer:0,
+   explain:'"prefer A to B" = 比起B更喜欢A（固定搭配，用 to 不用 than）。也可用：prefer to do A rather than do B，或 would rather do A than do B。',
+   examples:['I <strong>prefer</strong> reading <strong>to</strong> watching TV. 比起看电视，我更喜欢看书。','She <strong>prefers</strong> walking <strong>to</strong> driving. 比起开车，她更喜欢步行。'],
+   mnemonic:'prefer A to B（固定搭配，to不是than）'
+  },
+  {id:110, cat:'verb', diff:'medium', type:'mc',
+   q:'You\'d better ___ a doctor as soon as possible.',
+   hint:'"最好做某事"，后接什么形式？',
+   options:['to see','seeing','see','saw'], answer:2,
+   explain:'"had better + 动词原形"（不加to）= 最好做某事（带有警告/建议意味）。You\'d better = You had better。注意：后面直接接原形，否定为 had better not do。',
+   examples:['You\'d better <strong>leave</strong> now or you\'ll be late. 你最好现在出发，不然就迟到了。','We\'d better <strong>not</strong> tell her. 我们最好别告诉她。'],
+   mnemonic:'had better + 动词原形（不加to）；否定：had better not'
+  },
+  {id:111, cat:'verb', diff:'medium', type:'mc',
+   q:'I suggested ___ to the new restaurant for dinner.',
+   hint:'"建议做某事"，suggest 后接什么？',
+   options:['to go','going','go','that go'], answer:1,
+   explain:'"suggest + V-ing"或"suggest + that 从句（should + V原形）"= 建议做某事。注意：suggest 不接 to do（不能说 suggest to go）。同样：enjoy/avoid/finish/mind/keep/consider + V-ing。',
+   examples:['She <strong>suggested going</strong> to the park. 她建议去公园。','He <strong>suggested that</strong> we <strong>try</strong> the new dish. 他建议我们尝尝新菜。'],
+   mnemonic:'suggest + V-ing / that...should...（不接 to do）'
+  },
+  {id:112, cat:'tense_present', diff:'medium', type:'fill',
+   q:'By the time you read this letter, I ___ already ___. (leave - 完成时)',
+   hint:'你读信时，我已经走了——将来完成时',
+   answer:'will have left',
+   explain:'"By the time + 一般现在时从句，主句用将来完成时 will have done"。表示在将来某时间点之前将已完成的动作。leave 的过去分词是 left。',
+   examples:['By the time he arrives, we <strong>will have finished</strong> dinner. 等他到的时候，我们将已吃完晚饭。','By 2030, the population <strong>will have reached</strong> 10 billion. 到2030年，人口将达100亿。'],
+   mnemonic:'by the time + 现在时 → will have done（将来完成时）'
+  },
+  {id:113, cat:'collocation', diff:'medium', type:'mc',
+   q:'The new policy is ___ to help small businesses.',
+   hint:'"旨在/设计用来"做某事',
+   options:['designed','meant','intended','all of the above'], answer:3,
+   explain:'designed/meant/intended to do 三者都可表示"旨在、目的是"，均正确。be designed to（为某目的而设计）；be meant to（本意是）；be intended to（打算用来）。',
+   examples:['The law is <strong>designed to</strong> protect consumers. 该法律旨在保护消费者。','This exercise is <strong>intended to</strong> improve your stamina. 这个练习旨在提高你的耐力。'],
+   mnemonic:'designed/meant/intended to = 旨在/打算（三者可互换）'
+  },
+  {id:114, cat:'phrase', diff:'hard', type:'mc',
+   q:'The team worked ___ to finish the project on time.',
+   hint:'"不知疲倦地、夜以继日地"',
+   options:['round the clock','around the world','over the top','under the table'], answer:0,
+   explain:'"round the clock / around the clock" = 24小时不停地、昼夜不间断地（字面：绕钟表一圈）。等同于 24/7。',
+   examples:['Doctors worked <strong>round the clock</strong> during the crisis. 危机期间医生们日夜工作。','The factory operates <strong>around the clock</strong>. 工厂24小时运转。'],
+   mnemonic:'round/around the clock = 绕着时钟转 = 24小时不停'
+  },
+  {id:115, cat:'collocation', diff:'hard', type:'mc',
+   q:'The scientist\'s new theory ___ existing assumptions.',
+   hint:'"挑战、颠覆"现有假设',
+   options:['challenges','questions','disputes','undermines'], answer:0,
+   explain:'"challenge existing assumptions/theory/views" = 挑战现有假设/理论/观点。challenge 强调正面直接的挑战；question = 质疑（提出疑问）；dispute = 争议、否认；undermine = 暗中削弱。',
+   examples:['This research <strong>challenges</strong> the conventional wisdom. 这项研究挑战了传统智慧。','Many people <strong>question</strong> the accuracy of these statistics. 很多人质疑这些数据的准确性。'],
+   mnemonic:'challenge（正面挑战）vs question（质疑）vs undermine（暗中削弱）'
+  },
+  {id:116, cat:'noun', diff:'hard', type:'mc',
+   q:'The committee reached a ___ after hours of discussion.',
+   hint:'"共识、一致意见"',
+   options:['consensus','consent','concession','conclusion'], answer:0,
+   explain:'"consensus" = 共识、一致同意（所有人的共同意见）；consent = 同意/许可（允许某事）；concession = 让步/妥协；conclusion = 结论。reach a consensus = 达成共识。',
+   examples:['There is broad <strong>consensus</strong> on this issue. 在这个问题上存在广泛共识。','She gave her <strong>consent</strong> to the operation. 她同意了手术。'],
+   mnemonic:'consensus（共识）vs consent（同意）vs concession（让步）vs conclusion（结论）'
+  },
+  {id:117, cat:'phrase', diff:'cet4', type:'mc',
+   q:'She is known ___ her generosity.',
+   hint:'"因...而著名/闻名"',
+   options:['for','as','by','with'], answer:0,
+   explain:'"be known for" = 因...而著名（强调原因/特点）；be known as = 被称为/以...身份为人所知。She is known for her generosity = 她以慷慨大方著称。She is known as "Iron Lady" = 她被称为"铁娘子"。',
+   examples:['Paris is <strong>known for</strong> its fashion. 巴黎以时尚闻名。','She is <strong>known as</strong> the queen of pop. 她被称为流行乐女王。'],
+   mnemonic:'known for（因...著名）vs known as（被称为...）'
+  },
+  {id:118, cat:'phrase', diff:'cet4', type:'mc',
+   q:'The new medicine was put ___ test for safety.',
+   hint:'"进行测试"',
+   options:['to the','on the','under','through'], answer:0,
+   explain:'"put sth to the test" = 对某物进行测试、检验。也可用：put sth to the test = 考验某物/某人的能力。test 前用定冠词 the。',
+   examples:['Our friendship was really <strong>put to the test</strong> during that crisis. 那次危机真的考验了我们的友谊。','The new technology will be <strong>put to the test</strong> this year. 这项新技术今年将接受检验。'],
+   mnemonic:'put sb/sth to the test = 考验、检验'
+  },
+  {id:119, cat:'verb', diff:'cet6', type:'mc',
+   q:'The teacher tried to ___ the concept in simple terms.',
+   hint:'"阐明、解释清楚"（较难词）',
+   options:['elucidate','explain','clarify','elaborate'], answer:0,
+   explain:'"elucidate" = 阐明、清楚解释（正式/高级词汇）；explain = 解释（普通）；clarify = 澄清（消除误解）；elaborate = 详细说明（详细展开）。elucidate 是最正式的"解释清楚"。',
+   examples:['Could you <strong>elucidate</strong> your point? 你能阐明你的观点吗？','Please <strong>clarify</strong> what you mean. 请澄清你的意思。'],
+   mnemonic:'elucidate（最正式）> clarify（澄清）> explain（普通）> elaborate（展开详述）'
+  },
+  {id:120, cat:'collocation', diff:'cet6', type:'mc',
+   q:'The politician\'s statement was full of ___.',
+   hint:'"矛盾之处、自相矛盾"',
+   options:['contradictions','contrasts','contraries','contentions'], answer:0,
+   explain:'"contradiction" = 矛盾、自相矛盾（说法/行为不一致）；contrast = 对比、差异；contrary = 相反（观点）；contention = 争论/论点。full of contradictions = 充满矛盾。',
+   examples:['His life was full of <strong>contradictions</strong>. 他的生活充满了矛盾。','There is a clear <strong>contrast</strong> between the two styles. 这两种风格之间有明显的对比。'],
+   mnemonic:'contradiction（自相矛盾）vs contrast（对比差异）vs contention（争论）'
   }
 ];
 
@@ -1372,7 +2001,15 @@ function buildPool() {
   let pool = QUESTIONS;
   // Filter by difficulty
   if (session.diff !== 'all') {
-    pool = pool.filter(q => q.diff === session.diff);
+    if (session.diff === 'cet4') {
+      // 四级：包含 cet4 标记 + hard 难度题目
+      pool = pool.filter(q => q.diff === 'cet4' || q.diff === 'hard');
+    } else if (session.diff === 'cet6') {
+      // 六级：包含 cet6 + cet4 + hard
+      pool = pool.filter(q => q.diff === 'cet6' || q.diff === 'cet4' || q.diff === 'hard');
+    } else {
+      pool = pool.filter(q => q.diff === session.diff);
+    }
   }
   // Filter by category
   if (!session.cats.includes('all')) {
