@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>初中英语词汇闯关 · WordQuest</title>
+<style>
+  :root {
+    --primary: #6c63ff;
+    --primary-light: #a29bfe;
+    --secondary: #fd79a8;
+    --success: #00b894;
+    --warning: #fdcb6e;
+    --danger: #e17055;
+    --dark: #2d3436;
+    --gray: #636e72;
+    --light: #f8f9fa;
+    --card-bg: #ffffff;
+    --border: #e0e0e0;
+    --shadow: 0 4px 20px rgba(108,99,255,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: var(--dark);
+  }
+  /* ===== TOP NAV ===== */
+  .topnav {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+  .logo { color: #fff; font-size: 1.4rem; font-weight: 800; letter-spacing: 1px; }
+  .logo span { color: var(--warning); }
+  .nav-stats { display: flex; gap: 16px; }
+  .stat-chip {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  /* ===== MAIN LAYOUT ===== */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 28px;
+  }
+  .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 6px; }
+  .hero p { opacity: 0.85; font-size: 1rem; }
+  /* ===== STREAK BANNER ===== */
+  .streak-banner {
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+    border-radius: 16px;
+    padding: 14px 22px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 20px rgba(240,93,251,0.3);
+  }
+  .streak-left { display: flex; align-items: center; gap: 12px; }
+  .streak-fire { font-size: 2rem; }
+  .streak-text h3 { font-size: 1.1rem; font-weight: 700; }
+  .streak-text p { font-size: 0.82rem; opacity: 0.9; }
+  .streak-days { font-size: 2.2rem; font-weight: 900; }
+  /* ===== TABS ===== */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.15);
+    padding: 6px;
+    border-radius: 14px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .tab-btn.active {
+    background: #fff;
+    color: var(--primary);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+  }
+  /* ===== CARD ===== */
+  .card {
+    background: var(--card-bg);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  /* ===== PROGRESS WEEK ===== */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+  .day-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .day-label { font-size: 0.72rem; color: var(--gray); font-weight: 600; }
+  .day-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 2px solid var(--border);
+    color: var(--gray);
+    background: #fff;
+    transition: all 0.3s;
+  }
+  .day-circle.done { background: var(--success); border-color: var(--success); color: #fff; }
+  .day-circle.today { border-color: var(--primary); color: var(--primary); box-shadow: 0 0 0 3px rgba(108,99,255,0.2); }
+  .day-circle.today.done { background: var(--primary); color: #fff; }
+  /* ===== QUIZ MODE SELECTOR ===== */
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .mode-card {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: center;
+  }
+  .mode-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .mode-card.selected { border-color: var(--primary); background: rgba(108,99,255,0.06); }
+  .mode-icon { font-size: 2rem; margin-bottom: 8px; }
+  .mode-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .mode-desc { font-size: 0.78rem; color: var(--gray); }
+  /* ===== DIFFICULTY PILLS ===== */
+  .diff-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .diff-pill {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 2px solid var(--border);
+    background: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--gray);
+  }
+  .diff-pill.active-easy { background: #e8f8f5; border-color: var(--success); color: var(--success); }
+  .diff-pill.active-medium { background: #fef9ee; border-color: var(--warning); color: #b8860b; }
+  .diff-pill.active-hard { background: #fdf0ed; border-color: var(--danger); color: var(--danger); }
+  .diff-pill.active-cet4 { background: #f0f0ff; border-color: var(--primary); color: var(--primary); }
+  .diff-pill.active-cet6 { background: #fff0f6; border-color: var(--secondary); color: var(--secondary); }
+  /* ===== CATEGORY PILLS ===== */
+  .cat-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .cat-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--gray);
+  }
+  .cat-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+  /* ===== START BTN ===== */
+  .start-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--primary), #a29bfe);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 6px 20px rgba(108,99,255,0.35);
+    letter-spacing: 1px;
+  }
+  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(108,99,255,0.45); }
+  /* ===== QUIZ AREA ===== */
+  #quiz-area { display: none; }
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .progress-bar-wrap {
+    flex: 1;
+    height: 10px;
+    background: #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 0 14px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 5px;
+    transition: width 0.4s ease;
+  }
+  .quiz-counter { font-size: 0.85rem; font-weight: 700; color: var(--gray); }
+  .combo-badge {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: none;
+  }
+  .combo-badge.show { display: inline; }
+  /* ===== QUESTION CARD ===== */
+  .question-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 28px 24px;
+    box-shadow: 0 8px 30px rgba(108,99,255,0.15);
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+  }
+  .q-category {
+    display: inline-block;
+    background: rgba(108,99,255,0.1);
+    color: var(--primary);
+    padding: 3px 12px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .q-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .q-text .blank {
+    display: inline-block;
+    min-width: 80px;
+    border-bottom: 3px solid var(--primary);
+    text-align: center;
+    color: var(--primary);
+    font-style: italic;
+  }
+  .q-hint {
+    font-size: 0.82rem;
+    color: var(--gray);
+    margin-bottom: 18px;
+    font-style: italic;
+  }
+  /* ===== OPTIONS ===== */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .option-btn {
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    color: var(--dark);
+    line-height: 1.4;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--primary); background: rgba(108,99,255,0.04); transform: translateY(-1px); }
+  .option-btn.correct { background: #e8f8f5; border-color: var(--success); color: var(--success); }
+  .option-btn.wrong { background: #fdf0ed; border-color: var(--danger); color: var(--danger); }
+  .option-btn:disabled { cursor: default; }
+  .option-letter {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--light);
+    color: var(--gray);
+    font-size: 0.75rem;
+    text-align: center;
+    line-height: 22px;
+    font-weight: 700;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  .option-btn.correct .option-letter { background: var(--success); color: #fff; }
+  .option-btn.wrong .option-letter { background: var(--danger); color: #fff; }
+  /* ===== FILL-IN INPUT ===== */
+  .fill-input {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    font-size: 1.05rem;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.2s;
+    color: var(--dark);
+  }
+  .fill-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(108,99,255,0.15); }
+  .fill-input.correct { border-color: var(--success); background: #e8f8f5; }
+  .fill-input.wrong { border-color: var(--danger); background: #fdf0ed; }
+  .fill-submit {
+    width: 100%;
+    margin-top: 10px;
+    padding: 13px;
+    border-radius: 12px;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .fill-submit:hover { background: #5a52d5; }
+  /* ===== EXPLANATION ===== */
+  .explanation {
+    background: linear-gradient(135deg, #f8f0ff, #fff0f6);
+    border: 1.5px solid #e0d0ff;
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 14px;
+    display: none;
+  }
+  .explanation.show { display: block; animation: slideIn 0.3s ease; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .exp-title { font-weight: 800; color: var(--primary); margin-bottom: 8px; font-size: 0.95rem; }
+  .exp-correct { color: var(--success); font-weight: 700; margin-bottom: 6px; font-size: 0.95rem; }
+  .exp-why { color: var(--dark); font-size: 0.88rem; line-height: 1.7; }
+  .exp-example {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    color: var(--gray);
+    font-style: italic;
+    border-left: 3px solid var(--primary);
+  }
+  .exp-examples-title { font-weight: 700; color: var(--dark); font-size: 0.82rem; margin-bottom: 6px; margin-top: 10px; }
+  .exp-example-item {
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    margin-bottom: 5px;
+  }
+  .exp-example-item strong { color: var(--primary); }
+  .exp-mnemonic {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: #fffde7;
+    border-radius: 10px;
+    font-size: 0.83rem;
+    color: #7a6000;
+    border-left: 3px solid var(--warning);
+  }
+  /* ===== NEXT BTN ===== */
+  .next-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, var(--success), #55efc4);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-top: 12px;
+    display: none;
+    box-shadow: 0 4px 15px rgba(0,184,148,0.3);
+  }
+  .next-btn.show { display: block; animation: slideIn 0.3s ease; }
+  .next-btn:hover { transform: translateY(-2px); }
+  /* ===== RESULT PAGE ===== */
+  #result-area { display: none; }
+  .result-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .result-emoji { font-size: 4rem; margin-bottom: 12px; }
+  .result-score { font-size: 3rem; font-weight: 900; color: var(--primary); }
+  .result-label { font-size: 1rem; color: var(--gray); margin-bottom: 20px; }
+  .result-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .result-stat {
+    background: var(--light);
+    border-radius: 12px;
+    padding: 14px 10px;
+  }
+  .result-stat-num { font-size: 1.6rem; font-weight: 800; color: var(--dark); }
+  .result-stat-label { font-size: 0.75rem; color: var(--gray); margin-top: 2px; }
+  .retry-btn {
+    padding: 14px 32px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 6px;
+    transition: all 0.2s;
+  }
+  .retry-btn:hover { transform: translateY(-2px); }
+  .retry-btn.outline {
+    background: #fff;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+  }
+  /* ===== REVIEW LIST ===== */
+  .review-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--danger);
+  }
+  .review-item.correct { border-left-color: var(--success); }
+  .review-q { font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; }
+  .review-ans {
+    display: flex;
+    gap: 12px;
+    font-size: 0.82rem;
+  }
+  .review-ans span { padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+  .review-your { background: #fdf0ed; color: var(--danger); }
+  .review-your.ok { background: #e8f8f5; color: var(--success); }
+  .review-correct-lbl { background: #e8f8f5; color: var(--success); }
+  /* ===== STATS PAGE ===== */
+  #stats-area { display: none; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .stats-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .stats-num { font-size: 2.2rem; font-weight: 900; }
+  .stats-lbl { font-size: 0.78rem; color: var(--gray); margin-top: 4px; font-weight: 600; }
+  .bar-chart {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 18px;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .bar-label { font-size: 0.78rem; color: var(--gray); width: 70px; text-align: right; font-weight: 600; }
+  .bar-track { flex: 1; height: 22px; background: #f0f0f0; border-radius: 11px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 11px; transition: width 1s ease; }
+  .bar-val { font-size: 0.78rem; font-weight: 700; width: 35px; color: var(--dark); }
+  /* ===== LEADERBOARD ===== */
+  .lb-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    transition: transform 0.2s;
+  }
+  .lb-item:hover { transform: translateX(4px); }
+  .lb-rank { font-size: 1.2rem; font-weight: 900; width: 30px; text-align: center; }
+  .lb-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+  .lb-info { flex: 1; }
+  .lb-name { font-weight: 700; font-size: 0.95rem; }
+  .lb-score-lbl { font-size: 0.75rem; color: var(--gray); }
+  .lb-score { font-size: 1.1rem; font-weight: 900; color: var(--primary); }
+  /* ===== ANIMATIONS ===== */
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+  .confetti-burst { animation: pop 0.5s ease; }
+  .xp-float {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, var(--success), #55efc4);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size: 1.4rem;
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 9999;
+    animation: xpFloat 1.2s ease forwards;
+  }
+  @keyframes xpFloat { 0%{opacity:0;transform:translate(-50%,-30%)} 20%{opacity:1} 80%{opacity:1} 100%{opacity:0;transform:translate(-50%,-100%)} }
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:600px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .mode-grid { grid-template-columns: 1fr 1fr; }
+    .result-stats-row { grid-template-columns: repeat(3, 1fr); }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="logo">Word<span>Quest</span> 🚀</div>
+  <div class="nav-stats">
+    <div class="stat-chip">⭐ <span id="nav-xp">0</span> XP</div>
+    <div class="stat-chip">🔥 <span id="nav-streak">0</span>天</div>
+    <div class="stat-chip">💎 <span id="nav-gems">0</span></div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>🎯 英语词汇闯关</h1>
+    <p>介词 · 动词 · 时态 · 短语组合 · 每天进步一点点</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('home')">🏠 首页</button>
+    <button class="tab-btn" onclick="switchTab('quiz')">⚔️ 开始练习</button>
+    <button class="tab-btn" onclick="switchTab('stats')">📊 我的成绩</button>
+    <button class="tab-btn" onclick="switchTab('board')">🏆 排行榜</button>
+  </div>
+
+  <!-- ======= HOME TAB ======= -->
+  <div id="home-area">
+
+    <!-- STREAK -->
+    <div class="streak-banner">
+      <div class="streak-left">
+        <div class="streak-fire">🔥</div>
+        <div class="streak-text">
+          <h3>连续打卡</h3>
+          <p>坚持每天学习，保持火焰！</p>
+        </div>
+      </div>
+      <div class="streak-days" id="home-streak">0</div>
+    </div>
+
+    <!-- WEEK PROGRESS -->
+    <div class="card">
+      <div class="card-title">📅 本周进度</div>
+      <div class="week-grid" id="week-grid"></div>
+    </div>
+
+    <!-- TODAY MISSION -->
+    <div class="card">
+      <div class="card-title">🎯 今日任务</div>
+      <div id="today-missions"></div>
+    </div>
+
+    <!-- QUICK START -->
+    <div class="card">
+      <div class="card-title">⚡ 快速开始</div>
+      <div class="mode-grid">
+        <div class="mode-card selected" id="mc-mode" onclick="selectMode('mc')">
+          <div class="mode-icon">🎮</div>
+          <div class="mode-name">选择题</div>
+          <div class="mode-desc">四选一，快速练习</div>
+        </div>
+        <div class="mode-card" id="fill-mode" onclick="selectMode('fill')">
+          <div class="mode-icon">✏️</div>
+          <div class="mode-name">填空题</div>
+          <div class="mode-desc">拼写单词，加强记忆</div>
+        </div>
+        <div class="mode-card" id="phrase-mode" onclick="selectMode('phrase')">
+          <div class="mode-icon">🔗</div>
+          <div class="mode-name">短语组合</div>
+          <div class="mode-desc">词语搭配，地道表达</div>
+        </div>
+        <div class="mode-card" id="sentence-mode" onclick="selectMode('sentence')">
+          <div class="mode-icon">📝</div>
+          <div class="mode-name">短句填写</div>
+          <div class="mode-desc">语境理解，综合运用</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startQuiz()">🚀 立刻开始！</button>
+  </div>
+
+  <!-- ======= QUIZ TAB ======= -->
+  <div id="quiz-tab-area" style="display:none;">
+
+    <!-- SETTINGS -->
+    <div class="card" id="quiz-settings">
+      <div class="card-title">🎚️ 难度选择</div>
+      <div class="diff-row">
+        <span class="diff-pill active-easy" id="diff-easy" onclick="selectDiff('easy')">🌱 初级</span>
+        <span class="diff-pill" id="diff-medium" onclick="selectDiff('medium')">⚡ 中级</span>
+        <span class="diff-pill" id="diff-hard" onclick="selectDiff('hard')">🔥 高级</span>
+        <span class="diff-pill" id="diff-cet4" onclick="selectDiff('cet4')">📘 四级</span>
+        <span class="diff-pill" id="diff-cet6" onclick="selectDiff('cet6')">🏅 六级</span>
+      </div>
+      <div class="card-title" style="margin-top:16px;">📚 语法类型</div>
+      <div class="cat-row" id="cat-row">
+        <span class="cat-pill active" data-cat="all" onclick="toggleCat(this,'all')">全部</span>
+        <span class="cat-pill" data-cat="preposition" onclick="toggleCat(this,'preposition')">介词</span>
+        <span class="cat-pill" data-cat="article" onclick="toggleCat(this,'article')">冠词</span>
+        <span class="cat-pill" data-cat="noun" onclick="toggleCat(this,'noun')">名词</span>
+        <span class="cat-pill" data-cat="verb" onclick="toggleCat(this,'verb')">动词</span>
+        <span class="cat-pill" data-cat="adjective" onclick="toggleCat(this,'adjective')">形容词</span>
+        <span class="cat-pill" data-cat="tense_present" onclick="toggleCat(this,'tense_present')">现在时</span>
+        <span class="cat-pill" data-cat="tense_past" onclick="toggleCat(this,'tense_past')">过去时</span>
+        <span class="cat-pill" data-cat="tense_future" onclick="toggleCat(this,'tense_future')">将来时</span>
+        <span class="cat-pill" data-cat="phrase" onclick="toggleCat(this,'phrase')">短语</span>
+        <span class="cat-pill" data-cat="collocation" onclick="toggleCat(this,'collocation')">词组搭配</span>
+      </div>
+      <div class="card-title" style="margin-top:8px;">📦 题目数量</div>
+      <div class="diff-row">
+        <span class="diff-pill active-easy" id="cnt-5" onclick="selectCount(5)">5题 · 热身</span>
+        <span class="diff-pill" id="cnt-10" onclick="selectCount(10)">10题 · 标准</span>
+        <span class="diff-pill" id="cnt-20" onclick="selectCount(20)">20题 · 挑战</span>
+        <span class="diff-pill" id="cnt-30" onclick="selectCount(30)">30题 · 闯关</span>
+      </div>
+      <button class="start-btn" onclick="startFromTab()" style="margin-top:18px;">⚔️ 开始闯关！</button>
+    </div>
+
+    <!-- QUIZ QUESTIONS -->
+    <div id="quiz-area">
+      <div class="quiz-header">
+        <span class="quiz-counter" id="q-counter">1 / 10</span>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <span class="combo-badge" id="combo-badge">🔥 连击×<span id="combo-num">2</span></span>
+      </div>
+
+      <div class="question-card" id="question-card">
+        <div class="q-category" id="q-cat-label">介词</div>
+        <div class="q-text" id="q-text"></div>
+        <div class="q-hint" id="q-hint"></div>
+        <div id="options-area"></div>
+        <div class="explanation" id="explanation">
+          <div class="exp-title">💡 解析</div>
+          <div class="exp-correct" id="exp-correct"></div>
+          <div class="exp-why" id="exp-why"></div>
+          <div id="exp-examples-area"></div>
+          <div class="exp-mnemonic" id="exp-mnemonic" style="display:none;"></div>
+        </div>
+      </div>
+
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">下一题 →</button>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result-area">
+      <div class="result-card">
+        <div class="result-emoji" id="result-emoji">🎉</div>
+        <div class="result-score" id="result-score">90</div>
+        <div class="result-label">分</div>
+        <div id="result-title" style="font-size:1.2rem;font-weight:800;margin-bottom:6px;"></div>
+        <div id="result-msg" style="font-size:0.9rem;color:var(--gray);margin-bottom:20px;"></div>
+        <div class="result-stats-row">
+          <div class="result-stat">
+            <div class="result-stat-num" id="res-correct" style="color:var(--success);">0</div>
+            <div class="result-stat-label">✅ 答对</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-num" id="res-wrong" style="color:var(--danger);">0</div>
+            <div class="result-stat-label">❌ 答错</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-num" id="res-xp" style="color:var(--primary);">0</div>
+            <div class="result-stat-label">⭐ 获得XP</div>
+          </div>
+        </div>
+        <div>
+          <button class="retry-btn" onclick="restartSameQuiz()">🔄 再来一次</button>
+          <button class="retry-btn outline" onclick="backToSettings()">⚙️ 换题目</button>
+        </div>
+        <div id="wrong-review" style="margin-top:24px;text-align:left;display:none;">
+          <div class="card-title">📝 错题回顾</div>
+          <div id="review-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======= STATS TAB ======= -->
+  <div id="stats-area">
+    <div class="stats-grid">
+      <div class="stats-box">
+        <div class="stats-num" id="st-total" style="color:var(--primary);">0</div>
+        <div class="stats-lbl">总答题数</div>
+      </div>
+      <div class="stats-box">
+        <div class="stats-num" id="st-acc" style="color:var(--success);">0%</div>
+        <div class="stats-lbl">平均正确率</div>
+      </div>
+      <div class="stats-box">
+        <div class="stats-num" id="st-xp" style="color:#f0932b;">0</div>
+        <div class="stats-lbl">总XP</div>
+      </div>
+      <div class="stats-box">
+        <div class="stats-num" id="st-streak" style="color:var(--secondary);">0</div>
+        <div class="stats-lbl">最长连胜</div>
+      </div>
+    </div>
+    <div class="bar-chart">
+      <div class="card-title">📊 各类型正确率</div>
+      <div id="cat-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📅 最近7天</div>
+      <div class="week-grid" id="stats-week-grid"></div>
+    </div>
+  </div>
+
+  <!-- ======= LEADERBOARD TAB ======= -->
+  <div id="board-area" style="display:none;">
+    <div class="card">
+      <div class="card-title">🏆 本周排行榜</div>
+      <div id="leaderboard-list"></div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// =====================================================
+//  DATA: VOCABULARY + PHRASE + SENTENCE DATABASE
+// =====================================================
+const QUESTIONS = [
+  // ========== PREPOSITIONS 介词 ==========
+  {id:1, cat:'preposition', diff:'easy', type:'mc',
+   q:'She is sitting ___ the chair.',
+   hint:'表示"在…上面（接触表面）"',
+   options:['on','in','at','under'], answer:0,
+   explain:'on 表示接触表面的"在上面"；in 表示在内部；at 表示在某点。坐在椅子上用 on。',
+   examples:['The book is <strong>on</strong> the table. 书在桌子上。','She put the cup <strong>on</strong> the shelf. 她把杯子放在架子上。'],
+   mnemonic:'想象椅子的"表面"托着你，on = 接触面'
+  },
+  {id:2, cat:'preposition', diff:'easy', type:'mc',
+   q:'He arrived ___ Monday morning.',
+   hint:'具体某天/早上/下午用哪个介词？',
+   options:['in','on','at','by'], answer:1,
+   explain:'on 用于具体某天或某天的早上/下午/晚上：on Monday / on Monday morning。in 用于月份、年份、季节；at 用于具体时刻。',
+   examples:['I have a meeting <strong>on</strong> Friday afternoon. 我周五下午有个会议。','We play football <strong>on</strong> weekends. 我们周末踢足球。'],
+   mnemonic:'Day → on，Time → at，Period → in'
+  },
+  {id:3, cat:'preposition', diff:'easy', type:'fill',
+   q:'The train departs ___ 7:30 a.m.',
+   hint:'具体时刻用什么介词？',
+   answer:'at',
+   explain:'at 用于具体时刻、节假日名称前：at 7:30，at noon，at Christmas。',
+   examples:['The meeting starts <strong>at</strong> 9 o\'clock. 会议9点开始。','I\'ll see you <strong>at</strong> noon. 中午见。'],
+   mnemonic:'时刻点 → at（at a point in time）'
+  },
+  {id:4, cat:'preposition', diff:'medium', type:'mc',
+   q:'She has been working here ___ 2019.',
+   hint:'从某个过去的时间点持续到现在，用哪个介词？',
+   options:['for','since','from','during'], answer:1,
+   explain:'since + 时间点（从某时起），搭配完成时；for + 时间段（持续多久）。"since 2019"表示从2019年起一直到现在。',
+   examples:['I have known him <strong>since</strong> childhood. 我从小就认识他。','She has lived here <strong>for</strong> ten years. 她在这里住了十年。'],
+   mnemonic:'since = since a point（点）；for = for a period（段）'
+  },
+  {id:5, cat:'preposition', diff:'medium', type:'mc',
+   q:'The cat jumped ___ the wall.',
+   hint:'从一侧翻越到另一侧',
+   options:['across','over','through','along'], answer:1,
+   explain:'over 表示越过较高的障碍（如墙、栅栏）；across 表示从一侧到另一侧（通常是平面）；through 表示穿过内部。',
+   examples:['He climbed <strong>over</strong> the fence. 他翻过了篱笆。','She walked <strong>across</strong> the bridge. 她走过了桥。'],
+   mnemonic:'over = 翻越（弧线）；across = 横穿（直线）'
+  },
+  {id:6, cat:'preposition', diff:'hard', type:'mc',
+   q:'___ all his faults, she still loves him.',
+   hint:'表示"尽管，不顾"',
+   options:['Despite','Although','However','Nevertheless'], answer:0,
+   explain:'despite/in spite of + 名词/名词短语，表示"尽管"；although/though 后接从句（含主谓）。Despite all his faults = 尽管他有种种缺点。',
+   examples:['<strong>Despite</strong> the rain, we went for a walk. 尽管下雨，我们还是去散步了。','<strong>In spite of</strong> feeling tired, he finished the work. 尽管疲倦，他还是完成了工作。'],
+   mnemonic:'despite/in spite of + 名词；although/though + 句子'
+  },
+  // ========== ARTICLES 冠词 ==========
+  {id:7, cat:'article', diff:'easy', type:'mc',
+   q:'I saw ___ elephant at the zoo yesterday.',
+   hint:'第一次提到某事物，且以元音音素开头',
+   options:['a','an','the','—(无)'], answer:1,
+   explain:'元音音素开头的单词前用 an（发音看音素，不看拼写）：an elephant / an hour / an honest man。辅音音素开头用 a。',
+   examples:['She is <strong>an</strong> engineer. 她是一名工程师。','He has <strong>an</strong> MBA degree. 他有工商管理硕士学位。'],
+   mnemonic:'听音定冠：元音 → an；辅音 → a'
+  },
+  {id:8, cat:'article', diff:'easy', type:'fill',
+   q:'Please close ___ door when you leave.',
+   hint:'特指双方都知道的那扇门',
+   answer:'the',
+   explain:'the 用于特指——双方都清楚指哪一个事物时。"the door"表示"那扇（你我都知道的）门"。',
+   examples:['<strong>The</strong> sun rises in the east. 太阳从东方升起。（独一无二）','Did you feed <strong>the</strong> cat? 你喂猫了吗？（特指我们的猫）'],
+   mnemonic:'第一次出现 → a/an（泛指）；再次提到/特指 → the'
+  },
+  {id:9, cat:'article', diff:'medium', type:'mc',
+   q:'He plays ___ piano every evening.',
+   hint:'乐器前一般用什么冠词？',
+   options:['a','an','the','—(无)'], answer:2,
+   explain:'演奏乐器前通常用 the：play the piano / the violin / the guitar。但体育运动前不加冠词：play football / play basketball。',
+   examples:['She plays <strong>the</strong> violin beautifully. 她小提琴拉得很好。','We play <strong>—</strong> basketball after school. 我们放学后打篮球。'],
+   mnemonic:'乐器 → the；运动 → 无冠词'
+  },
+  {id:10, cat:'article', diff:'hard', type:'mc',
+   q:'___ rich should help ___ poor.',
+   hint:'"富人"和"穷人"作为群体，如何表达？',
+   options:['The / the','A / a','— / —','The / a'], answer:0,
+   explain:'"the + 形容词"表示一类人：the rich（富人），the poor（穷人），the elderly（老人），the blind（盲人）。这是固定用法，后面动词用复数。',
+   examples:['<strong>The</strong> young should respect <strong>the</strong> old. 年轻人应该尊敬老人。','<strong>The</strong> injured were taken to hospital. 伤者被送往医院。'],
+   mnemonic:'the + adj = 一类人（复数概念）'
+  },
+  // ========== NOUNS 名词 ==========
+  {id:11, cat:'noun', diff:'easy', type:'mc',
+   q:'She gave me two ___ of advice.',
+   hint:'advice 是不可数名词，要用量词短语',
+   options:['pieces','cups','bars','sheets'], answer:0,
+   explain:'advice、information、furniture、news 等为不可数名词，不能直接加 -s。量词用 piece：a piece of advice，two pieces of advice。',
+   examples:['a piece of <strong>news</strong> 一则新闻','three pieces of <strong>furniture</strong> 三件家具','a bit of <strong>information</strong> 一点信息'],
+   mnemonic:'不可数名词 + piece(s) of：advice / news / furniture / information'
+  },
+  {id:12, cat:'noun', diff:'medium', type:'mc',
+   q:'The ___ of the team was outstanding.',
+   hint:'团队整体表现',
+   options:['performance','perform','performing','performed'], answer:0,
+   explain:'名词形式是 performance（表现、演出），动词是 perform，形容词是 performative。冠词 the 后面接名词。',
+   examples:['The <strong>performance</strong> of the students improved greatly. 学生的表现大大提升。','Her piano <strong>performance</strong> was amazing. 她的钢琴演奏令人惊叹。'],
+   mnemonic:'perform（动词）→ performance（名词）'
+  },
+  {id:13, cat:'noun', diff:'medium', type:'fill',
+   q:'The children played happily in the ___. (操场)',
+   hint:'school + 操场 = ?',
+   answer:'playground',
+   explain:'playground = play + ground，字面意思"玩耍的地方"，即操场/游乐场。复合名词记忆：school playground 学校操场。',
+   examples:['Kids are running on the <strong>playground</strong>. 孩子们在操场上跑。','The <strong>playground</strong> has swings and slides. 操场上有秋千和滑梯。'],
+   mnemonic:'play + ground = 玩 + 地方 = 操场'
+  },
+  {id:14, cat:'noun', diff:'hard', type:'mc',
+   q:'His ___ for learning languages is remarkable.',
+   hint:'对语言的"能力/才能"',
+   options:['aptitude','attitude','altitude','attribute'], answer:0,
+   explain:'aptitude = 天资、才能（天生的能力）；attitude = 态度；altitude = 海拔高度；attribute = 特征/属性。aptitude for sth = 做某事的天赋。',
+   examples:['She has a natural <strong>aptitude</strong> for music. 她有音乐方面的天赋。','His positive <strong>attitude</strong> impressed everyone. 他积极的态度给大家留下了深刻印象。'],
+   mnemonic:'apt（适合）+ itude = aptitude（适合做某事的才能）'
+  },
+  // ========== VERBS 动词 ==========
+  {id:15, cat:'verb', diff:'easy', type:'mc',
+   q:'She ___ her homework before dinner every day.',
+   hint:'每天的习惯，第三人称单数',
+   options:['do','does','did','is doing'], answer:1,
+   explain:'一般现在时表示习惯动作，第三人称单数（he/she/it）动词要加 -s/-es：do → does，go → goes，watch → watches。',
+   examples:['He <strong>goes</strong> to school by bus. 他坐公交上学。','She <strong>watches</strong> TV in the evening. 她晚上看电视。'],
+   mnemonic:'第三人称单数 + s/es（一般现在时习惯）'
+  },
+  {id:16, cat:'verb', diff:'easy', type:'mc',
+   q:'Look! The birds ___ in the sky.',
+   hint:'现在正在发生的动作',
+   options:['fly','flies','are flying','flew'], answer:2,
+   explain:'现在进行时 = am/is/are + 动词-ing，表示现在正在进行的动作。"Look!"和"now"等是现在进行时的信号词。',
+   examples:['<strong>Listen!</strong> Someone is knocking at the door. 听！有人在敲门。','They are <strong>playing</strong> basketball now. 他们现在在打篮球。'],
+   mnemonic:'Look! / Listen! / now → 现在进行时：be + V-ing'
+  },
+  {id:17, cat:'verb', diff:'medium', type:'mc',
+   q:'I ___ my keys. I can\'t find them anywhere.',
+   hint:'刚刚发生、对现在有影响',
+   options:['lost','have lost','had lost','lose'], answer:1,
+   explain:'现在完成时 = have/has + 过去分词，表示过去发生但对现在有影响。"我找不到钥匙"= 之前丢了（对现在有影响）。',
+   examples:['She <strong>has just finished</strong> her homework. 她刚刚完成作业。','I <strong>have never seen</strong> such a beautiful sunset. 我从未见过如此美丽的日落。'],
+   mnemonic:'对现在有影响 → 现在完成时：have/has + p.p.'
+  },
+  {id:18, cat:'verb', diff:'medium', type:'fill',
+   q:'By the time she arrived, the movie ___. (already start)',
+   hint:'在过去某时间之前已完成，用过去完成时',
+   answer:'had already started',
+   explain:'过去完成时 = had + 过去分词，表示在过去某时间点之前已经完成的动作。"By the time she arrived"说明时间参照点是她到达的那一刻（过去），电影在那之前已开始。',
+   examples:['When I got there, they <strong>had already left</strong>. 我到时，他们已经离开了。','She <strong>had studied</strong> English for 3 years before she moved to the US. 她移居美国前已学了3年英语。'],
+   mnemonic:'过去的过去 → 过去完成时：had + p.p.'
+  },
+  {id:19, cat:'verb', diff:'hard', type:'mc',
+   q:'The manager suggested that everyone ___ early the next day.',
+   hint:'建议/要求/命令类动词后的从句用什么结构？',
+   options:['arrive','arrives','arrived','will arrive'], answer:0,
+   explain:'建议/命令/要求类动词（suggest, demand, insist, recommend, propose）后的 that 从句用虚拟语气：(should) + 动词原形。should 可省略，只留原形。',
+   examples:['He insisted that she <strong>apologize</strong>. 他坚持让她道歉。','The doctor recommended that he <strong>rest</strong> for a week. 医生建议他休息一周。'],
+   mnemonic:'suggest/demand/insist/recommend + that + (should) + V原形'
+  },
+  // ========== TENSE_PRESENT 现在时 ==========
+  {id:20, cat:'tense_present', diff:'easy', type:'mc',
+   q:'Water ___ at 100°C.',
+   hint:'科学事实/真理',
+   options:['boils','is boiling','boiled','will boil'], answer:0,
+   explain:'一般现在时用于陈述客观事实、科学真理、自然规律。如：The Earth goes around the Sun. Water boils at 100°C.',
+   examples:['The Sun <strong>rises</strong> in the east. 太阳从东方升起。','Light <strong>travels</strong> faster than sound. 光比声音传播得快。'],
+   mnemonic:'客观规律/科学事实 → 一般现在时'
+  },
+  {id:21, cat:'tense_present', diff:'medium', type:'mc',
+   q:'She ___ her teeth twice a day.',
+   hint:'日常习惯，三单',
+   options:['brush','brushes','is brushing','has brushed'], answer:1,
+   explain:'表示规律性/习惯性动作，用一般现在时。第三人称单数 she 后动词加 -s：brush → brushes（以 sh 结尾加 es）。',
+   examples:['He <strong>washes</strong> his car every Sunday. 他每周日洗车。','She <strong>practices</strong> piano for an hour daily. 她每天练一小时钢琴。'],
+   mnemonic:'每天/经常/总是 + 三单 → 动词+s/es'
+  },
+  // ========== TENSE_PAST 过去时 ==========
+  {id:22, cat:'tense_past', diff:'easy', type:'mc',
+   q:'Yesterday, Tom ___ to the library.',
+   hint:'昨天发生的动作',
+   options:['go','goes','went','has gone'], answer:2,
+   explain:'yesterday / last year / in 2020 等过去时间状语 → 一般过去时。go 的过去式是 went（不规则变化）。',
+   examples:['She <strong>visited</strong> her grandparents last weekend. 上周末她探望了祖父母。','They <strong>played</strong> chess all afternoon. 他们下了一整个下午的棋。'],
+   mnemonic:'past time marker（yesterday/last/ago）→ 一般过去时'
+  },
+  {id:23, cat:'tense_past', diff:'medium', type:'mc',
+   q:'While I ___ TV, the phone rang.',
+   hint:'过去进行时 + 一般过去时，表示被打断',
+   options:['watch','watched','was watching','had watched'], answer:2,
+   explain:'过去进行时 = was/were + V-ing，表示过去某时刻正在进行的动作，常与 while 连用；被一般过去时的短暂动作打断。结构：while + 过去进行时，+ 一般过去时。',
+   examples:['<strong>While</strong> she was cooking, the kids were playing. 她做饭时，孩子们在玩。','I <strong>was studying</strong> when you called. 你打电话时我正在学习。'],
+   mnemonic:'while + was/were doing（背景）+ 一般过去时（打断事件）'
+  },
+  {id:24, cat:'tense_past', diff:'hard', type:'fill',
+   q:'If she ___ harder, she would have passed the exam. (study)',
+   hint:'与过去事实相反的虚拟条件句',
+   answer:'had studied',
+   explain:'与过去事实相反的虚拟条件句：if + had + p.p.（虚拟过去完成时），主句 + would have + p.p.。这里 study 的过去分词是 studied。',
+   examples:['If he <strong>had left</strong> earlier, he wouldn\'t have missed the bus. 如果他早点出发，就不会错过班车了。','If I <strong>had known</strong> the truth, I would have told you. 如果我知道真相，我就告诉你了。'],
+   mnemonic:'与过去相反虚拟：if + had done ... would have done'
+  },
+  // ========== TENSE_FUTURE 将来时 ==========
+  {id:25, cat:'tense_future', diff:'easy', type:'mc',
+   q:'I think it ___ tomorrow.',
+   hint:'对未来的预测/想法（非计划）',
+   options:['rains','is raining','will rain','rained'], answer:2,
+   explain:'"will + 动词原形"用于：①临时决定的意愿；②对未来的预测（常与 think/believe/probably 连用）。这里 "I think" 表示预测，用 will。',
+   examples:['I <strong>will</strong> help you carry those bags. 我来帮你拿那些包。（临时决定）','I think she <strong>will</strong> pass the exam. 我觉得她会通过考试。（预测）'],
+   mnemonic:'预测/临时决定 → will；已计划安排 → be going to'
+  },
+  {id:26, cat:'tense_future', diff:'medium', type:'mc',
+   q:'Look at those clouds! It ___ rain.',
+   hint:'根据眼前迹象判断即将发生',
+   options:['will','is going to','would','shall'], answer:1,
+   explain:'"be going to"用于：①根据眼前迹象得出的判断；②已经计划好的事。"Look at those clouds"= 有迹象，所以用 is going to。',
+   examples:['She <strong>is going to</strong> have a baby. 她要生宝宝了。（有迹象）','We <strong>are going to</strong> visit Paris next month. 我们下个月要去巴黎。（已计划）'],
+   mnemonic:'有迹象/已计划 → be going to；临时决定/预测 → will'
+  },
+  // ========== ADJECTIVES 形容词 ==========
+  {id:27, cat:'adjective', diff:'easy', type:'mc',
+   q:'This is the ___ movie I have ever seen.',
+   hint:'用最高级',
+   options:['more interesting','most interesting','interesting','interestingly'], answer:1,
+   explain:'最高级 = the + 最高级形式（多音节加 most）。三音节以上词 interesting → most interesting。前面必须有 the，后面常接 ... I have ever seen。',
+   examples:['This is the <strong>most beautiful</strong> place I\'ve ever been to. 这是我去过的最美的地方。','He is the <strong>tallest</strong> boy in the class. 他是班里最高的男生。'],
+   mnemonic:'短词（1-2音节）→ -er/-est；长词 → more/most'
+  },
+  {id:28, cat:'adjective', diff:'medium', type:'mc',
+   q:'She felt ___ after the long journey.',
+   hint:'感到精疲力竭，形容词还是副词？',
+   options:['exhausting','exhausted','exhaust','exhaustedly'], answer:1,
+   explain:'"feel + 形容词"（系动词）。exhausted（人感到疲惫）vs exhausting（事情令人疲惫）。感知/情感类分词形容词：-ed 描述人的感受；-ing 描述事物的特质。',
+   examples:['I\'m really <strong>bored</strong>. The class is really <strong>boring</strong>. 我很无聊。课很无聊。','She was <strong>excited</strong>. The news was <strong>exciting</strong>. 她很兴奋。消息令人兴奋。'],
+   mnemonic:'-ed = 人的感受（被动/结果）；-ing = 事物的特质（主动/原因）'
+  },
+  {id:29, cat:'adjective', diff:'hard', type:'mc',
+   q:'The problem is ___ to solve without proper tools.',
+   hint:'impossible / difficult 类',
+   options:['impossible','impossibly','impossibility','impose'], answer:0,
+   explain:'系表结构：主语 + be + 形容词。impossible 是形容词，表示"不可能的"。solve 是不定式，说明"解决这个问题"是不可能的。',
+   examples:['The task seems <strong>difficult</strong> to complete. 这个任务似乎难以完成。','It is <strong>impossible</strong> to predict the future. 预测未来是不可能的。'],
+   mnemonic:'be + impossible/difficult/easy + to do = 对某事来说...'
+  },
+  // ========== PHRASES 短语 ==========
+  {id:30, cat:'phrase', diff:'easy', type:'mc',
+   q:'Can you ___ a favor for me?',
+   hint:'"帮个忙"的固定搭配',
+   options:['make','do','give','take'], answer:1,
+   explain:'"do a favor" 是固定搭配，意思是"帮个忙"。注意区分：do homework（做作业），make a decision（做决定），take a rest（休息）。',
+   examples:['Could you do me a <strong>favor</strong>? 你能帮我个忙吗？','I did him a <strong>big favor</strong> by helping him move. 我帮他搬家，帮了他大忙。'],
+   mnemonic:'do a favor / do homework / do exercise（do + 活动）'
+  },
+  {id:31, cat:'phrase', diff:'easy', type:'mc',
+   q:'He always ___ care of his younger brother.',
+   hint:'照顾、照料某人',
+   options:['makes','does','takes','gives'], answer:2,
+   explain:'"take care of" 是固定短语，意思是"照顾、照料"，相当于 look after。take 搭配：take care of, take a photo, take a risk, take notes。',
+   examples:['Please <strong>take care of</strong> yourself. 请好好照顾自己。','She takes <strong>care of</strong> the elderly every day. 她每天照料老人。'],
+   mnemonic:'take care of = look after（照顾）'
+  },
+  {id:32, cat:'phrase', diff:'medium', type:'mc',
+   q:'The report should be ___ account the latest data.',
+   hint:'"考虑到、将...纳入考量"',
+   options:['taken into','bringing to','put in','giving to'], answer:0,
+   explain:'"take ... into account" = 考虑到，将...纳入考量。同义表达：take ... into consideration。固定搭配，必须记住顺序。',
+   examples:['You need to <strong>take into account</strong> the weather conditions. 你需要考虑天气情况。','The cost should be <strong>taken into consideration</strong>. 应该将费用考虑在内。'],
+   mnemonic:'take sth into account/consideration = 把...考虑在内'
+  },
+  {id:33, cat:'phrase', diff:'medium', type:'fill',
+   q:'We need to come ___ a solution quickly.',
+   hint:'"想出、提出"某个主意或解决方案',
+   answer:'up with',
+   explain:'"come up with" = 想出、提出（主意、计划、解决方案）。这是常用短语动词：come up with an idea/plan/solution。',
+   examples:['She <strong>came up with</strong> a brilliant idea. 她想出了一个绝妙的主意。','Can you <strong>come up with</strong> a better solution? 你能想出更好的解决办法吗？'],
+   mnemonic:'come up with = 想出、提出（向上浮现出来）'
+  },
+  {id:34, cat:'phrase', diff:'hard', type:'mc',
+   q:'The project fell ___ schedule due to technical issues.',
+   hint:'"落后于计划"',
+   options:['behind','under','below','beneath'], answer:0,
+   explain:'"fall behind schedule" = 落后于计划。fall behind = 落后（进度/队伍/还款）。相关搭配：fall behind on payments（延迟还款），fall behind in studies（学习落后）。',
+   examples:['Construction has <strong>fallen behind</strong> schedule. 建设进度已落后于计划。','Don\'t <strong>fall behind</strong> on your assignments. 别让作业落下来。'],
+   mnemonic:'fall behind = 落后于；fall behind schedule = 工期/进度滞后'
+  },
+  // ========== COLLOCATIONS 词语搭配 ==========
+  {id:35, cat:'collocation', diff:'easy', type:'mc',
+   q:'She ___ a speech at the conference.',
+   hint:'"做/发表演讲"',
+   options:['made','did','said','told'], answer:0,
+   explain:'"make a speech" 是固定搭配。常见 make 搭配：make a speech（发表演讲），make progress（取得进步），make a mistake（犯错），make friends（交朋友）。',
+   examples:['He <strong>made</strong> an impressive speech. 他发表了令人印象深刻的演讲。','Let\'s <strong>make</strong> progress together. 让我们共同取得进步。'],
+   mnemonic:'make: speech/progress/mistake/decision/effort/friends'
+  },
+  {id:36, cat:'collocation', diff:'easy', type:'mc',
+   q:'You need to ___ attention to details.',
+   hint:'"注意...细节"，pay还是give？',
+   options:['pay','give','make','take'], answer:0,
+   explain:'"pay attention to" = 注意，关注。这是固定搭配：pay attention（付出注意力），pay a visit（拜访），pay a compliment（称赞），pay the bill（付账）。',
+   examples:['Please <strong>pay attention to</strong> traffic signs. 请注意交通标志。','You should <strong>pay</strong> more attention to your spelling. 你应该更注意拼写。'],
+   mnemonic:'pay attention to = 注意（像付钱一样"付出"注意力）'
+  },
+  {id:37, cat:'collocation', diff:'medium', type:'mc',
+   q:'The scientists ___ a breakthrough in cancer research.',
+   hint:'"取得/获得"突破',
+   options:['did','made','achieved','gained'], answer:2,
+   explain:'"achieve a breakthrough" = 取得突破。achieve 常搭配：achieve a goal（实现目标），achieve success（获得成功），achieve a breakthrough（取得突破）。',
+   examples:['She <strong>achieved</strong> her dream of becoming a doctor. 她实现了成为医生的梦想。','The team <strong>achieved</strong> remarkable results. 团队取得了显著成果。'],
+   mnemonic:'achieve: goal/success/dream/result/breakthrough（实现/取得）'
+  },
+  {id:38, cat:'collocation', diff:'medium', type:'fill',
+   q:'It is important to ___ good habits from an early age.',
+   hint:'"养成良好习惯"，develop还是form？',
+   answer:'develop',
+   explain:'"develop good habits" = 养成良好习惯（也可用 form）。develop 常搭配：develop skills（培养技能），develop habits（养成习惯），develop a plan（制定计划）。',
+   examples:['Children should <strong>develop</strong> reading habits early. 孩子们应该从小养成阅读习惯。','She <strong>developed</strong> strong communication skills. 她培养了强大的沟通能力。'],
+   mnemonic:'develop/form good habits = 养成习惯（grow = 成长发展）'
+  },
+  {id:39, cat:'collocation', diff:'hard', type:'mc',
+   q:'The company decided to ___ its losses and close the project.',
+   hint:'接受损失，不再追加投入',
+   options:['cut','reduce','minimize','accept'], answer:0,
+   explain:'"cut one\'s losses" = 及时止损，不再追加损失。cut 常见搭配：cut costs（削减成本），cut corners（走捷径/偷工减料），cut ties（断绝关系）。',
+   examples:['It\'s time to <strong>cut our losses</strong> and move on. 是时候止损并继续前进了。','The company <strong>cut costs</strong> by reducing staff. 公司通过裁员来削减成本。'],
+   mnemonic:'cut losses = 止损；cut costs = 削减成本'
+  },
+  // ========== CET4 四级短语 ==========
+  {id:40, cat:'collocation', diff:'cet4', type:'mc',
+   q:'The new policy is aimed ___ reducing pollution.',
+   hint:'"旨在/目的是"做某事',
+   options:['at','for','to','in'], answer:0,
+   explain:'"be aimed at" = 旨在，以…为目标。aim at 后面接名词或动名词（V-ing）。相关表达：aim to do（旨在做）。',
+   examples:['The program is <strong>aimed at</strong> helping unemployed workers. 该项目旨在帮助失业工人。','She <strong>aims at</strong> becoming a scientist. 她以成为科学家为目标。'],
+   mnemonic:'be aimed at + V-ing = 旨在做某事'
+  },
+  {id:41, cat:'phrase', diff:'cet4', type:'mc',
+   q:'The new shopping mall is conveniently ___ in the city center.',
+   hint:'某物/某地"坐落于、位于"',
+   options:['located','situated','found','placed'], answer:0,
+   explain:'"be located in/at" = 位于，坐落于。也可用 be situated（较正式）。located 更口语常用：The hotel is located near the station.',
+   examples:['The museum is <strong>located</strong> in the heart of the city. 博物馆位于市中心。','Our office is <strong>situated</strong> on the 15th floor. 我们的办公室位于15层。'],
+   mnemonic:'be located in = 位于（location的形容词形式）'
+  },
+  {id:42, cat:'verb', diff:'cet4', type:'mc',
+   q:'Scientists have ___ that regular exercise improves memory.',
+   hint:'"证明、证实"某个说法或事实',
+   options:['demonstrated','demonstrated','said','talked'], answer:0,
+   explain:'"demonstrate" = 证明、展示、演示。搭配：demonstrate that（证明…），demonstrate how（演示如何…）。比 show 更正式。',
+   examples:['Research has <strong>demonstrated</strong> a link between diet and health. 研究证明了饮食与健康之间的联系。','He <strong>demonstrated</strong> how to use the equipment. 他演示了如何使用该设备。'],
+   mnemonic:'demonstrate = 证明 + 展示（demo的完整形式）'
+  },
+  // ========== CET6 六级短语 ==========
+  {id:43, cat:'collocation', diff:'cet6', type:'mc',
+   q:'The politician\'s remarks were ___ out of context.',
+   hint:'"断章取义"地引用',
+   options:['taken','pulled','cut','drawn'], answer:0,
+   explain:'"take out of context" = 断章取义，脱离语境引用。这是固定短语，必须用 take。take out of context 意味着引用时省略了重要背景，使原意被扭曲。',
+   examples:['My words were <strong>taken out of context</strong>. 我的话被断章取义了。','Headlines often <strong>take</strong> statements <strong>out of context</strong>. 标题往往断章取义。'],
+   mnemonic:'take ... out of context = 断章取义（把话从语境中抽走）'
+  },
+  {id:44, cat:'verb', diff:'cet6', type:'mc',
+   q:'The new regulation will ___ to all companies regardless of size.',
+   hint:'"适用于"，法规/规定的应用范围',
+   options:['apply','adopt','adapt','append'], answer:0,
+   explain:'"apply to" = 适用于；apply for = 申请；apply sth to sth = 将…应用于…。这里 apply to all companies = 对所有公司适用。',
+   examples:['The same rules <strong>apply to</strong> everyone. 同样的规则适用于所有人。','She <strong>applied for</strong> a scholarship. 她申请了奖学金。'],
+   mnemonic:'apply to = 适用于；apply for = 申请（for = 为了获得）'
+  },
+  {id:45, cat:'phrase', diff:'cet6', type:'fill',
+   q:'The government should ___ account for its spending. (hold + 宾语)',
+   hint:'"让某人为某事负责"',
+   answer:'be held',
+   explain:'"hold sb accountable/account for sth" = 让某人为某事负责。被动式：be held accountable/to account。这是高频六级/考研短语。',
+   examples:['Companies must <strong>be held accountable</strong> for their environmental impact. 企业必须为其环境影响负责。','The manager was <strong>held to account</strong> for the failure. 经理为失败负了责任。'],
+   mnemonic:'hold sb accountable = 让人负责（主动）；be held accountable = 被追责（被动）'
+  }
+];
+
+// =====================================================
+//  STATE
+// =====================================================
+let state = {
+  xp: 0, gems: 0, streak: 0, totalCorrect: 0, totalAnswered: 0,
+  weekDone: new Array(7).fill(false),
+  catStats: {},
+  history: [],
+  lastPlayDate: null,
+  longestStreak: 0
+};
+
+let session = {
+  mode: 'mc',
+  diff: 'easy',
+  cats: ['all'],
+  count: 5,
+  questions: [],
+  current: 0,
+  score: 0,
+  combo: 0,
+  answered: [],
+  wrongQuestions: []
+};
+
+// =====================================================
+//  LOAD / SAVE
+// =====================================================
+function loadState() {
+  try {
+    const saved = localStorage.getItem('wq_state');
+    if (saved) state = Object.assign(state, JSON.parse(saved));
+    // Check streak
+    const today = new Date().toDateString();
+    if (state.lastPlayDate) {
+      const last = new Date(state.lastPlayDate);
+      const diff = (new Date() - last) / (1000 * 60 * 60 * 24);
+      if (diff > 1.5) { state.streak = 0; }
+    }
+  } catch(e) {}
+}
+function saveState() {
+  localStorage.setItem('wq_state', JSON.stringify(state));
+}
+
+// =====================================================
+//  INIT
+// =====================================================
+loadState();
+updateNavStats();
+renderWeekGrid('week-grid');
+renderTodayMissions();
+
+// =====================================================
+//  NAV & TABS
+// =====================================================
+function updateNavStats() {
+  document.getElementById('nav-xp').textContent = state.xp;
+  document.getElementById('nav-streak').textContent = state.streak;
+  document.getElementById('nav-gems').textContent = state.gems;
+  document.getElementById('home-streak').textContent = state.streak + ' 天';
+}
+
+function switchTab(tab) {
+  const areas = ['home-area','quiz-tab-area','stats-area','board-area'];
+  const areaMap = {home:'home-area', quiz:'quiz-tab-area', stats:'stats-area', board:'board-area'};
+  areas.forEach(a => document.getElementById(a).style.display = 'none');
+  document.getElementById(areaMap[tab]).style.display = 'block';
+  document.querySelectorAll('.tab-btn').forEach((btn,i) => btn.classList.remove('active'));
+  const tabOrder = ['home','quiz','stats','board'];
+  document.querySelectorAll('.tab-btn')[tabOrder.indexOf(tab)].classList.add('active');
+  if (tab === 'stats') renderStats();
+  if (tab === 'board') renderLeaderboard();
+}
+
+// =====================================================
+//  WEEK GRID
+// =====================================================
+function renderWeekGrid(containerId) {
+  const labels = ['一','二','三','四','五','六','日'];
+  const today = new Date().getDay();
+  const adjustedToday = today === 0 ? 6 : today - 1;
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const isDone = state.weekDone[i];
+    const isToday = i === adjustedToday;
+    let cls = 'day-circle';
+    if (isDone) cls += ' done';
+    if (isToday) cls += ' today';
+    container.innerHTML += `
+      <div class="day-cell">
+        <div class="day-label">周${labels[i]}</div>
+        <div class="${cls}">${isDone ? '✓' : (i+1)}</div>
+      </div>`;
+  }
+}
+
+// =====================================================
+//  TODAY MISSIONS
+// =====================================================
+function renderTodayMissions() {
+  const missions = [
+    { icon:'⚡', name:'每日5题', desc:'完成5道练习题', done: state.totalAnswered >= 5 },
+    { icon:'🎯', name:'正确率达70%', desc:'答对至少70%题目', done: state.totalAnswered > 0 && (state.totalCorrect/state.totalAnswered) >= 0.7 },
+    { icon:'🔗', name:'短语达人', desc:'完成一组短语题', done: false },
+  ];
+  const el = document.getElementById('today-missions');
+  el.innerHTML = missions.map(m => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0f0;">
+      <span style="font-size:1.5rem;">${m.icon}</span>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:0.9rem;">${m.name}</div>
+        <div style="font-size:0.78rem;color:var(--gray);">${m.desc}</div>
+      </div>
+      <span style="font-size:1.1rem;">${m.done ? '✅' : '⬜'}</span>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+//  MODE / DIFF / COUNT SELECTORS
+// =====================================================
+function selectMode(mode) {
+  session.mode = mode;
+  ['mc','fill','phrase','sentence'].forEach(m => {
+    document.getElementById(m+'-mode').classList.remove('selected');
+  });
+  document.getElementById(mode+'-mode').classList.add('selected');
+}
+
+function selectDiff(diff) {
+  session.diff = diff;
+  const pills = ['easy','medium','hard','cet4','cet6'];
+  pills.forEach(d => {
+    const el = document.getElementById('diff-'+d);
+    el.className = 'diff-pill';
+    if (d === diff) el.classList.add('active-'+d);
+  });
+}
+
+function selectCount(n) {
+  session.count = n;
+  [5,10,20,30].forEach(c => {
+    const el = document.getElementById('cnt-'+c);
+    el.className = 'diff-pill';
+    if (c === n) el.classList.add('active-easy');
+  });
+}
+
+function toggleCat(el, cat) {
+  if (cat === 'all') {
+    session.cats = ['all'];
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+  } else {
+    const allPill = document.querySelector('.cat-pill[data-cat="all"]');
+    allPill.classList.remove('active');
+    el.classList.toggle('active');
+    const active = Array.from(document.querySelectorAll('.cat-pill.active')).map(p => p.dataset.cat);
+    session.cats = active.length ? active : ['all'];
+    if (!active.length) { allPill.classList.add('active'); session.cats = ['all']; }
+  }
+}
+
+// =====================================================
+//  BUILD QUESTION POOL
+// =====================================================
+function buildPool() {
+  let pool = QUESTIONS;
+  // Filter by difficulty
+  if (session.diff !== 'all') {
+    pool = pool.filter(q => q.diff === session.diff);
+  }
+  // Filter by category
+  if (!session.cats.includes('all')) {
+    pool = pool.filter(q => session.cats.includes(q.cat));
+  }
+  // Filter by mode (mc/fill/phrase/sentence)
+  if (session.mode === 'fill') {
+    pool = pool.filter(q => q.type === 'fill');
+  } else if (session.mode === 'mc' || session.mode === 'phrase' || session.mode === 'sentence') {
+    pool = pool.filter(q => q.type === 'mc');
+  }
+  // If pool too small, relax filters
+  if (pool.length < 3) pool = QUESTIONS.filter(q => q.type === (session.mode === 'fill' ? 'fill' : 'mc'));
+  // Shuffle
+  pool = pool.sort(() => Math.random() - 0.5);
+  return pool.slice(0, session.count);
+}
+
+// =====================================================
+//  START QUIZ
+// =====================================================
+function startQuiz() {
+  switchTab('quiz');
+  startFromTab();
+}
+
+function startFromTab() {
+  session.questions = buildPool();
+  if (session.questions.length === 0) {
+    alert('该难度/类型暂无题目，已自动切换到全部题目！');
+    session.cats = ['all'];
+    session.diff = 'easy';
+    session.questions = buildPool();
+  }
+  session.current = 0;
+  session.score = 0;
+  session.combo = 0;
+  session.answered = [];
+  session.wrongQuestions = [];
+
+  document.getElementById('quiz-settings').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  document.getElementById('result-area').style.display = 'none';
+
+  renderQuestion();
+}
+
+// =====================================================
+//  RENDER QUESTION
+// =====================================================
+const CAT_NAMES = {
+  preposition:'介词', article:'冠词', noun:'名词', verb:'动词',
+  adjective:'形容词', tense_present:'现在时', tense_past:'过去时',
+  tense_future:'将来时', phrase:'短语', collocation:'词语搭配'
+};
+
+function renderQuestion() {
+  const q = session.questions[session.current];
+  const total = session.questions.length;
+  const pct = (session.current / total) * 100;
+
+  document.getElementById('q-counter').textContent = `${session.current+1} / ${total}`;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('q-cat-label').textContent = CAT_NAMES[q.cat] || q.cat;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-hint').textContent = q.hint ? '💡 ' + q.hint : '';
+  document.getElementById('explanation').classList.remove('show');
+  document.getElementById('next-btn').classList.remove('show');
+
+  // Combo badge
+  const comboBadge = document.getElementById('combo-badge');
+  if (session.combo >= 2) {
+    comboBadge.classList.add('show');
+    document.getElementById('combo-num').textContent = session.combo;
+  } else {
+    comboBadge.classList.remove('show');
+  }
+
+  const optionsArea = document.getElementById('options-area');
+  if (q.type === 'mc') {
+    const letters = ['A','B','C','D'];
+    optionsArea.innerHTML = `<div class="options-grid">${
+      q.options.map((opt, i) => `
+        <button class="option-btn" onclick="selectOption(${i})" id="opt-${i}">
+          <span class="option-letter">${letters[i]}</span>${opt}
+        </button>`).join('')
+    }</div>`;
+  } else {
+    optionsArea.innerHTML = `
+      <input class="fill-input" id="fill-answer" placeholder="输入答案..." onkeydown="if(event.key==='Enter') submitFill()">
+      <button class="fill-submit" onclick="submitFill()">✓ 确认答案</button>`;
+    setTimeout(() => {
+      const inp = document.getElementById('fill-answer');
+      if (inp) inp.focus();
+    }, 100);
+  }
+}
+
+// =====================================================
+//  ANSWER HANDLING
+// =====================================================
+function selectOption(idx) {
+  const q = session.questions[session.current];
+  const correct = q.answer === idx;
+  processAnswer(correct, idx, q.answer);
+}
+
+function submitFill() {
+  const q = session.questions[session.current];
+  const inp = document.getElementById('fill-answer');
+  const userAns = inp.value.trim().toLowerCase();
+  const correctAns = (typeof q.answer === 'string' ? q.answer : q.options[q.answer]).toLowerCase();
+  const correct = userAns === correctAns || correctAns.split('/').map(s=>s.trim()).includes(userAns);
+  inp.disabled = true;
+  inp.classList.add(correct ? 'correct' : 'wrong');
+  document.querySelector('.fill-submit').disabled = true;
+  processAnswer(correct, userAns, typeof q.answer === 'string' ? q.answer : q.options[q.answer]);
+}
+
+function processAnswer(correct, userAns, correctAns) {
+  const q = session.questions[session.current];
+
+  // Disable options
+  if (q.type === 'mc') {
+    document.querySelectorAll('.option-btn').forEach((btn, i) => {
+      btn.disabled = true;
+      if (i === correctAns) btn.classList.add('correct');
+      if (i === userAns && !correct) btn.classList.add('wrong');
+    });
+  }
+
+  // Update state
+  if (correct) {
+    session.combo++;
+    session.score++;
+    state.totalCorrect++;
+    const xpGain = 10 * (1 + Math.min(session.combo - 1, 4) * 0.2);
+    const roundedXP = Math.round(xpGain);
+    state.xp += roundedXP;
+    if (session.combo >= 3) state.gems++;
+    showXPFloat('+' + roundedXP + ' XP' + (session.combo >= 2 ? ' 🔥' : ''));
+  } else {
+    session.combo = 0;
+    session.wrongQuestions.push({
+      q: q.q, userAns: typeof userAns === 'number' ? q.options[userAns] : userAns,
+      correctAns: typeof correctAns === 'number' ? q.options[correctAns] : correctAns
+    });
+  }
+  state.totalAnswered++;
+
+  // Update cat stats
+  if (!state.catStats[q.cat]) state.catStats[q.cat] = {correct:0, total:0};
+  state.catStats[q.cat].total++;
+  if (correct) state.catStats[q.cat].correct++;
+
+  session.answered.push({ correct, q: q.q, userAns, correctAns });
+  updateNavStats();
+
+  // Show explanation
+  showExplanation(q, correct);
+  document.getElementById('next-btn').classList.add('show');
+
+  // Update streak
+  const today = new Date().toDateString();
+  if (state.lastPlayDate !== today) {
+    state.lastPlayDate = today;
+    const todayIdx = new Date().getDay();
+    const adj = todayIdx === 0 ? 6 : todayIdx - 1;
+    state.weekDone[adj] = true;
+    state.streak++;
+    if (state.streak > state.longestStreak) state.longestStreak = state.streak;
+    renderWeekGrid('week-grid');
+  }
+  saveState();
+}
+
+function showExplanation(q, correct) {
+  const expEl = document.getElementById('explanation');
+  document.getElementById('exp-correct').textContent = correct ?
+    '✅ 回答正确！太棒了！' :
+    `❌ 答案是：${typeof q.answer === 'string' ? q.answer : q.options[q.answer]}`;
+  document.getElementById('exp-why').textContent = q.explain;
+
+  // Examples
+  const exArea = document.getElementById('exp-examples-area');
+  if (q.examples && q.examples.length) {
+    exArea.innerHTML = `<div class="exp-examples-title">📚 更多例句：</div>` +
+      q.examples.map(e => `<div class="exp-example-item">${e}</div>`).join('');
+  } else {
+    exArea.innerHTML = '';
+  }
+
+  // Mnemonic
+  const mnEl = document.getElementById('exp-mnemonic');
+  if (q.mnemonic) {
+    mnEl.textContent = '🧠 记忆口诀：' + q.mnemonic;
+    mnEl.style.display = 'block';
+  } else {
+    mnEl.style.display = 'none';
+  }
+
+  expEl.classList.add('show');
+}
+
+// =====================================================
+//  NEXT QUESTION / RESULTS
+// =====================================================
+function nextQuestion() {
+  session.current++;
+  if (session.current >= session.questions.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-area').style.display = 'none';
+  document.getElementById('result-area').style.display = 'block';
+
+  const total = session.questions.length;
+  const correct = session.score;
+  const pct = Math.round((correct / total) * 100);
+  const xpEarned = session.answered.reduce((sum, a) => sum + (a.correct ? 10 : 0), 0);
+
+  let emoji = '😊', title = '继续加油！', msg = '每次练习都是进步！';
+  if (pct >= 90) { emoji = '🎉'; title = '太厉害了！'; msg = '全部掌握，无敌！'; }
+  else if (pct >= 70) { emoji = '😎'; title = '表现不错！'; msg = '再练练错题，你会更棒！'; }
+  else if (pct >= 50) { emoji = '🤔'; title = '还有提升空间'; msg = '认真看解析，下次更好！'; }
+  else { emoji = '💪'; title = '加油！'; msg = '基础部分再练练，会有进步的！'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-score').textContent = pct;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-msg').textContent = msg;
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = total - correct;
+  document.getElementById('res-xp').textContent = '+' + xpEarned;
+
+  // Wrong review
+  if (session.wrongQuestions.length > 0) {
+    const wr = document.getElementById('wrong-review');
+    wr.style.display = 'block';
+    document.getElementById('review-list').innerHTML = session.wrongQuestions.map(w => `
+      <div class="review-item">
+        <div class="review-q">${w.q}</div>
+        <div class="review-ans">
+          <span class="review-your">你答：${w.userAns || '（未答）'}</span>
+          <span class="review-correct-lbl">正确：${w.correctAns}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  // Progress bar animation
+  setTimeout(() => {
+    document.getElementById('progress-fill').style.width = '100%';
+  }, 100);
+}
+
+function restartSameQuiz() {
+  session.questions = buildPool();
+  session.current = 0;
+  session.score = 0;
+  session.combo = 0;
+  session.answered = [];
+  session.wrongQuestions = [];
+  document.getElementById('result-area').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  renderQuestion();
+}
+
+function backToSettings() {
+  document.getElementById('result-area').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'none';
+  document.getElementById('quiz-settings').style.display = 'block';
+  document.getElementById('wrong-review').style.display = 'none';
+}
+
+// =====================================================
+//  XP FLOAT ANIMATION
+// =====================================================
+function showXPFloat(text) {
+  const el = document.createElement('div');
+  el.className = 'xp-float';
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1300);
+}
+
+// =====================================================
+//  STATS PAGE
+// =====================================================
+function renderStats() {
+  document.getElementById('st-total').textContent = state.totalAnswered;
+  const acc = state.totalAnswered > 0 ? Math.round(state.totalCorrect / state.totalAnswered * 100) : 0;
+  document.getElementById('st-acc').textContent = acc + '%';
+  document.getElementById('st-xp').textContent = state.xp;
+  document.getElementById('st-streak').textContent = state.longestStreak;
+
+  // Category bars
+  const colors = {
+    preposition:'#6c63ff', article:'#fd79a8', noun:'#00b894',
+    verb:'#0984e3', adjective:'#fdcb6e', tense_present:'#e17055',
+    tense_past:'#a29bfe', tense_future:'#55efc4', phrase:'#fab1a0',
+    collocation:'#74b9ff'
+  };
+  const bars = document.getElementById('cat-bars');
+  bars.innerHTML = Object.entries(CAT_NAMES).map(([key, name]) => {
+    const s = state.catStats[key];
+    const rate = s && s.total > 0 ? Math.round(s.correct / s.total * 100) : 0;
+    const total = s ? s.total : 0;
+    return `
+      <div class="bar-row">
+        <div class="bar-label">${name}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${rate}%;background:${colors[key]||'#6c63ff'}"></div>
+        </div>
+        <div class="bar-val">${total > 0 ? rate + '%' : '-'}</div>
+      </div>`;
+  }).join('');
+
+  renderWeekGrid('stats-week-grid');
+}
+
+// =====================================================
+//  LEADERBOARD (simulated)
+// =====================================================
+function renderLeaderboard() {
+  const players = [
+    { name:'你', score: state.xp, emoji:'🎓', bg:'#f0f0ff' },
+    { name:'小明', score: Math.max(0, state.xp - Math.floor(Math.random()*80+20)), emoji:'🐉', bg:'#fff0f6' },
+    { name:'小红', score: Math.max(0, state.xp - Math.floor(Math.random()*120+50)), emoji:'🌸', bg:'#f0fff4' },
+    { name:'大壮', score: Math.max(0, state.xp - Math.floor(Math.random()*200+100)), emoji:'💪', bg:'#fff8e1' },
+    { name:'小芳', score: Math.max(0, state.xp - Math.floor(Math.random()*300+150)), emoji:'⭐', bg:'#e8f5e9' },
+  ].sort((a,b) => b.score - a.score);
+
+  const medals = ['🥇','🥈','🥉','4','5'];
+  document.getElementById('leaderboard-list').innerHTML = players.map((p,i) => `
+    <div class="lb-item" ${p.name === '你' ? 'style="box-shadow:0 2px 12px rgba(108,99,255,0.25);border:1.5px solid var(--primary);"' : ''}>
+      <div class="lb-rank">${medals[i]}</div>
+      <div class="lb-avatar" style="background:${p.bg}">${p.emoji}</div>
+      <div class="lb-info">
+        <div class="lb-name">${p.name}${p.name === '你' ? ' （你）' : ''}</div>
+        <div class="lb-score-lbl">本周累计XP</div>
+      </div>
+      <div class="lb-score">${p.score}</div>
+    </div>`).join('');
+}
+
+// =====================================================
+//  INIT HOME TAB AS DEFAULT
+// =====================================================
+document.getElementById('quiz-tab-area').style.display = 'none';
+document.getElementById('stats-area').style.display = 'none';
+document.getElementById('board-area').style.display = 'none';
+document.getElementById('home-area').style.display = 'block';
+</script>
+</body>
+</html>
