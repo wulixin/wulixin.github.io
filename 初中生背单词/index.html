@@ -850,44 +850,57 @@ let QUESTIONS_LOADED = false;
 
 async function loadAllQuestions() {
   if (QUESTIONS_LOADED) return QUESTIONS;
-  const filesToLoad = [...new Set(Object.values(CAT_FILE_MAP))];
-  const fetches = filesToLoad.map(f =>
-    fetch('data/' + f).then(r => r.json()).catch(() => [])
-  );
-  const results = await Promise.all(fetches);
-  // Merge all questions with unique IDs
+
+  // Data files are loaded via static <script> tags at the bottom of the page.
+  // Just merge them from global window variables.
+  const allVars = [
+    'QUESTIONS_prepositions', 'QUESTIONS_articles', 'QUESTIONS_nouns',
+    'QUESTIONS_verbs', 'QUESTIONS_adjectives', 'QUESTIONS_tenses',
+    'QUESTIONS_phrases', 'QUESTIONS_collocations',
+    'QUESTIONS_cet4', 'QUESTIONS_cet6'
+  ];
+
   const seen = new Set();
   QUESTIONS = [];
-  for (const arr of results) {
-    for (const q of arr) {
-      const key = q.q + '|' + q.cat + '|' + q.type;
-      if (!seen.has(key)) {
-        seen.add(key);
-        QUESTIONS.push(q);
+
+  for (const varName of allVars) {
+    const arr = window[varName];
+    if (arr && Array.isArray(arr)) {
+      for (const q of arr) {
+        const key = q.q + '|' + q.cat + '|' + q.type;
+        if (!seen.has(key)) {
+          seen.add(key);
+          QUESTIONS.push(q);
+        }
       }
     }
   }
-  // Also load standalone CET4/CET6 files
-  try {
-    const cet4 = await fetch('data/cet4.json').then(r => r.json());
-    for (const q of cet4) {
-      const key = q.q + '|' + q.cat + '|' + q.type;
-      if (!seen.has(key)) { seen.add(key); QUESTIONS.push(q); }
-    }
-  } catch(e) {}
-  try {
-    const cet6 = await fetch('data/cet6.json').then(r => r.json());
-    for (const q of cet6) {
-      const key = q.q + '|' + q.cat + '|' + q.type;
-      if (!seen.has(key)) { seen.add(key); QUESTIONS.push(q); }
-    }
-  } catch(e) {}
+
+  // If nothing loaded (e.g. script tags failed), try fetch as fallback
+  if (QUESTIONS.length === 0) {
+    console.warn('Static scripts loaded no data, trying fetch fallback...');
+    await loadViaFetchFallback();
+  }
+
   QUESTIONS_LOADED = true;
-  console.log(`✅ 题库加载完成: ${QUESTIONS.length} 题`);
-  // Update hero badge
+  console.log('✅ 题库加载完成: ' + QUESTIONS.length + ' 题');
   const badge = document.getElementById('hero-question-count');
-  if (badge) badge.textContent = `📚 ${QUESTIONS.length}题词库`;
+  if (badge) badge.textContent = '📚 ' + QUESTIONS.length + '题词库';
   return QUESTIONS;
+}
+
+async function loadViaFetchFallback() {
+  const files = ['prepositions.json','articles.json','nouns.json','verbs.json','adjectives.json','tenses.json','phrases.json','collocations.json','cet4.json','cet6.json'];
+  const results = await Promise.all(
+    files.map(f => fetch('data/' + f).then(r => r.json()).catch(() => []))
+  );
+  const seen = new Set();
+  for (const arr of results) {
+    for (const q of arr) {
+      const key = q.q + '|' + q.cat + '|' + q.type;
+      if (!seen.has(key)) { seen.add(key); QUESTIONS.push(q); }
+    }
+  }
 }
 
 // =====================================================
@@ -2432,13 +2445,27 @@ document.getElementById('quiz-tab-area').style.display = 'none';
 document.getElementById('stats-area').style.display = 'none';
 document.getElementById('board-area').style.display = 'none';
 document.getElementById('home-area').style.display = 'block';
+</script>
 
-// 预加载题库（后台加载，不阻塞页面）
+<!-- 静态预加载所有题库 JS 文件（兼容 file:// 协议） -->
+<script src="data/prepositions.js"></script>
+<script src="data/articles.js"></script>
+<script src="data/nouns.js"></script>
+<script src="data/verbs.js"></script>
+<script src="data/adjectives.js"></script>
+<script src="data/tenses.js"></script>
+<script src="data/phrases.js"></script>
+<script src="data/collocations.js"></script>
+<script src="data/cet4.js"></script>
+<script src="data/cet6.js"></script>
+
+<script>
+// 数据加载完成后，再初始化题库
 loadAllQuestions().then(() => {
   const badge = document.getElementById('hero-question-count');
-  if (badge) badge.textContent = `📚 ${QUESTIONS.length}题词库`;
+  if (badge) badge.textContent = '📚 ' + QUESTIONS.length + '题词库';
   console.log('✅ 题库已就绪: ' + QUESTIONS.length + ' 题');
 });
-</script>
+
 </body>
 </html>
