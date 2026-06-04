@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R动态可视化与交互图形包技能汇总 | R Dynamic Visualizations Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#ec4899;--glow:rgba(236,72,153,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#ec4899,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(236,72,153,.2);border-color:rgba(236,72,153,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#ec4899,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#ec4899,#6366f1);color:#fff;box-shadow:0 4px 15px rgba(236,72,153,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(236,72,153,.15);color:#f9a8d4;font-weight:600}
+.pkg-tag.more{background:rgba(99,102,241,.15);color:#a5b4fc}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#f9a8d4}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(236,72,153,.12);border-color:rgba(236,72,153,.3);color:#f9a8d4;font-weight:600}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:12px;border-top:1px solid var(--border)}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:768px){
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.stats-bar{gap:16px}
+.stat-num{font-size:22px}
+.logo h1{font-size:16px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">🎨</span>
+<h1 data-zh="R动态可视化与交互图形包技能汇总" data-en="R Dynamic Visualizations & Interactive Graphics Packages">R动态可视化与交互图形包技能汇总</h1>
+</div>
+<button class="lang-btn" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">10</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">56</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">5</div><div class="stat-label" data-zh="核心包" data-en="Core Packages">核心包</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" placeholder="搜索包名或关键词..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡" data-en="Cards">技能卡</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Table">包列表</button>
+</div>
+
+<div class="view-container">
+<div id="network-view" class="view active">
+<svg id="network-svg"></svg>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div id="cards-view" class="view"></div>
+<div id="table-view" class="view"></div>
+</div>
+
+<footer>
+<p>数据来源: <a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/DynamicVisualizations.html" target="_blank">CRAN Task View: Dynamic Visualizations</a> | 清华大学开源软件镜像站</p>
+<p style="margin-top:4px">Powered by D3.js v7 | R动态可视化与交互图形包技能汇总 © 2026</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div class="modal-header">
+<span class="modal-icon" id="modal-icon"></span>
+<span class="modal-title" id="modal-title"></span>
+</div>
+<div class="modal-desc" id="modal-desc"></div>
+<div class="modal-pkgs" id="modal-pkgs"></div>
+</div>
+</div>
+
+<script>
+let lang='zh';
+const categories=[
+{id:'general',icon:'🖥️',color:'#ec4899',zh:'通用交互图形',en:'General Interactive Graphics',zhDesc:'基于JS可视化库的通用交互图形框架，支持联动刷选、工具提示、缩放等',enDesc:'General interactive graphics frameworks based on JS visualization libraries with linked brushing, tooltips, zoom, etc.',
+packages:[
+{name:'plotly',zh:'plotly.js交互图(ggplotly转换)',en:'plotly.js interactive graphics (ggplotly converter)',core:true},
+{name:'ggiraph',zh:'ggplot2交互扩展(悬停/点击/工具提示)',en:'ggplot2 interactive extension (hover/click/tooltip)',core:true},
+{name:'crosstalk',zh:'htmlwidgets联动刷选框架',en:'htmlwidgets linked brushing framework',core:true},
+{name:'r2d3',zh:'D3.js原始代码绑定R数据',en:'D3.js raw code binding to R data'},
+{name:'ddplot',zh:'r2d3框架动画直方图/折线图',en:'r2d3 animated histograms/line charts'},
+{name:'animint2',zh:'ggplot2分支(Web输出/多联动/动画)',en:'ggplot2 fork (Web output/linked views/animation)'},
+{name:'plotscaper',zh:'JS交互联动图(散点/直方/马赛克)',en:'JS linked views (scatter/histogram/mosaic)'},
+{name:'echarts4r',zh:'ECharts交互图(e_charts+e_*)',en:'ECharts interactive (e_charts+e_*)'},
+{name:'echarty',zh:'ECharts替代接口(ec.init列表配置)',en:'ECharts alternative interface (ec.init list config)'},
+{name:'highcharter',zh:'Highcharts交互图(hchart/hc_add_series)',en:'Highcharts interactive (hchart/hc_add_series)'},
+{name:'billboarder',zh:'Billboard.js交互图(bb_*)',en:'Billboard.js interactive (bb_*)'},
+{name:'googleVis',zh:'Google Charts交互图(gvis[ChartType])',en:'Google Charts interactive (gvis[ChartType])'},
+{name:'rAmCharts',zh:'amCharts交互图(amChartType)',en:'amCharts interactive (amChartType)'},
+{name:'rAmCharts4',zh:'amCharts4交互图(多数据集选择)',en:'amCharts4 interactive (multi-dataset selector)'},
+{name:'RJSplot',zh:'11种交互图形(热力图/Manhattan等)',en:'11 interactive chart types (heatmap/Manhattan etc.)'}
+]},
+
+{id:'animation',icon:'🎬',color:'#f97316',zh:'动画与过渡',en:'Animation & Transitions',zhDesc:'数据驱动的动画制作，支持过渡效果、帧动画和教学演示',enDesc:'Data-driven animation with transitions, frame animation and teaching demos',
+packages:[
+{name:'gganimate',zh:'ggplot2动画语法(transition_*/enter_*/exit_*)',en:'ggplot2 animation grammar (transition_*/enter_*/exit_*)',core:true},
+{name:'animate',zh:'base R语法D3.js动画',en:'base R syntax D3.js animation'},
+{name:'animation',zh:'统计概念动画演示(自助法/CLT)',en:'Statistical concept animation demos (bootstrap/CLT)'}
+]},
+
+{id:'multivariate',icon:'🔄',color:'#8b5cf6',zh:'多变量与巡游可视化',en:'Multivariate & Tour Visualizations',zhDesc:'散点图矩阵、平行坐标图、投影巡游和高维数据交互探索',enDesc:'Scatterplot matrices, parallel coordinates, projection tours and high-dimensional interactive exploration',
+packages:[
+{name:'GGally',zh:'散点图矩阵(ggpairs)+plotly联动',en:'Scatterplot matrix (ggpairs)+plotly linking'},
+{name:'pairsD3',zh:'D3.js散点图矩阵',en:'D3.js scatterplot matrix'},
+{name:'scatterPlotMatrix',zh:'交互散点图矩阵(回归线/相关系数)',en:'Interactive scatterplot matrix (regression/correlation)'},
+{name:'tourr',zh:'投影巡游(grand/guided/planned tour)',en:'Projection tours (grand/guided/planned tour)'},
+{name:'spinifex',zh:'手动巡游算法(manual_tour)',en:'Manual tour algorithm (manual_tour)'},
+{name:'detourr',zh:'three.js 2D/3D巡游显示(旋转/刷选)',en:'three.js 2D/3D tour display (rotate/brush)'},
+{name:'langevitour',zh:'Langevin动力学投影序列',en:'Langevin dynamics projection sequence'},
+{name:'woylier',zh:'Given插值投影寻踪变体',en:'Given interpolation projection pursuit variant'},
+{name:'ferrn',zh:'投影寻踪优化诊断图',en:'Projection pursuit optimization diagnostics'},
+{name:'loon',zh:'Tcl交互图形工具包',en:'Tcl interactive graphics toolkit'},
+{name:'parallelPlot',zh:'D3.js平行坐标图(联动刷选)',en:'D3.js parallel coordinates (linked brushing)'}
+]},
+
+{id:'timeseries',icon:'📈',color:'#0ea5e9',zh:'时间序列交互',en:'Time Series Interactive',zhDesc:'交互式时间序列图表、时间线可视化和时序数据联动探索',enDesc:'Interactive time series charts, timeline visualization and temporal data linked exploration',
+packages:[
+{name:'dygraphs',zh:'dygraphs.js交互时序图(高亮/注释/区间选择)',en:'dygraphs.js interactive time series (highlight/annotate/range)'},
+{name:'timevis',zh:'vis.js时间线可视化(拖拽缩放)',en:'vis.js timeline visualization (drag/zoom)'},
+{name:'tsibbletalk',zh:'crosstalk框架时序联动图',en:'crosstalk framework time series linked views'}
+]},
+
+{id:'maps',icon:'🗺️',color:'#22c55e',zh:'交互地图(Leaflet系)',en:'Interactive Maps (Leaflet Family)',zhDesc:'Leaflet生态系统，支持WebGL大规模渲染、小多图同步、地图字形等',enDesc:'Leaflet ecosystem with WebGL large-scale rendering, small multiples sync, map glyphs, etc.',
+packages:[
+{name:'leaflet',zh:'Leaflet交互地图(最流行JS地图库)',en:'Leaflet interactive map (most popular JS map library)',core:true},
+{name:'leafpop',zh:'Leaflet弹窗显示静态图',en:'Leaflet popup with static plots'},
+{name:'leafsync',zh:'小多图同步Leaflet地图',en:'Small multiples synced Leaflet maps'},
+{name:'leaflet.minicharts',zh:'地图上饼图/条形图字形(带动画)',en:'Map pie/bar chart glyphs (animated)'},
+{name:'leaflegend',zh:'自定义图片标记和图例',en:'Custom image markers and legends'},
+{name:'leafem',zh:'GIS图层(Cloud GeoTIFF/raster/stars)',en:'GIS layers (Cloud GeoTIFF/raster/stars)'},
+{name:'leafgl',zh:'WebGL渲染大规模数据(百万点)',en:'WebGL large-scale rendering (millions of points)'}
+]},
+
+{id:'advmaps',icon:'🌐',color:'#14b8a6',zh:'交互地图(高级)',en:'Interactive Maps (Advanced)',zhDesc:'Mapbox/deck.gl大数据可视化、专题地图语法和快速地图浏览',enDesc:'Mapbox/deck.gl big data visualization, thematic map grammar and quick map browsing',
+packages:[
+{name:'tmap',zh:'ggplot2风格专题地图语法',en:'ggplot2-style thematic map grammar'},
+{name:'mapview',zh:'sf/raster快速创建Leaflet地图',en:'sf/raster quick Leaflet map creation'},
+{name:'mapboxer',zh:'Mapbox GL JS接口(交互过滤/聚类)',en:'Mapbox GL JS interface (interactive filter/clustering)'},
+{name:'deckgl',zh:'deck.gl接口(交互编辑器微调)',en:'deck.gl interface (interactive editor tuning)'},
+{name:'mapdeck',zh:'Mapbox+deck.gl大数据交互可视化',en:'Mapbox+deck.gl big data interactive visualization'},
+{name:'evolMap',zh:'带GUI时序地图(时间演变/数据库探索)',en:'GUI temporal map (time evolution/database exploration)'}
+]},
+
+{id:'networks',icon:'🔗',color:'#06b6d4',zh:'网络与层级图',en:'Network & Hierarchical Graphs',zhDesc:'力导向网络、Sankey图、可折叠树图和时序网络可视化',enDesc:'Force-directed networks, Sankey diagrams, collapsible trees and temporal network visualization',
+packages:[
+{name:'sigmajs',zh:'sigma.js网络图(高亮相邻/自定义图标)',en:'sigma.js network (highlight neighbors/custom icons)'},
+{name:'networkD3',zh:'D3.js网络/Sankey/树状图',en:'D3.js network/Sankey/tree diagrams'},
+{name:'visNetwork',zh:'vis.js网络图(rpart分类树)',en:'vis.js network (rpart classification tree)'},
+{name:'collapsibleTree',zh:'D3.js可折叠树图',en:'D3.js collapsible tree diagram'},
+{name:'rD3plot',zh:'带GUI时序交互网络(搜索/过滤/回放)',en:'GUI temporal interactive network (search/filter/replay)'}
+]},
+
+{id:'heatmaps',icon:'🌡️',color:'#eab308',zh:'热力图与矩阵',en:'Heatmaps & Matrices',zhDesc:'交互式热力图、聚类树状图和复杂子图布局',enDesc:'Interactive heatmaps, clustering dendrograms and complex subplot layouts',
+packages:[
+{name:'heatmaply',zh:'plotly.js交互热力图(缩放/变换/树状图)',en:'plotly.js interactive heatmap (zoom/transform/dendrogram)'},
+{name:'iheatmapr',zh:'plotly.js复杂热力图(聚类/注释/统计)',en:'plotly.js complex heatmap (clustering/annotation/stats)'}
+]},
+
+{id:'hierarchical',icon:'🎄',color:'#a855f7',zh:'层级与分面数据',en:'Hierarchical & Faceted Data',zhDesc:'旭日图、树图、分区图和小多图分面可视化',enDesc:'Sunburst charts, treemaps, partition diagrams and small multiple faceting',
+packages:[
+{name:'sunburstR',zh:'D3.js旭日图(同心环层次数据)',en:'D3.js sunburst chart (concentric ring hierarchy)'},
+{name:'D3partitionR',zh:'嵌套数据交互图(旭日/树/冰柱/分区)',en:'Nested data interactive (sunburst/tree/icicle/partition)'},
+{name:'trelliscopejs',zh:'trelliscope.js小多图分面可视化',en:'trelliscope.js small multiple faceting'},
+{name:'scatterD3',zh:'散点图交互(套索/分组/轴缩放/标签拖拽)',en:'Scatter plot interactive (lasso/group/zoom/label drag)'}
+]},
+
+{id:'threed',icon:'🧊',color:'#6366f1',zh:'3D与特殊可视化',en:'3D & Special Visualizations',zhDesc:'WebGL/OpenGL三维可视化、GUI工具包和图形语法接口',enDesc:'WebGL/OpenGL 3D visualization, GUI toolkit and grammar of graphics interface',
+packages:[
+{name:'rgl',zh:'OpenGL/WebGL 3D可视化',en:'OpenGL/WebGL 3D visualization'},
+{name:'tcltk',zh:'Tcl/Tk GUI基础包',en:'Tcl/Tk GUI base package'},
+{name:'gglite',zh:'JS图形语法接口(含交互性)',en:'JS grammar of graphics interface (interactive)'}
+]}
+];
+
+let currentTab='network';
+function t(k){return lang==='zh'?k.zh:k.en}
+function toggleLang(){
+  lang=lang==='zh'?'en':'zh';
+  document.querySelector('.lang-btn').textContent=lang==='zh'?'EN':'中';
+  document.querySelectorAll('[data-zh]').forEach(el=>{
+    const v=el.getAttribute('data-'+lang);
+    if(v)el.textContent=v;
+  });
+  document.getElementById('search-input').placeholder=lang==='zh'?'搜索包名或关键词...':'Search packages or keywords...';
+  renderCurrentView();
+}
+
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['network','cards','table'][i]===tab);
+  });
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(tab+'-view').classList.add('active');
+  renderCurrentView();
+}
+
+function renderCurrentView(){
+  if(currentTab==='network')renderNetwork();
+  else if(currentTab==='cards')renderCards();
+  else renderTable();
+}
+
+let searchQuery='';
+function handleSearch(q){searchQuery=q.toLowerCase();renderCurrentView()}
+
+function getFilteredCategories(){
+  if(!searchQuery)return categories;
+  return categories.map(c=>{
+    const pkgs=c.packages.filter(p=>
+      p.name.toLowerCase().includes(searchQuery)||
+      p.zh.toLowerCase().includes(searchQuery)||
+      p.en.toLowerCase().includes(searchQuery)
+    );
+    if(pkgs.length===0)return null;
+    return{...c,packages:pkgs};
+  }).filter(Boolean);
+}
+
+function renderNetwork(){
+  const svg=d3.select('#network-svg');
+  svg.selectAll('*').remove();
+  const container=document.getElementById('network-view');
+  const w=container.clientWidth,h=container.clientHeight;
+  svg.attr('viewBox',`0 0 ${w} ${h}`);
+
+  const filtered=getFilteredCategories();
+  const nodes=[];
+  const links=[];
+
+  const centerNode={id:'dynamic',name:lang==='zh'?'动态可视化':'Dynamic Viz',color:'#ec4899',r:35,isCenter:true};
+  nodes.push(centerNode);
+
+  filtered.forEach(cat=>{
+    const catNode={id:cat.id,name:t(cat),color:cat.color,r:22,isCat:true,catData:cat};
+    nodes.push(catNode);
+    links.push({source:centerNode.id,target:catNode.id,value:cat.packages.length});
+
+    cat.packages.forEach(pkg=>{
+      const pkgNode={id:cat.id+'-'+pkg.name,name:pkg.name,color:cat.color,r:(pkg.core?9:5),isPkg:true,pkgData:pkg,catColor:cat.color};
+      nodes.push(pkgNode);
+      links.push({source:catNode.id,target:pkgNode.id,value:1});
+    });
+  });
+
+  const simulation=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(d=>d.id).distance(d=>(d.value>1?100:35)))
+    .force('charge',d3.forceManyBody().strength(d=>(d.isCenter?-300:d.isCat?-80:-15)))
+    .force('center',d3.forceCenter(w/2,h/2))
+    .force('collision',d3.forceCollide().radius(d=>(d.r+3)));
+
+  const link=svg.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke',d=>(d.source.isCenter?'rgba(236,72,153,.15)':'rgba(255,255,255,.06)'))
+    .attr('stroke-width',d=>(d.value>1?2:1));
+
+  const node=svg.append('g').selectAll('g').data(nodes).join('g')
+    .call(d3.drag()
+      .on('start',(e,d)=>{if(!e.active)simulation.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y})
+      .on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y})
+      .on('end',(e,d)=>{if(!e.active)simulation.alphaTarget(0);d.fx=null;d.fy=null}));
+
+  node.append('circle')
+    .attr('r',d=>d.r)
+    .attr('fill',d=>(d.isCenter?'rgba(236,72,153,.2)':d.isCat?d.color+'33':d.catColor+'22'))
+    .attr('stroke',d=>(d.isCenter?'#ec4899':d.isCat?d.color:d.catColor))
+    .attr('stroke-width',d=>(d.isCenter?3:d.isCat?2:(d.pkgData&&d.pkgData.core?2:1)));
+
+  node.filter(d=>(d.isCat||d.isCenter)).append('text')
+    .attr('dy',d=>(d.r+14))
+    .attr('text-anchor','middle')
+    .attr('fill',d=>(d.isCenter?'#ec4899':d.color))
+    .attr('font-size',d=>(d.isCenter?13:10))
+    .attr('font-weight',d=>(d.isCenter?700:600))
+    .text(d=>(d.name.length>8?d.name.slice(0,8)+'…':d.name));
+
+  const tooltip=document.getElementById('tooltip');
+  node.on('mouseover',(e,d)=>{
+    if(d.isPkg){
+      tooltip.innerHTML='<div class="tooltip-name" style="color:'+d.catColor+'">'+d.name+(d.pkgData.core?' ★':'')+'</div><div class="tooltip-desc">'+t(d.pkgData)+'</div>';
+      tooltip.classList.add('show');
+    }else if(d.isCat){
+      tooltip.innerHTML='<div class="tooltip-name" style="color:'+d.color+'">'+d.name+'</div><div class="tooltip-desc">'+d.catData.packages.length+' packages</div>';
+      tooltip.classList.add('show');
+    }
+    tooltip.style.left=(e.offsetX+15)+'px';
+    tooltip.style.top=(e.offsetY-10)+'px';
+  }).on('mouseout',()=>tooltip.classList.remove('show'));
+
+  node.on('click',(e,d)=>{
+    if(d.isCat)openModal(d.catData);
+  });
+
+  simulation.on('tick',()=>{
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    node.attr('transform',d=>'translate('+d.x+','+d.y+')');
+  });
+
+  const zoom=d3.zoom().scaleExtent([.3,4]).on('zoom',e=>{svg.select('g').attr('transform',e.transform)});
+  svg.call(zoom);
+}
+
+function renderCards(){
+  const container=document.getElementById('cards-view');
+  const filtered=getFilteredCategories();
+  container.innerHTML='<div class="cards-grid">'+filtered.map(cat=>`
+    <div class="category-card" style="border-left-color:${cat.color}" onclick="openModal(categories.find(c=>c.id==='${cat.id}'))">
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${t(cat)}</span>
+      </div>
+      <div class="card-desc">${t({zh:cat.zhDesc,en:cat.enDesc})}</div>
+      <div class="card-tags">
+        ${cat.packages.slice(0,8).map(p=>'<span class="pkg-tag'+(p.core?' core':'')+'">'+p.name+'</span>').join('')}
+        ${cat.packages.length>8?'<span class="pkg-tag more">+'+(cat.packages.length-8)+'</span>':''}
+      </div>
+    </div>`).join('')+'</div>';
+}
+
+function renderTable(){
+  const container=document.getElementById('table-view');
+  const filtered=getFilteredCategories();
+  container.innerHTML=filtered.map(cat=>`
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick="openModal(categories.find(c=>c.id==='${cat.id}'))">
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${t(cat)}</span>
+        <span class="table-cat-count">${cat.packages.length}</span>
+      </div>
+      <table class="pkg-table">
+        <tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th></tr>
+        ${cat.packages.map(p=>`
+          <tr>
+            <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span>${p.core?' <span class="core-star">★</span>':''}</td>
+            <td>${t(p)}</td>
+          </tr>`).join('')}
+      </table>
+    </div>`).join('');
+}
+
+function openModal(cat){
+  if(!cat)return;
+  document.getElementById('modal-icon').textContent=cat.icon;
+  document.getElementById('modal-title').textContent=t(cat);
+  document.getElementById('modal-title').style.color=cat.color;
+  document.getElementById('modal-desc').textContent=t({zh:cat.zhDesc,en:cat.enDesc});
+  document.getElementById('modal-pkgs').innerHTML=cat.packages.map(p=>
+    '<span class="modal-pkg'+(p.core?' core':'')+'" style="'+(p.core?'border-color:'+cat.color+'55;':'')+'">'+p.name+(p.core?' ★':'')+' <span style="color:var(--text2);font-size:11px">— '+t(p)+'</span></span>'
+  ).join('');
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-overlay'))return;
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+// Particles
+const canvas=document.getElementById('particles-canvas');
+const ctx=canvas.getContext('2d');
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+
+for(let i=0;i<60;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    vx:(Math.random()-.5)*.3,
+    vy:(Math.random()-.5)*.3,
+    r:Math.random()*2+.5,
+    color:['rgba(236,72,153,','rgba(99,102,241,','rgba(168,85,247,'][Math.floor(Math.random()*3)]
+  });
+}
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+    if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.color+(.3+Math.random()*.2)+')';ctx.fill();
+  });
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle='rgba(236,72,153,'+(.06*(1-dist/120))+')';ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+renderCurrentView();
+</script>
+</body>
+</html>

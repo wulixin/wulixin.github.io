@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R高性能计算包技能汇总 | R High-Performance Computing Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#f59e0b;--glow:rgba(245,158,11,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(245,158,11,.2);border-color:rgba(245,158,11,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;box-shadow:0 4px 15px rgba(245,158,11,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(245,158,11,.15);color:#fcd34d;font-weight:600}
+.pkg-tag.more{background:rgba(239,68,68,.15);color:#fca5a5}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#fcd34d}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.25);color:#fcd34d;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#fbbf24;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">⚡</span>
+<h1 data-zh="R高性能计算包技能汇总" data-en="R High-Performance Computing Package Skills">R高性能计算包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">95</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">11</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">2</div><div class="stat-label" data-zh="核心" data-en="Core">核心</div></div>
+<div class="stat-item"><div class="stat-num">2025</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/HighPerformanceComputing.html" target="_blank">CRAN Task View: High-Performance and Parallel Computing with R</a></p>
+<p style="margin-top:6px" data-zh="2025 · R高性能计算生态系统全景" data-en="2025 · R HPC Ecosystem Overview">2025 · R高性能计算生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"explicit",icon:"🔀",color:"#f59e0b",zh:"显式并行计算",en:"Explicit Parallelism",zhDesc:"MPI/Socket/Future框架/foreach/mirai异步/集群调度/容错并行/AWS云执行",enDesc:"MPI, Socket, Future framework, foreach, mirai async, cluster scheduling, fault tolerance & AWS",
+packages:[
+{name:"Rmpi",zh:"MPI标准R接口(Open MPI/MPICH/LAM/Deino)",en:"MPI standard R interface (Open MPI, MPICH, LAM, Deino)",core:true},
+{name:"pbdMPI",zh:"S4类MPI接口(SPMD并行编程风格)",en:"S4-based MPI interface for SPMD parallel programming"},
+{name:"snow",zh:"简单网络工作站抽象层(PVM/MPI/NWS/Socket)",en:"Simple Network of Workstations (PVM, MPI, NWS, sockets)",core:true},
+{name:"snowFT",zh:"snow容错扩展(故障恢复/检查点)",en:"Fault-tolerance extensions to snow with recovery"},
+{name:"snowfall",zh:"snow替代接口(顺序/并行模式统一API)",en:"Alternative snow interface with unified sequential/parallel API"},
+{name:"parallelly",zh:"parallel增强(并行worker启动控制/配置)",en:"Enhanced parallel with additional worker launch control"},
+{name:"foreach",zh:"通用迭代并行框架(无显式循环计数器)",en:"General iteration framework without explicit loop counters"},
+{name:"doMC",zh:"foreach多核后端(parallel/multicore单机)",en:"foreach multicore backend via parallel/multicore"},
+{name:"doSNOW",zh:"foreach snow后端(集群并行)",en:"foreach backend using snow cluster"},
+{name:"doMPI",zh:"foreach Rmpi后端(MPI集群)",en:"foreach backend using Rmpi"},
+{name:"doFuture",zh:"foreach future后端(统一并行抽象)",en:"foreach backend via the future framework"},
+{name:"future",zh:"Future并发框架(自动全局变量检测/多后端)",en:"Future concurrent framework with auto global detection"},
+{name:"futurize",zh:"自动并行化转换(base-R/purrr/foreach→future)",en:"Auto-parallelize base-R, purrr & foreach to future"},
+{name:"future.apply",zh:"Future并行apply函数族",en:"Parallel apply functions via the future framework"},
+{name:"furrr",zh:"Future并行purrr(函数式编程并行化)",en:"Parallel purrr via the future framework"},
+{name:"future.callr",zh:"Future callr后端(后台R进程)",en:"Future backend via the callr package"},
+{name:"future.mirai",zh:"Future mirai后端(高性能异步)",en:"Future backend via the mirai package"},
+{name:"future.batchtools",zh:"Future batchtools后端(HPC调度器)",en:"Future backend via the batchtools package"},
+{name:"mirai",zh:"极简异步框架(nanonext NNG C库/本地+分布式)",en:"Minimalist async framework via nanonext NNG C library"},
+{name:"nanonext",zh:"NNG C消息库绑定(高性能异步通信)",en:"High-performance NNG C messaging library binding"},
+{name:"crew",zh:"mirai扩展(自动伸缩/中央管理器/插件平台)",en:"mirai extension with auto-scaling, manager & plugin system"},
+{name:"parSim",zh:"并行模拟研究(本地/多核/HPC集群)",en:"Parallel simulation studies on local cores & HPC clusters"},
+{name:"qsub",zh:"Grid Engine集群任务提交",en:"Submit commands to GridEngine clusters"},
+{name:"condor",zh:"Condor HPC集群SSH交互",en:"Interact with Condor HPC installations via SSH"},
+{name:"piecemeal",zh:"大规模模拟研究(设置/运行/监控/收集/调试)",en:"Set up, run, monitor & debug large simulation studies"},
+{name:"starburst",zh:"AWS Future后端(环境同步/数据传输/Worker编排)",en:"Future backend for AWS: env sync, data transfer & orchestration"}
+]},
+
+{id:"implicit",icon:"🌀",color:"#3b82f6",zh:"隐式并行与流水线",en:"Implicit Parallelism & Pipelines",zhDesc:"BLAS多线程/流水线工具/DAG工作流/自动任务编排",enDesc:"BLAS multi-threading, pipeline tools, DAG workflows & automatic task orchestration",
+packages:[
+{name:"RhpcBLASctl",zh:"BLAS核心数检测与显式选择(控制线程数)",en:"Detect & explicitly select number of BLAS cores"},
+{name:"flexiblas",zh:"FlexiBLAS管理(运行时切换BLAS/LAPACK库)",en:"Manage BLAS/LAPACK libraries at runtime via FlexiBLAS"},
+{name:"targets",zh:"R流水线工具包(Make风格/DAG/分布式future)",en:"R pipeline toolkit: Make-style DAG with distributed future"},
+{name:"drake",zh:"targets前身(R流水线/依赖追踪/时间戳)",en:"Predecessor of targets: R pipeline with dependency tracking"}
+]},
+
+{id:"rng",icon:"🎲",color:"#8b5cf6",zh:"并行随机数",en:"Parallel Random Numbers",zhDesc:"并行安全随机数生成/独立随机流/可重现并行循环",enDesc:"Parallel-safe RNG, independent random streams & reproducible parallel loops",
+packages:[
+{name:"rlecuyer",zh:"L'Ecuyer并行随机数生成器(流分割)",en:"L'Ecuyer parallel random number generator with stream splitting"},
+{name:"rstream",zh:"多流随机数生成器(并行独立流)",en:"Multiple stream random number generators for parallel computing"},
+{name:"sitmo",zh:"高质量并行PRNG(Sitmo/使用C++11)",en:"High-quality parallel PRNG via Sitmo (C++11)"},
+{name:"dqrng",zh:"快速高质量随机数(pcg64/xoshiro/并行安全)",en:"Fast high-quality RNG: pcg64, xoshiro & parallel-safe"},
+{name:"doRNG",zh:"可重现并行foreach循环(独立随机流/rstream)",en:"Reproducible parallel foreach via independent random streams"}
+]},
+
+{id:"scheduler",icon:"📋",color:"#0ea5e9",zh:"集群调度与批处理",en:"Cluster Schedulers & Batch Processing",zhDesc:"SLURM/PBS/SGE/LSF任务提交/SSH远程/MapReduce过滤",enDesc:"SLURM, PBS, SGE, LSF job submission, SSH remote & MapReduce",
+packages:[
+{name:"rslurm",zh:"SLURM作业提交(从R提交Slurm任务)",en:"Submit SLURM jobs from R"},
+{name:"batch",zh:"集群并行计算请求提交与结果收集",en:"Launch parallel computing requests & gather results"},
+{name:"BatchJobs",zh:"Map/Reduce/Filter(PBS/Torque/LSF/SGE/多核/SSH)",en:"Map/Reduce/Filter on PBS, Torque, LSF, SGE & multicore"},
+{name:"BatchExperiments",zh:"统计实验抽象层(扩展BatchJobs/参数扫描)",en:"Statistical experiment abstraction extending BatchJobs"},
+{name:"batchtools",zh:"BatchJobs+BatchExperiments后继(统一HPC接口)",en:"Successor to BatchJobs & BatchExperiments with unified HPC API"},
+{name:"clustermq",zh:"零网络存储集群调度(LSF/SGE/SLURM/SSH)",en:"Cluster scheduler without network-mounted storage (LSF/SGE/SLURM)"}
+]},
+
+{id:"gpu",icon:"🎮",color:"#ec4899",zh:"GPU计算",en:"GPU Computing",zhDesc:"GPU加速/OpenCL/TensorFlow GPU/BLAS基准测试/图模型OpenMP",enDesc:"GPU acceleration, OpenCL, TensorFlow GPU, BLAS benchmarking & OpenMP",
+packages:[
+{name:"gcbd",zh:"BLAS与GPU基准测试框架(性能对比)",en:"Benchmarking framework for BLAS and GPUs"},
+{name:"OpenCL",zh:"OpenCL R接口(硬件无关GPU编程)",en:"R interface to OpenCL for vendor-neutral GPU programming"},
+{name:"tensorflow",zh:"TensorFlow API(CPU/GPU部署/深度学习)",en:"TensorFlow API: deploy computation on CPUs or GPUs"},
+{name:"BDgraph",zh:"贝叶斯图结构学习(OpenMP/C++并行)",en:"Bayesian graph structure learning via OpenMP & C++"},
+{name:"ssgraph",zh:"尖峰板条图模型(OpenMP/C++并行推理)",en:"Spike-and-slab graph model via OpenMP & C++"}
+]},
+
+{id:"bigmem",icon:"💾",color:"#10b981",zh:"大内存与核外数据",en:"Large Memory & Out-of-Memory Data",zhDesc:"内存映射/文件存储大数据/核外计算/共享内存/零拷贝并行读取",enDesc:"Memory-mapped, file-backed big data, out-of-core, shared memory & zero-copy parallel reads",
+packages:[
+{name:"biglm",zh:"增量式lm()/glm()(核外数据/大文件)",en:"Incremental lm() & glm() for out-of-memory datasets"},
+{name:"ff",zh:"文件存储大数据访问(内存映射/高层函数)",en:"File-based access to datasets too large for memory"},
+{name:"bigmemory",zh:"大矩阵内存/文件存储(跨进程共享/外部指针)",en:"Large matrices in memory or files, shareable across R processes"},
+{name:"data.table",zh:"高性能数据操作(数据库风格/键值索引/极速)",en:"High-performance data manipulation with database-like operations"},
+{name:"sqldf",zh:"SQL查询R数据框(内存数据库/无需导入导出)",en:"SQL queries on R data frames via in-memory databases"},
+{name:"LaF",zh:"大ASCII文件快速访问(csv/固定宽度格式)",en:"Fast access to large ASCII files in csv & fixed-width format"},
+{name:"bigstatsr",zh:"文件存储大矩阵(内存映射/PCA/稀疏方法)",en:"File-backed large matrices with PCA & sparse methods"},
+{name:"arrow",zh:"Apache Arrow内存格式(核外处理/流式/列存储)",en:"Apache Arrow in-memory format with out-of-memory processing"},
+{name:"shard",zh:"零拷贝并行读取(共享内存映射/Worker监控)",en:"Zero-copy parallel reads via shared memory-mapped segments"},
+{name:"mori",zh:"ALTREP惰性求值共享内存并行(序列化支持)",en:"Shared memory parallelism via lazy ALTREP materialization"},
+{name:"memshare",zh:"高效共享内存并行数据访问",en:"Efficient parallel data access via shared memory"}
+]},
+
+{id:"compiled",icon:"⚙️",color:"#6366f1",zh:"编译代码接口",en:"Compiled Code Interfaces",zhDesc:"C++/Fortran/Java/Python接口/Rcpp/内联编译/TBB并行/嵌入R",enDesc:"C++, Fortran, Java & Python interfaces, Rcpp, inline compilation, TBB & R embedding",
+packages:[
+{name:"Rcpp",zh:"C++与R无缝集成(对象传递/糖语法/自动转换)",en:"Seamless C++ & R integration with object transfer & sugar syntax"},
+{name:"inline",zh:"C/C++/Fortran内联编译(自动编译/链接/加载)",en:"Inline C, C++ & Fortran with auto compilation & linking"},
+{name:"RInside",zh:"R嵌入C++应用(直接数据传输/快速交互)",en:"Embed R into C++ applications for direct data transfer"},
+{name:"RcppParallel",zh:"Intel TBB+TinyThread(安全并发C++/R并行)",en:"Intel TBB & TinyThread for safe concurrent C++ within R"},
+{name:"rJava",zh:"Java低层接口(类似.Call()/JVM桥接)",en:"Low-level Java interface similar to .Call() for JVM bridging"},
+{name:"reticulate",zh:"Python接口(模块/类/函数/高性能Python包)",en:"Python interface: modules, classes & high-performance packages"},
+{name:"quickr",zh:"R函数→Fortran自动翻译编译(类型/形状声明)",en:"Auto-translate R functions with type/shape to Fortran & compile"}
+]},
+
+{id:"profiling",icon:"🔬",color:"#14b8a6",zh:"性能分析工具",en:"Profiling Tools",zhDesc:"Rprof可视化/内存分析/性能瓶颈定位/pprof格式/采样分析",enDesc:"Rprof visualization, memory analysis, bottleneck identification, pprof format & sampling",
+packages:[
+{name:"profvis",zh:"Rprof可视化分析(交互式火焰图/时间线)",en:"Interactive Rprof visualization with flame graphs & timeline"},
+{name:"proffer",zh:"Rprof→pprof可视化(火焰图/调用图/Web界面)",en:"Rprof to pprof visualization with flame graphs & web UI"},
+{name:"profmem",zh:"内存分析(R内存分配追踪/总量统计)",en:"Memory profiling via R memory allocation tracking"},
+{name:"proftools",zh:"Rprof工具集(调用图/热点分析/可视化)",en:"Rprof toolkit: call graphs, hotspots & visualization"},
+{name:"aprof",zh:"性能分析(代码行级瓶颈/优化建议)",en:"Line-level performance profiling with optimization suggestions"},
+{name:"profile",zh:"性能数据读写(多格式转换/pprof/Rprof)",en:"Read/write profiling data & convert among pprof & Rprof formats"}
+]},
+
+{id:"parallel_app",icon:"🚀",color:"#ef4444",zh:"并行应用",en:"Parallel Applications",zhDesc:"并行交叉验证/聚类/文本挖掘/贝叶斯MCMC/梯度提升/ODE求解",enDesc:"Parallel CV, clustering, text mining, Bayesian MCMC, gradient boosting & ODE solving",
+packages:[
+{name:"caret",zh:"并行化预测模型交叉验证/自助法(MPI/NWS)",en:"Parallelized cross-validation & bootstrap for predictive models"},
+{name:"xgboost",zh:"分布式梯度提升(Hadoop/SGE/MPI并行)",en:"Distributed gradient boosting on Hadoop, SGE & MPI"},
+{name:"pvclust",zh:"层次聚类多尺度自助法(snow/Rmpi)",en:"Hierarchical clustering via multiscale bootstraps"},
+{name:"tm",zh:"并行文本挖掘(snow/Rmpi/语料库处理)",en:"Parallelized text mining via snow & Rmpi"},
+{name:"Matching",zh:"多元/倾向得分匹配(并行snow)",en:"Multivariate & propensity score matching with snow"},
+{name:"bnlearn",zh:"贝叶斯网络结构学习(snow并行)",en:"Bayesian network structure learning with parallel snow"},
+{name:"dclone",zh:"数据克隆贝叶斯MCMC(JAGS/WinBUGS/并行snow)",en:"Data cloning Bayesian MCMC (JAGS, WinBUGS & snow)"},
+{name:"keras",zh:"高级神经网络API(GPU/快速实验/多后端)",en:"High-level neural networks API for fast GPU experimentation"},
+{name:"rxode2",zh:"并行ODE求解(OpenMP/多单元药代动力学)",en:"Parallel ODE solving via OpenMP for pharmacokinetics"},
+{name:"nlmixr2",zh:"非线性混合效应(rxode2并行ODE/群体PKPD)",en:"NLMM using parallel ODE solving from rxode2"},
+{name:"varSelRF",zh:"随机森林变量选择(并行snow/Rmpi)",en:"Parallel variable selection via random forests"},
+{name:"latentnet",zh:"潜位置聚类模型(snow并行)",en:"Latent position & cluster models with parallel snow"},
+{name:"peperr",zh:"并行预测误差估计(snow/重抽样)",en:"Parallelised prediction error estimation via snow resampling"},
+{name:"rgenoud",zh:"遗传优化(snow并行/导数利用)",en:"Genetic optimization using derivatives with snow"},
+{name:"pbapply",zh:"带进度条apply(多并行后端支持)",en:"Progress bar apply with multiple parallel backend support"},
+{name:"Sim.DiffProc",zh:"并行随机微分方程模拟(Itô/Stratonovich)",en:"Parallel SDE simulation (Itô & Stratonovich)"},
+{name:"mvnfast",zh:"快速多元正态生成(并行/sumo RNG)",en:"Fast parallel multivariate normal via sumo RNG"},
+{name:"orloca",zh:"运筹学选址分析(snow并行)",en:"Operations research locational analysis with snow"},
+{name:"pls",zh:"偏最小二乘(parallel包示例/并行交叉验证)",en:"Partial least squares with parallel package facilities"},
+{name:"Rborist",zh:"OpenMP随机森林(预测器级并行)",en:"OpenMP-based predictor-level parallelism for random forests"},
+{name:"h2o",zh:"分布式ML平台(GBM/GLM/深度学习/随机森林)",en:"Distributed ML platform: GBM, GLM, deep learning & RF"},
+{name:"randomForestSRC",zh:"OpenMP+MPI并行随机森林(生存/竞争风险)",en:"OpenMP & MPI parallel random forests for survival & competing risks"},
+{name:"parabar",zh:"并行进度条(多后端/可扩展)",en:"Progress bar for parallel applications with extensible backends"},
+{name:"doParabar",zh:"foreach parabar适配器(并行进度条)",en:"foreach parallel adapter for parabar backends"}
+]},
+
+{id:"hadoop",icon:"🗂️",color:"#64748b",zh:"分布式序列化",en:"Distributed Serialization",zhDesc:"Protocol Buffers/结构化数据序列化/MapReduce数据格式",enDesc:"Protocol Buffers, structured data serialization & MapReduce data formats",
+packages:[
+{name:"RProtoBuf",zh:"Google Protocol Buffers接口(结构化数据序列化)",en:"Google Protocol Buffers interface for structured data serialization"}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(245,158,11,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(245,158,11,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>

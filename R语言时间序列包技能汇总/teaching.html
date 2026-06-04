@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R统计教学包技能汇总 | R Teaching Statistics Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#f59e0b;--glow:rgba(245,158,11,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#f59e0b,#f97316,#14b8a6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(245,158,11,.2);border-color:rgba(245,158,11,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#f59e0b,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;box-shadow:0 4px 15px rgba(245,158,11,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(245,158,11,.15);color:#fcd34d;font-weight:600}
+.pkg-tag.more{background:rgba(249,115,22,.15);color:#fdba74}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#fcd34d}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.25);color:#fcd34d;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#fbbf24;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">🎓</span>
+<h1 data-zh="R统计教学包技能汇总" data-en="R Teaching Statistics Package Skills">R统计教学包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">60</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">8</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">5</div><div class="stat-label" data-zh="核心" data-en="Core">核心</div></div>
+<div class="stat-item"><div class="stat-num">2025</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/TeachingStatistics.html" target="_blank">CRAN Task View: Teaching Statistics</a></p>
+<p style="margin-top:6px" data-zh="2025 · R统计教学生态系统全景" data-en="2025 · R Teaching Statistics Ecosystem Overview">2025 · R统计教学生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"interactive",icon:"💻",color:"#f59e0b",zh:"交互式教学",en:"Interactive Teaching",zhDesc:"GUI界面/交互教程/控制台学习/R Markdown互动教程",enDesc:"GUI interfaces, interactive tutorials, console learning & R Markdown tutorials",
+packages:[
+{name:"Rcmdr",zh:"tcltk GUI点选界面，加载数据调用R函数，含插件扩展",en:"tcltk GUI point-and-click interface with plug-in extensions",core:true},
+{name:"swirl",zh:"R控制台交互式学习环境(EDA/推断/回归课程)，即时反馈",en:"Interactive R console learning with immediate feedback"},
+{name:"swirlify",zh:"教师创建和分享swirl课程的创作工具",en:"Author and share custom swirl courses"},
+{name:"mosaic",zh:"数学/统计/计算/建模广泛教学工具，模拟化随机推断",en:"Wide-range teaching tools with simulation-based inference",core:true},
+{name:"mosaicCalc",zh:"mosaic微积分教学配套包",en:"Companion to mosaic for calculus-related teaching"},
+{name:"learnr",zh:"R Markdown转互动教程(叙述/公式/练习/视频/Shiny组件)",en:"Turn R Markdown into interactive tutorials with exercises & Shiny"},
+{name:"xplain",zh:"统计函数输出定制化交互解释(XML格式含R代码)",en:"Bespoke interactive interpretations of statistics function output"},
+{name:"BetaBit",zh:"R控制台统计游戏(数据清洗/回归建模)",en:"Games for students in the R console (data-cleaning & regression)"}
+]},
+
+{id:"animation",icon:"🎬",color:"#f97316",zh:"动画与可视化演示",en:"Animation & Visual Demonstration",zhDesc:"统计概念动画/概率分布可视化/CLT/假设检验/回归演示",enDesc:"Statistical concept animations, probability visualization, CLT, hypothesis testing & regression demos",
+packages:[
+{name:"animation",zh:"统计/数据挖掘/机器学习动画(可导出GIF/PDF/HTML)",en:"Animations for statistics, data mining & ML (exportable)",core:true},
+{name:"gganimate",zh:"ggplot2动画渲染(GIF/MP4视频)",en:"Animate ggplot2 plots into GIF/MP4 videos"},
+{name:"smovie",zh:"统计概念电影: 概率分布/CLT/极值/Fisher变换/回归/假设检验",en:"Movies: distributions, CLT, extremes, Fisher transform, regression, hypothesis testing"},
+{name:"visualize",zh:"概率分布pdf/pmf图形+均值方差+区间着色",en:"Graphs of pdf/pmf with mean, variance & interval shading"},
+{name:"TeachingDemos",zh:"大量静态/交互统计演示(抛硬币/置信区间/CLT/MLE/回归)",en:"Wide range of static & interactive statistical demos"},
+{name:"distrTeach",zh:"CLT/大数定律图示(Tcl/Tk交互控件)",en:"CLT & Law of Large Numbers plots with Tcl/Tk widget"},
+{name:"visStatistics",zh:"自动选择最合适假设检验并可视化(决策树)",en:"Auto-select & visualize appropriate hypothesis test (decision tree)"}
+]},
+
+{id:"bayesian_teach",icon:"🎲",color:"#8b5cf6",zh:"贝叶斯教学",en:"Bayesian Teaching",zhDesc:"贝叶斯推断教学: 先验/似然/后验/预测检验/Shiny交互",enDesc:"Teaching Bayesian inference: prior, likelihood, posterior & predictive checking",
+packages:[
+{name:"LearnBayes",zh:"贝叶斯推断核心概念: 先验/似然/后验/预测推断/数据集",en:"Essential Bayesian inference: prior, likelihood, posterior & predictive"},
+{name:"shinybrms",zh:"Shiny界面brms贝叶斯回归(上传数据/设似然/设先验/推断后验)",en:"Shiny GUI for Bayesian regression via brms"},
+{name:"Bolstad",zh:"《Introduction to Bayesian Statistics》Bolstad & Curran配套",en:"Companion to Bolstad & Curran's Introduction to Bayesian Statistics"}
+]},
+
+{id:"experiment",icon:"🌾",color:"#10b981",zh:"实验设计与农业统计",en:"Experimental Design & Agricultural Statistics",zhDesc:"实验设计/分析/可视化，侧重农业田间试验",enDesc:"Design, analysis & visualization of experiments, esp. agricultural field trials",
+packages:[
+{name:"agricolae",zh:"统计实验设计与分析(农业田间试验)，可可视化",en:"Design & analysis of statistical experiments (agricultural field trials)"},
+{name:"agricolaeplotr",zh:"agricolae设计方案可视化",en:"Visualize designs constructed by agricolae"},
+{name:"LearningRlab",zh:"中学/大学基础统计教学(逐步解释+学生练习)",en:"Basic statistics teaching for secondary/baccalaureate students"}
+]},
+
+{id:"examination",icon:"📝",color:"#ef4444",zh:"考试与测评",en:"Examination & Assessment",zhDesc:"自动生成随机考试/在线练习/QTI标准/LaTeX随机化",enDesc:"Automatic random exam generation, online practice, QTI standard & LaTeX randomization",
+packages:[
+{name:"exams",zh:"Sweave/Rmd题库自动生成考试(多平台/自测/PDF自动阅卷)",en:"Auto exam generation from Sweave/Rmd pools, multi-platform & auto-marking",core:true},
+{name:"exams.forge",zh:"exams包练习题创建增强工具",en:"Further facilitates exercise creation based on exams package"},
+{name:"exams.forge.data",zh:"exams.forge配套数据包",en:"Data companion to exams.forge"},
+{name:"ProfessR",zh:"ASCII文本题库创建选择题考试(多版本随机化)",en:"Create multiple choice exams from ASCII pools, randomize versions"},
+{name:"rqti",zh:"QTI v2.1标准练习/考试(Rmd或S4类/OPAL学习管理系统)",en:"QTI v2.1 standard exercises & exams for OPAL LMS"},
+{name:"TexExamRandomizer",zh:"LaTeX exam文档类题目随机化+自动阅卷",en:"Randomize LaTeX exam questions & auto-mark answer spreadsheets"}
+]},
+
+{id:"intro_books",icon:"📖",color:"#06b6d4",zh:"入门与综合统计教材",en:"Introductory & General Statistics Textbooks",zhDesc:"入门统计/应用回归/现代统计推断/数据科学教材配套包",enDesc:"Intro stats, applied regression, modern inference & data science textbook companions",
+packages:[
+{name:"MASS",zh:"《Modern Applied Statistics with S》Venables & Ripley经典配套",en:"Companion to Modern Applied Statistics with S (Venables & Ripley)",core:true},
+{name:"ISwR",zh:"《Introductory Statistics with R》Dalgaard 2nd ed配套",en:"Companion to Introductory Statistics with R (Dalgaard)"},
+{name:"HSAUR3",zh:"《A Handbook of Statistical Analyses using R》3rd ed配套",en:"Companion to Handbook of Statistical Analyses using R, 3rd ed"},
+{name:"openintro",zh:"OpenIntro开源入门统计教材与资源",en:"Open-source textbooks & resources for introductory statistics"},
+{name:"moderndive",zh:"《ModernDive: Statistical Inference via Data Science》配套",en:"Companion to ModernDive: Statistical Inference via Data Science"},
+{name:"infer",zh:"moderndive配套tidyverse风格统计推断",en:"Tidyverse-friendly inference companion to moderndive"},
+{name:"LSTbook",zh:"《Lessons in Statistical Thinking》Kaplan 2024配套",en:"Companion to Lessons in Statistical Thinking (Kaplan 2024)"},
+{name:"HKRbook",zh:"《Introduction to Statistics》Härdle, Klinke & Rönz配套",en:"Companion to Introduction to Statistics (Härdle, Klinke & Rönz)"},
+{name:"liver",zh:"《Data Science Foundations and Machine Learning with R》Mohammadi 2025配套",en:"Companion to Data Science Foundations & ML with R (Mohammadi 2025)"},
+{name:"resampledata",zh:"《Mathematical Statistics with Resampling in R》2nd ed配套",en:"Companion to Mathematical Statistics with Resampling in R"},
+{name:"SMPracticals",zh:"《Statistical Models》Davison 2003配套实践",en:"Practicals for Statistical Models (Davison 2003)"},
+{name:"msos",zh:"《Multivariate Statistics: Old School》Marden配套(免费PDF)",en:"Companion to Multivariate Statistics: Old School (free PDF)"}
+]},
+
+{id:"regression_books",icon:"📐",color:"#14b8a6",zh:"回归与线性模型教材",en:"Regression & Linear Models Textbooks",zhDesc:"线性回归/广义线性模型/分类数据分析/多层级模型教材配套包",enDesc:"Linear regression, GLM, categorical data & multilevel models textbook companions",
+packages:[
+{name:"car",zh:"《An R Companion to Applied Regression》Fox & Weisberg配套",en:"Companion to R Companion to Applied Regression (Fox & Weisberg)"},
+{name:"carData",zh:"car包配套数据集",en:"Companion data package for car"},
+{name:"effects",zh:"car包配套效应显示",en:"Effect displays companion to car"},
+{name:"faraway",zh:"Faraway三本书: 实用回归/线性模型/扩展线性模型",en:"Faraway: Practical Regression, Linear Models & Extending Linear Model"},
+{name:"HH",zh:"《Statistical Analysis and Data Display》Heiberger & Holland 2nd ed配套",en:"Companion to Statistical Analysis & Data Display (Heiberger & Holland)"},
+{name:"MPV",zh:"《Introduction to Linear Regression Analysis》Montgomery等6th ed配套",en:"Companion to Introduction to Linear Regression Analysis (Montgomery et al.)"},
+{name:"regtools",zh:"《Statistical Regression and Classification》Matloff配套",en:"Companion to Statistical Regression & Classification (Matloff)"},
+{name:"arm",zh:"《Data Analysis Using Regression & Multilevel Models》Gelman & Hill配套",en:"Companion to Data Analysis Using Regression & Multilevel Models"},
+{name:"vcd",zh:"《Discrete Data Analysis with R》Friendly & Meyer配套",en:"Companion to Discrete Data Analysis with R (Friendly & Meyer)"},
+{name:"vcdExtra",zh:"vcd扩展(额外数据集和示例)",en:"Extension of vcd with additional datasets & examples"},
+{name:"CatDataAnalysis",zh:"《Categorical Data Analysis》Agresti 3rd ed配套",en:"Companion to Categorical Data Analysis (Agresti 3rd ed)"},
+{name:"Sleuth2",zh:"《The Statistical Sleuth》Ramsey & Schafer配套",en:"Companion to The Statistical Sleuth (Ramsey & Schafer)"},
+{name:"Sleuth3",zh:"《The Statistical Sleuth》更新版数据集",en:"Updated datasets for The Statistical Sleuth"},
+{name:"HRW",zh:"《Semiparametric Regression with R》Harezlak等配套",en:"Companion to Semiparametric Regression with R (Harezlak et al.)"}
+]},
+
+{id:"special_books",icon:"🔬",color:"#a855f7",zh:"专业领域教材",en:"Specialized Domain Textbooks",zhDesc:"生物统计/计量经济学/生物数据/DALEX模型解释等配套包",enDesc:"Biostatistics, econometrics, biological data & model interpretation companions",
+packages:[
+{name:"AER",zh:"《Applied Econometrics with R》Kleiber & Zeileis配套",en:"Companion to Applied Econometrics with R (Kleiber & Zeileis)"},
+{name:"wooldridge",zh:"《Introductory Econometrics》Wooldridge 7th ed配套",en:"Companion to Introductory Econometrics (Wooldridge 7th ed)"},
+{name:"abd",zh:"《The Analysis of Biological Data》Whitlock & Schluter 3rd ed配套",en:"Companion to Analysis of Biological Data (Whitlock & Schluter)"},
+{name:"ACSWR",zh:"《A Course in Statistics With R》Tattar等配套",en:"Companion to A Course in Statistics with R (Tattar et al.)"},
+{name:"asbio",zh:"《Foundational & Applied Statistics for Biologists》Aho配套",en:"Companion to Foundational & Applied Statistics for Biologists (Aho)"},
+{name:"DALEX",zh:"预测模型探索与解释(含教学案例)",en:"Explore & understand predictive models (teaching showcases)"}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(245,158,11,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(245,158,11,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>

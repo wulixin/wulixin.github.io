@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R时间序列包技能汇总 | R Time Series Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#3b82f6;--glow:rgba(59,130,246,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;box-shadow:0 4px 15px rgba(59,130,246,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(59,130,246,.15);color:#93c5fd;font-weight:600}
+.pkg-tag.more{background:rgba(139,92,246,.15);color:#c4b5fd}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#93c5fd}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.25);color:#93c5fd;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#60a5fa;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">📊</span>
+<h1 data-zh="R时间序列包技能汇总" data-en="R Time Series Package Skills">R时间序列包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">312</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">22</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">45+</div><div class="stat-label" data-zh="子主题" data-en="Sub-topics">子主题</div></div>
+<div class="stat-item"><div class="stat-num">2026</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://cran.r-project.org/web/views/TimeSeries.html" target="_blank">CRAN Task View: Time Series Analysis</a></p>
+<p style="margin-top:6px" data-zh="2026 · R时间序列生态系统全景" data-en="2026 · R Time Series Ecosystem Overview">2026 · R时间序列生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"basics",icon:"📊",color:"#3b82f6",zh:"基础与滚动统计",en:"Basics & Rolling Statistics",zhDesc:"时间序列基础处理、滚动统计计算与可视化",enDesc:"Time series basics, rolling statistics and visualization",packages:[
+{name:"forecast",zh:"经典预测框架",en:"Classic forecasting framework",core:true},
+{name:"zoo",zh:"规则/不规则时间序列基础设施",en:"Regular/irregular time series infrastructure",core:true},
+{name:"tsibble",zh:"整洁时间序列数据结构",en:"Tidy time series data structure",core:true},
+{name:"slider",zh:"滑动窗口函数",en:"Sliding window functions"},
+{name:"tbrf",zh:"基于时间的滚动函数",en:"Time-based rolling functions"},
+{name:"roll",zh:"高效滚动统计",en:"Efficient rolling statistics"},
+{name:"runner",zh:"灵活滚动计算",en:"Flexible rolling computations"},
+{name:"runstats",zh:"快速滚动统计量",en:"Fast running statistics"},
+{name:"data.table",zh:"高性能数据处理",en:"High-performance data processing"},
+{name:"dygraphs",zh:"交互式时间序列图表",en:"Interactive time series charts"},
+{name:"TSstudio",zh:"时间序列分析与可视化",en:"Time series analysis & visualization"},
+{name:"ggtime",zh:"ggplot2时间序列扩展",en:"ggplot2 time series extension"},
+{name:"gravitas",zh:"时间序列粒度分析",en:"Time series granularity analysis"},
+{name:"sugrrants",zh:"时间序列日历图",en:"Time series calendar plots"},
+{name:"fanplot",zh:"扇形预测图",en:"Fan plot for forecasts"},
+{name:"xiacf",zh:"交互式ACF图",en:"Interactive ACF plots"},
+{name:"tsutils",zh:"时间序列实用工具",en:"Time series utilities"},
+{name:"dCovTS",zh:"时间序列距离协方差",en:"Distance covariance for time series"},
+{name:"linevis",zh:"折线图可视化",en:"Line chart visualization"},
+{name:"ZRA",zh:"零膨胀滚动平均",en:"Zero-inflated rolling average"},
+{name:"gglinedensity",zh:"线密度图",en:"Line density plots"},
+{name:"tsibbletalk",zh:"交互式tsibble探索",en:"Interactive tsibble exploration"}
+]},
+{id:"times",icon:"🕐",color:"#06b6d4",zh:"时间与日期",en:"Times and Dates",zhDesc:"日期时间处理、日历系统与时区管理",enDesc:"Date-time processing, calendar systems & timezone management",packages:[
+{name:"lubridate",zh:"日期时间解析与运算",en:"Date-time parsing & arithmetic",core:true},
+{name:"clock",zh:"高精度日期时间工具",en:"High-precision date-time tools",core:true},
+{name:"chron",zh:"时间序列日期处理",en:"Time series date handling"},
+{name:"anytime",zh:"智能日期解析",en:"Smart date parsing"},
+{name:"timeDate",zh:"金融日历与节假日",en:"Financial calendars & holidays"},
+{name:"timechange",zh:"时区变更操作",en:"Timezone change operations"},
+{name:"almanac",zh:"业务日历调整",en:"Business calendar adjustments"},
+{name:"wktmo",zh:"周/月转换",en:"Week-to-month conversion"},
+{name:"qlcal",zh:"量化金融日历",en:"QuantLib calendars"},
+{name:"CFtime",zh:"气候数据时间框架",en:"Climate data time framework"},
+{name:"tempdisagg",zh:"时间序列时间拆分",en:"Temporal disaggregation"},
+{name:"TSdisaggregation",zh:"时间序列拆分方法",en:"TS disaggregation methods"},
+{name:"tsdisagg2",zh:"时间序列拆分方法2",en:"TS disaggregation methods 2"},
+{name:"disagmethod",zh:"拆分方法集合",en:"Disaggregation method collection"},
+{name:"parttime",zh:"部分时间解析",en:"Partial time parsing"},
+{name:"datetimeoffset",zh:"日期时间偏移",en:"Date-time offsets"},
+{name:"calcal",zh:"日历计算",en:"Calendar calculations"},
+{name:"era",zh:"地质年代向量",en:"Geological era vectors"},
+{name:"tis",zh:"时间序列日期工具",en:"Time series date utilities"},
+{name:"mondate",zh:"月末日期处理",en:"Month-end date handling"},
+{name:"tind",zh:"时间索引工具",en:"Time index tools"},
+{name:"aion",zh:"考古年代学",en:"Archaeological chronology"},
+{name:"VedicDateTime",zh:"吠陀历法",en:"Vedic calendar system"},
+{name:"jalcal",zh:"贾拉利历转换",en:"Jalali calendar conversion"}
+]},
+{id:"classes",icon:"🗂️",color:"#8b5cf6",zh:"时间序列类",en:"Time Series Classes",zhDesc:"时间序列数据结构与格式转换",enDesc:"Time series data structures & format conversion",packages:[
+{name:"xts",zh:"可扩展时间序列",en:"eXtensible time series",core:true},
+{name:"tsbox",zh:"时间序列类统一转换",en:"Unified TS class conversion",core:true},
+{name:"timetk",zh:"时间序列工具箱",en:"Time series toolkit"},
+{name:"data.table",zh:"高性能数据处理",en:"High-performance data processing"},
+{name:"collapse",zh:"高效数据转换",en:"Efficient data transformation"},
+{name:"tseries",zh:"时间序列分析与计算金融",en:"TS analysis & computational finance"},
+{name:"timeSeries",zh:"Rmetrics时间序列对象",en:"Rmetrics time series objects"},
+{name:"DTSg",zh:"数据表时间序列",en:"DataTable time series"},
+{name:"dtts",zh:"数据表时间序列工具",en:"DataTable TS tools"},
+{name:"mixtime",zh:"混合时间格式",en:"Mixed time formats"},
+{name:"tis",zh:"时间序列索引",en:"Time series indices"},
+{name:"tframe",zh:"时间序列框架",en:"Time series frames"}
+]},
+{id:"forecast",icon:"🔮",color:"#ec4899",zh:"预测与单变量建模",en:"Forecasting & Univariate Modeling",zhDesc:"时间序列预测、ARIMA/GARCH建模与状态空间模型",enDesc:"TS forecasting, ARIMA/GARCH modeling & state space models",packages:[
+{name:"fable",zh:"整洁预测框架",en:"Tidy forecasting framework",core:true},
+{name:"forecast",zh:"经典预测方法集",en:"Classic forecasting methods",core:true},
+{name:"tseries",zh:"时间序列分析与检验",en:"TS analysis & testing",core:true},
+{name:"modeltime",zh:"tidymodels时间序列接口",en:"tidymodels TS interface"},
+{name:"smooth",zh:"平滑预测模型",en:"Smoothing forecast models"},
+{name:"prophet",zh:"Facebook预测模型",en:"Facebook Prophet model"},
+{name:"fable.prophet",zh:"fable的Prophet接口",en:"fable Prophet interface"},
+{name:"rugarch",zh:"单变量GARCH模型",en:"Univariate GARCH models"},
+{name:"tsgarch",zh:"GARCH模型拟合",en:"GARCH model fitting"},
+{name:"fGarch",zh:"金融GARCH模型",en:"Financial GARCH models"},
+{name:"arfima",zh:"长记忆ARFIMA模型",en:"Long memory ARFIMA models"},
+{name:"fracdiff",zh:"分数差分估计",en:"Fractional differencing estimation"},
+{name:"bsts",zh:"贝叶斯结构时间序列",en:"Bayesian structural time series"},
+{name:"bssm",zh:"贝叶斯状态空间模型",en:"Bayesian state space models"},
+{name:"KFAS",zh:"卡尔曼滤波状态空间",en:"Kalman filter state space"},
+{name:"glarma",zh:"广义线性ARMA模型",en:"Generalized linear ARMA"},
+{name:"gasmodel",zh:"广义自回归评分模型",en:"Generalized autoregressive score"},
+{name:"legion",zh:"多变量分数模型",en:"Multivariate fraction models"},
+{name:"MAPA",zh:"多聚合预测算法",en:"Multiple aggregation prediction"},
+{name:"Rlgt",zh:"Rlgt预测模型",en:"Rlgt forecasting model"},
+{name:"tsissm",zh:"创新状态空间模型",en:"Innovations state space models"},
+{name:"forecTheta",zh:"Theta预测法",en:"Theta forecasting method"},
+{name:"bayesforecast",zh:"贝叶斯时间序列预测",en:"Bayesian TS forecasting"},
+{name:"robustarima",zh:"稳健ARIMA估计",en:"Robust ARIMA estimation"},
+{name:"UComp",zh:"不可观测分量模型",en:"Unobserved components models"},
+{name:"autostsm",zh:"自动结构时间序列",en:"Automatic structural TS"},
+{name:"statespacer",zh:"状态空间建模",en:"State space modeling"},
+{name:"tscount",zh:"计数时间序列模型",en:"Count time series models"},
+{name:"fableCount",zh:"fable计数模型",en:"fable count models"},
+{name:"ZIM",zh:"零膨胀混合模型",en:"Zero-inflated mixed models"},
+{name:"stochvol",zh:"随机波动率模型",en:"Stochastic volatility models"},
+{name:"imputeTS",zh:"时间序列缺失值插补",en:"TS missing value imputation"},
+{name:"imputeTestbench",zh:"插补方法基准测试",en:"Imputation benchmarking"},
+{name:"seer",zh:"自动预测选择",en:"Automatic forecast selection"},
+{name:"finnts",zh:"金融时间序列预测",en:"Financial TS forecasting"},
+{name:"forecastHybrid",zh:"混合预测模型",en:"Hybrid forecast models"},
+{name:"scoringRules",zh:"预测评分规则",en:"Forecast scoring rules"},
+{name:"scoringutils",zh:"预测评分工具",en:"Forecast scoring utilities"},
+{name:"tsoutliers",zh:"时间序列异常值检测",en:"TS outlier detection"},
+{name:"tsrobprep",zh:"稳健时间序列预处理",en:"Robust TS preprocessing"},
+{name:"ctbi",zh:"周期时间序列分解",en:"Cyclical TS decomposition"},
+{name:"funtimes",zh:"函数时间序列分析",en:"Functional TS analysis"},
+{name:"onlineforecast",zh:"在线预测模型",en:"Online forecasting models"},
+{name:"mvgam",zh:"多变量GAM模型",en:"Multivariate GAM models"},
+{name:"robustGarch",zh:"稳健GARCH模型",en:"Robust GARCH models"},
+{name:"nsarfima",zh:"非平稳ARFIMA",en:"Non-stationary ARFIMA"},
+{name:"garma",zh:"广义ARMA模型",en:"Generalized ARMA models"},
+{name:"esemifar",zh:"半参数ARFIMA估计",en:"Semi-parametric ARFIMA"},
+{name:"tfarima",zh:"传递函数ARIMA",en:"Transfer function ARIMA"},
+{name:"partsm",zh:"周期ARMA模型",en:"Periodic ARMA models"},
+{name:"perARMA",zh:"周期ARMA建模",en:"Periodic ARMA modeling"},
+{name:"pcts",zh:"周期相关时间序列",en:"Periodically correlated TS"},
+{name:"dlm",zh:"动态线性模型",en:"Dynamic linear models"},
+{name:"walker",zh:"贝叶斯动态线性模型",en:"Bayesian dynamic linear models"},
+{name:"diffusion",zh:"扩散过程建模",en:"Diffusion process modeling"},
+{name:"DIMORA",zh:"扩散模型创新采纳",en:"Diffusion model adoption"},
+{name:"tsgc",zh:"增长曲线建模",en:"Growth curve modeling"},
+{name:"portes",zh:"Portmanteau检验",en:"Portmanteau tests"},
+{name:"greybox",zh:"灰色预测模型工具箱",en:"Grey box modeling toolkit"},
+{name:"tstests",zh:"时间序列检验",en:"Time series tests"},
+{name:"sweep",zh:"broom时间序列扩展",en:"broom TS extension"},
+{name:"tsintermittent",zh:"间歇需求预测",en:"Intermittent demand forecasting"},
+{name:"gctsc",zh:"几何复杂度时间序列分类",en:"Geometric complexity TS classification"},
+{name:"coconots",zh:"计数时间序列建模",en:"Count time series modeling"},
+{name:"ZINARp",zh:"零膨胀INAR模型",en:"Zero-inflated INAR models"},
+{name:"spINAR",zh:"半参数INAR模型",en:"Semi-parametric INAR models"},
+{name:"PTSR",zh:"泊松整值时间序列",en:"Poisson integer-valued TS"},
+{name:"betaARMA",zh:"Beta ARMA回归模型",en:"Beta ARMA regression"},
+{name:"ModalForecast",zh:"模态预测方法",en:"Modal forecasting method"},
+{name:"ARCensReg",zh:"AR删失回归",en:"AR censored regression"},
+{name:"qarPI",zh:"分位数AR预测区间",en:"Quantile AR prediction intervals"},
+{name:"arima2",zh:"ARIMA模型估计改进",en:"Improved ARIMA estimation"},
+{name:"gsarima",zh:"广义季节ARIMA",en:"Generalized seasonal ARIMA"},
+{name:"tsPI",zh:"时间序列预测区间",en:"TS prediction intervals"},
+{name:"TSTutorial",zh:"时间序列教程",en:"Time series tutorial"},
+{name:"RobKF",zh:"稳健卡尔曼滤波",en:"Robust Kalman filter"},
+{name:"wex",zh:"天气衍生品建模",en:"Weather derivatives modeling"},
+{name:"bayesSSM",zh:"贝叶斯状态空间模型",en:"Bayesian state space models"},
+{name:"GlarmaVarSel",zh:"GLARMA变量选择",en:"GLARMA variable selection"},
+{name:"profoc",zh:"概率预测组合",en:"Probabilistic forecast combination"},
+{name:"ForeComp",zh:"预测组合方法",en:"Forecast combination methods"},
+{name:"multDM",zh:"多变量Diebold-Mariano检验",en:"Multivariate DM test"},
+{name:"modeltime.resample",zh:"modeltime重抽样",en:"modeltime resampling"},
+{name:"fabletools",zh:"fable核心工具",en:"fable core tools"},
+{name:"tsdataleaks",zh:"时间序列数据泄漏检测",en:"TS data leakage detection"},
+{name:"ltsa",zh:"线性时间序列算法",en:"Linear TS algorithms"},
+{name:"timsac",zh:"时间序列分析与控制",en:"TS analysis & control"},
+{name:"WeightedPortTest",zh:"加权Portmanteau检验",en:"Weighted portmanteau tests"},
+{name:"testcorr",zh:"相关性检验",en:"Correlation testing"},
+{name:"mtsdi",zh:"多变量时间序列插补",en:"Multivariate TS imputation"},
+{name:"mvLSWimpute",zh:"多变量LSW插补",en:"Multivariate LSW imputation"},
+{name:"itsmr",zh:"ITSM R接口",en:"ITSM R interface"}
+]},
+{id:"changepoint",icon:"🔀",color:"#f59e0b",zh:"变点检测",en:"Change Point Detection",zhDesc:"结构突变与变点检测方法",enDesc:"Structural breaks & change point detection methods",packages:[
+{name:"changepoint",zh:"变点检测方法",en:"Change point detection methods",core:true},
+{name:"strucchange",zh:"结构变化检验",en:"Structural change testing"},
+{name:"strucchangeRcpp",zh:"Rcpp加速结构变化",en:"Rcpp-accelerated structural change"},
+{name:"ecp",zh:"非参数变点检测",en:"Non-parametric change point detection"},
+{name:"changepoint.np",zh:"非参数变点",en:"Non-parametric change points"},
+{name:"changepoint.geo",zh:"几何变点检测",en:"Geometric change point detection"},
+{name:"changepointGA",zh:"遗传算法变点检测",en:"Genetic algorithm CP detection"},
+{name:"mosum",zh:"移动求和统计量",en:"Moving sum statistics"},
+{name:"Rbeast",zh:"贝叶斯变点检测",en:"Bayesian changepoint detection"},
+{name:"BayesChange",zh:"贝叶斯变点分析",en:"Bayesian change point analysis"},
+{name:"fastcpd",zh:"快速变点检测",en:"Fast change point detection"},
+{name:"breakfast",zh:"断点快速估计",en:"Breakpoint fast estimation"},
+{name:"rupturesRcpp",zh:"Rcppruptures接口",en:"Rcpp ruptures interface"},
+{name:"binsegRcpp",zh:"二分分割算法",en:"Binary segmentation algorithm"},
+{name:"fpop",zh:"最优分割算法",en:"Optimal partitioning algorithm"},
+{name:"jointseg",zh:"联合分割方法",en:"Joint segmentation methods"},
+{name:"trend",zh:"趋势与变点检测",en:"Trend & change point detection"},
+{name:"InspectChangepoint",zh:"高维变点检测",en:"High-dimensional CP detection"},
+{name:"CptNonPar",zh:"非参数变点",en:"Non-parametric change points"},
+{name:"VARcpDetectOnline",zh:"VAR在线变点检测",en:"VAR online CP detection"},
+{name:"changeS",zh:"变点检测统计量",en:"Change point statistics"},
+{name:"tidychangepoint",zh:"整洁变点检测",en:"Tidy change point detection"}
+]},
+{id:"frequency",icon:"〰️",color:"#10b981",zh:"频域分析",en:"Frequency Analysis",zhDesc:"谱分析、小波变换与频域方法",enDesc:"Spectral analysis, wavelets & frequency domain methods",packages:[
+{name:"multitaper",zh:"多锥谱估计",en:"Multi-taper spectral estimation",core:true},
+{name:"psd",zh:"功率谱密度估计",en:"Power spectral density estimation"},
+{name:"wavelets",zh:"离散小波变换",en:"Discrete wavelet transforms"},
+{name:"wavethresh",zh:"小波阈值处理",en:"Wavelet thresholding"},
+{name:"waveslim",zh:"小波信号处理",en:"Wavelet signal processing"},
+{name:"WaveletComp",zh:"小波分量分析",en:"Wavelet component analysis"},
+{name:"biwavelet",zh:"双小波分析",en:"Biwavelet analysis"},
+{name:"bspec",zh:"贝叶斯谱分析",en:"Bayesian spectral analysis"},
+{name:"beyondWhittle",zh:"超越Whittle谱估计",en:"Beyond Whittle spectral estimation"},
+{name:"regspec",zh:"回归谱估计",en:"Regression spectral estimation"},
+{name:"quantspec",zh:"分位数谱分析",en:"Quantile spectral analysis"},
+{name:"lomb",zh:"Lomb-Scargle周期图",en:"Lomb-Scargle periodogram"},
+{name:"spectral",zh:"谱分析方法",en:"Spectral analysis methods"},
+{name:"kza",zh:"Kolmogorov-Zurbenko滤波",en:"Kolmogorov-Zurbenko filter"},
+{name:"rhosa",zh:"高阶谱分析",en:"Higher-order spectral analysis"},
+{name:"peacots",zh:"峰值时间序列谱分析",en:"Peak TS spectral analysis"},
+{name:"mvLSW",zh:"多变量局部小浪",en:"Multivariate locally stationary wavelets"},
+{name:"locits",zh:"局部平稳时间序列",en:"Locally stationary TS"},
+{name:"forecastLSW",zh:"LSW预测",en:"LSW forecasting"},
+{name:"hwwntest",zh:"白噪声检验",en:"White noise tests"},
+{name:"wavScalogram",zh:"小波尺度图",en:"Wavelet scalograms"},
+{name:"CNLTtsa",zh:"复非线性小波阈值",en:"Complex nonlinear wavelet thresholding"},
+{name:"lpacf",zh:"局部偏自相关函数",en:"Local partial autocorrelation"},
+{name:"LSWPlib",zh:"LSW处理库",en:"LSW processing library"}
+]},
+{id:"decomp",icon:"🎛️",color:"#ef4444",zh:"分解与滤波",en:"Decomposition & Filtering",zhDesc:"趋势分解、滤波与信号提取方法",enDesc:"Trend decomposition, filtering & signal extraction",packages:[
+{name:"mFilter",zh:"宏观经济滤波方法",en:"Macro-economic filtering methods",core:true},
+{name:"Rssa",zh:"奇异谱分析",en:"Singular spectrum analysis"},
+{name:"EMD",zh:"经验模态分解",en:"Empirical mode decomposition"},
+{name:"robfilter",zh:"稳健滤波方法",en:"Robust filtering methods"},
+{name:"signal",zh:"信号处理工具",en:"Signal processing tools"},
+{name:"hpfilter",zh:"Hodrick-Prescott滤波",en:"Hodrick-Prescott filter"},
+{name:"neverhpfilter",zh:"替代HP滤波方法",en:"Alternatives to HP filter"},
+{name:"orbouli",zh:"Orban-Obouli分解",en:"Orban-Obouli decomposition"},
+{name:"smoots",zh:"非参数平滑趋势",en:"Non-parametric smooth trends"},
+{name:"trendseries",zh:"趋势序列分析",en:"Trend series analysis"},
+{name:"ArDec",zh:"自回归分解",en:"Autoregressive decomposition"},
+{name:"tsdecomp",zh:"时间序列分解",en:"Time series decomposition"},
+{name:"ASSA",zh:"高级奇异谱分析",en:"Advanced SSA"},
+{name:"hht",zh:"Hilbert-Huang变换",en:"Hilbert-Huang transform"},
+{name:"Rlibeemd",zh:"集成EMD方法",en:"Ensemble EMD methods"},
+{name:"sleekts",zh:"平滑时间序列",en:"Sleek time series"},
+{name:"jumps",zh:"跳跃检测与估计",en:"Jump detection & estimation"}
+]},
+{id:"seasonality",icon:"📅",color:"#6366f1",zh:"季节性",en:"Seasonality",zhDesc:"季节调整与季节性分析",enDesc:"Seasonal adjustment & seasonality analysis",packages:[
+{name:"seasonal",zh:"X-13ARIMA-SEATS季节调整",en:"X-13ARIMA-SEATS seasonal adjustment",core:true},
+{name:"RJDemetra",zh:"JDemetra+季节调整",en:"JDemetra+ seasonal adjustment",core:true},
+{name:"stlplus",zh:"STL分解增强版",en:"Enhanced STL decomposition"},
+{name:"stR",zh:"稳健季节趋势分解",en:"Robust seasonal-trend decomposition"},
+{name:"bfast",zh:"断点加季节趋势",en:"Breaks for additive season & trend"},
+{name:"seasonalview",zh:"季节调整可视化",en:"Seasonal adjustment visualization"},
+{name:"x12",zh:"X-12ARIMA接口",en:"X-12ARIMA interface"},
+{name:"rjd3toolkit",zh:"JDemetra 3工具包",en:"JDemetra 3 toolkit"},
+{name:"ggdemetra",zh:"季节调整ggplot扩展",en:"Seasonal adjustment ggplot extension"},
+{name:"deseats",zh:"非参数季节调整",en:"Non-parametric seasonal adjustment"},
+{name:"dsa",zh:"日历与季节调整",en:"Day & seasonal adjustment"},
+{name:"boiwsa",zh:"业务日调整",en:"Business day adjustment"},
+{name:"StructuralDecompose",zh:"结构分解",en:"Structural decomposition"},
+{name:"season",zh:"季节性分析工具",en:"Seasonality analysis tools"},
+{name:"seas",zh:"X-13接口",en:"X-13 interface"},
+{name:"sazedR",zh:"季节周期检测",en:"Seasonal period detection"},
+{name:"x13binary",zh:"X-13二进制文件",en:"X-13 binary files"}
+]},
+{id:"stationarity",icon:"⚖️",color:"#14b8a6",zh:"平稳性、单位根与协整",en:"Stationarity, Unit Roots & Cointegration",zhDesc:"单位根检验、协整关系与误差修正模型",enDesc:"Unit root tests, cointegration & error correction models",packages:[
+{name:"urca",zh:"单位根与协整检验",en:"Unit root & cointegration tests",core:true},
+{name:"tseries",zh:"时间序列检验",en:"Time series tests",core:true},
+{name:"uroot",zh:"季节单位根检验",en:"Seasonal unit root tests"},
+{name:"COINT",zh:"协整回归估计",en:"Cointegration regression estimation"},
+{name:"CADFtest",zh:"协整ADF检验",en:"Cointegration ADF test"},
+{name:"MultipleBubbles",zh:"多重泡沫检验",en:"Multiple bubble testing"},
+{name:"sTSD",zh:"半参数趋势平稳检验",en:"Semi-parametric trend stationarity"},
+{name:"boundedur",zh:"有界单位根检验",en:"Bounded unit root tests"},
+{name:"locits",zh:"局部平稳检验",en:"Local stationarity tests"},
+{name:"costat",zh:"协平稳分析",en:"Co-stationarity analysis"},
+{name:"LSTS",zh:"局部平稳时间序列",en:"Locally stationary TS"},
+{name:"pvars",zh:"面板向量自回归",en:"Panel VAR models"},
+{name:"makicoint",zh:"MAKI协整检验",en:"MAKI cointegration test"},
+{name:"tsDyn",zh:"非线性时间序列动态",en:"Nonlinear TS dynamics"},
+{name:"cointReg",zh:"协整回归",en:"Cointegration regression"},
+{name:"ecm",zh:"误差修正模型",en:"Error correction models"},
+{name:"FCVAR",zh:"分数协整VAR",en:"Fractional cointegration VAR"},
+{name:"ARDL",zh:"自回归分布滞后模型",en:"Autoregressive distributed lag"},
+{name:"nardl",zh:"非线性ARDL模型",en:"Nonlinear ARDL models"},
+{name:"ardl.nardl",zh:"ARDL/NARDL估计",en:"ARDL/NARDL estimation"},
+{name:"TrendLSW",zh:"趋势LSW估计",en:"Trend LSW estimation"}
+]},
+{id:"nonlinear",icon:"🌀",color:"#f97316",zh:"非线性时间序列",en:"Nonlinear Time Series",zhDesc:"门限模型、混沌系统与神经网络",enDesc:"Threshold models, chaos & neural networks",packages:[
+{name:"NTS",zh:"非线性时间序列分析",en:"Nonlinear TS analysis",core:true},
+{name:"tsDyn",zh:"非线性动态系统",en:"Nonlinear dynamic systems",core:true},
+{name:"TSLSTM",zh:"LSTM时间序列预测",en:"LSTM time series forecasting"},
+{name:"nnfor",zh:"神经网络预测",en:"Neural network forecasting"},
+{name:"GMDH",zh:"GMDH神经网络",en:"GMDH neural networks"},
+{name:"tseriesChaos",zh:"混沌时间序列分析",en:"Chaotic TS analysis"},
+{name:"DChaos",zh:"混沌动态估计",en:"Chaotic dynamics estimation"},
+{name:"mixAR",zh:"混合自回归模型",en:"Mixture autoregressive models"},
+{name:"uGMAR",zh:"高斯混合AR模型",en:"Gaussian mixture AR models"},
+{name:"MSwM",zh:"马尔可夫切换模型",en:"Markov switching models"},
+{name:"depmixS4",zh:"依存混合模型",en:"Dependent mixture models"},
+{name:"EXPAR",zh:"指数自回归模型",en:"Exponential AR models"},
+{name:"EXPARMA",zh:"指数ARMA模型",en:"Exponential ARMA models"},
+{name:"bentcableAR",zh:"弯折线自回归",en:"Bent-cable autoregression"},
+{name:"BAYSTAR",zh:"贝叶斯门限AR",en:"Bayesian threshold AR"},
+{name:"setartree",zh:"半参数树模型",en:"Semi-parametric tree models"},
+{name:"tseriesTARMA",zh:"门限ARMA模型",en:"Threshold ARMA models"},
+{name:"NlinTS",zh:"非线性时间序列",en:"Nonlinear time series"},
+{name:"narfima",zh:"非线性ARFIMA模型",en:"Nonlinear ARFIMA models"},
+{name:"TSLSTMplus",zh:"增强LSTM预测",en:"Enhanced LSTM forecasting"},
+{name:"TSANN",zh:"人工神经网络时间序列",en:"ANN time series"},
+{name:"echos",zh:"回声状态网络",en:"Echo state networks"},
+{name:"xpect",zh:"期望动态分析",en:"Expectation dynamics analysis"},
+{name:"fNonlinear",zh:"金融非线性模型",en:"Financial nonlinear models"},
+{name:"tseriesEntropy",zh:"时间序列熵分析",en:"TS entropy analysis"},
+{name:"nlts",zh:"非线性时间序列",en:"Nonlinear time series"},
+{name:"nonlinearTseries",zh:"非线性时间序列分析",en:"Nonlinear TS analysis"}
+]},
+{id:"entropy",icon:"🔬",color:"#a855f7",zh:"熵分析",en:"Entropy",zhDesc:"信息熵与转移熵分析",enDesc:"Information entropy & transfer entropy analysis",packages:[
+{name:"RTransferEntropy",zh:"转移熵检验",en:"Transfer entropy testing"},
+{name:"tseriesEntropy",zh:"时间序列熵估计",en:"TS entropy estimation"},
+{name:"TSEntropies",zh:"时间序列熵方法集",en:"TS entropy methods collection"}
+]},
+{id:"dynamic",icon:"📈",color:"#0ea5e9",zh:"动态回归模型",en:"Dynamic Regression Models",zhDesc:"分布滞后与动态回归建模",enDesc:"Distributed lag & dynamic regression modeling",packages:[
+{name:"dynlm",zh:"动态线性回归",en:"Dynamic linear regression",core:true},
+{name:"dyn",zh:"动态回归工具",en:"Dynamic regression tools"},
+{name:"dlm",zh:"动态线性模型",en:"Dynamic linear models"},
+{name:"bsts",zh:"贝叶斯结构时间序列",en:"Bayesian structural time series"},
+{name:"walker",zh:"贝叶斯动态模型",en:"Bayesian dynamic models"},
+{name:"dLagM",zh:"分布滞后模型",en:"Distributed lag models"},
+{name:"dlnm",zh:"分布式滞后非线性模型",en:"Distributed lag nonlinear models"},
+{name:"fastTS",zh:"快速时间序列回归",en:"Fast time series regression"},
+{name:"crosslag",zh:"交叉滞后分析",en:"Cross-lagged analysis"},
+{name:"dlmtree",zh:"分布式滞后树模型",en:"Distributed lag tree models"},
+{name:"greybox",zh:"灰色模型工具箱",en:"Grey box model toolkit"},
+{name:"tpr",zh:"时间序列预测回归",en:"TS predictive regression"},
+{name:"sym.arma",zh:"对称ARMA模型",en:"Symmetric ARMA models"},
+{name:"aplms",zh:"自适应LMS滤波",en:"Adaptive LMS filtering"}
+]},
+{id:"transformer",icon:"🤖",color:"#e11d48",zh:"预训练Transformer模型",en:"Pre-trained Transformer Models",zhDesc:"基于预训练Transformer的时间序列预测",enDesc:"Pre-trained transformer-based TS forecasting",packages:[
+{name:"nixtlar",zh:"Nixtla TimeGPT接口",en:"Nixtla TimeGPT interface"}
+]},
+{id:"multivariate",icon:"🕸️",color:"#8b5cf6",zh:"多变量时间序列模型",en:"Multivariate Time Series Models",zhDesc:"VAR/VECM、因子模型与状态空间方法",enDesc:"VAR/VECM, factor models & state space methods",packages:[
+{name:"MTS",zh:"多变量时间序列分析",en:"Multivariate TS analysis",core:true},
+{name:"vars",zh:"向量自回归模型",en:"Vector autoregression",core:true},
+{name:"bigtime",zh:"大维时间序列",en:"Large-dimensional TS"},
+{name:"BigVAR",zh:"大维VAR模型",en:"Large VAR models"},
+{name:"svars",zh:"结构VAR模型",en:"Structural VAR models"},
+{name:"FCVAR",zh:"分数协整VAR",en:"Fractional cointegration VAR"},
+{name:"dfms",zh:"动态因子模型",en:"Dynamic factor models"},
+{name:"KFAS",zh:"卡尔曼滤波状态空间",en:"Kalman filter state space"},
+{name:"FKF",zh:"快速卡尔曼滤波",en:"Fast Kalman filter"},
+{name:"FKF.SP",zh:"单精度快速卡尔曼",en:"Single-precision fast Kalman"},
+{name:"MARSS",zh:"多变量AR状态空间",en:"Multivariate AR state space"},
+{name:"pomp",zh:"部分观测马尔可夫过程",en:"Partially observed Markov processes"},
+{name:"bvarsv",zh:"贝叶斯VAR随机波动",en:"Bayesian VAR stochastic volatility"},
+{name:"bvartools",zh:"贝叶斯VAR工具",en:"Bayesian VAR tools"},
+{name:"BVAR",zh:"贝叶斯向量自回归",en:"Bayesian vector autoregression"},
+{name:"bayesianVARs",zh:"贝叶斯VAR模型集",en:"Bayesian VAR models collection"},
+{name:"bsvars",zh:"贝叶斯结构VAR",en:"Bayesian structural VAR"},
+{name:"bsvarSIGNs",zh:"符号约束贝叶斯SVAR",en:"Sign-restricted Bayesian SVAR"},
+{name:"bpvars",zh:"贝叶斯面板VAR",en:"Bayesian panel VAR"},
+{name:"FAVAR",zh:"因子增广VAR",en:"Factor-augmented VAR"},
+{name:"BGVAR",zh:"贝叶斯全局VAR",en:"Bayesian global VAR"},
+{name:"mlVAR",zh:"多层级VAR",en:"Multi-level VAR"},
+{name:"gmvarkit",zh:"高斯混合VAR",en:"Gaussian mixture VAR"},
+{name:"GNAR",zh:"图网络AR模型",en:"Graph network AR models"},
+{name:"graphicalVAR",zh:"图VAR模型",en:"Graphical VAR models"},
+{name:"NetVAR",zh:"网络VAR模型",en:"Network VAR models"},
+{name:"tsnet",zh:"时间序列网络估计",en:"TS network estimation"},
+{name:"sstvars",zh:"半参数结构VAR",en:"Semi-parametric structural VAR"},
+{name:"VARshrink",zh:"收缩VAR估计",en:"Shrinkage VAR estimation"},
+{name:"VAR.etp",zh:"VAR估计与预测",en:"VAR estimation & prediction"},
+{name:"mtarm",zh:"多门限AR模型",en:"Multi-threshold AR models"},
+{name:"mAr",zh:"混合自回归",en:"Mixture autoregression"},
+{name:"NVAR",zh:"非线性VAR",en:"Nonlinear VAR"},
+{name:"quadVAR",zh:"二次VAR模型",en:"Quadratic VAR models"},
+{name:"factorstochvol",zh:"因子随机波动率",en:"Factor stochastic volatility"},
+{name:"tsmarch",zh:"时间序列波动建模",en:"TS volatility modeling"},
+{name:"sparseDFM",zh:"稀疏动态因子模型",en:"Sparse dynamic factor models"},
+{name:"bayesdfa",zh:"贝叶斯动态因子分析",en:"Bayesian dynamic factor analysis"},
+{name:"sufficientForecasting",zh:"充分预测方法",en:"Sufficient forecasting"},
+{name:"ForeCA",zh:"预测成分分析",en:"Forecastable components analysis"},
+{name:"HDTSA",zh:"高维时间序列分析",en:"High-dimensional TS analysis"},
+{name:"freqdom",zh:"频域运算",en:"Frequency domain operations"},
+{name:"tsBSS",zh:"时间序列盲源分离",en:"TS blind source separation"},
+{name:"sdrt",zh:"子空间差分回归",en:"Subspace differential regression"},
+{name:"MultiGlarmaVarSel",zh:"多变量GLARMA变量选择",en:"Multivariate GLARMA var selection"},
+{name:"mbsts",zh:"多变量贝叶斯结构时间序列",en:"Multivariate Bayesian structural TS"},
+{name:"dynamite",zh:"动态边际模型",en:"Dynamic marginal models"},
+{name:"gdpc",zh:"广义动态主成分",en:"Generalized dynamic principal components"},
+{name:"mgm",zh:"混合图模型",en:"Mixed graphical models"},
+{name:"fnets",zh:"因子网络估计",en:"Factor network estimation"},
+{name:"flap",zh:"功能线性预测",en:"Functional linear prediction"},
+{name:"kalmanfilter",zh:"卡尔曼滤波器",en:"Kalman filter"},
+{name:"grangersearch",zh:"Granger因果搜索",en:"Granger causality search"},
+{name:"mvgam",zh:"多变量GAM模型",en:"Multivariate GAM models"}
+]},
+{id:"largescale",icon:"📚",color:"#22d3ee",zh:"大规模时间序列分析",en:"Large-Scale TS Analysis",zhDesc:"特征提取、聚类与分层预测",enDesc:"Feature extraction, clustering & hierarchical forecasting",packages:[
+{name:"feasts",zh:"时间序列特征提取",en:"TS feature extraction",core:true},
+{name:"tsfeatures",zh:"时间序列特征计算",en:"TS feature computation",core:true},
+{name:"hts",zh:"分层时间序列预测",en:"Hierarchical TS forecasting",core:true},
+{name:"fable",zh:"整洁预测框架",en:"Tidy forecasting framework"},
+{name:"dtwclust",zh:"DTW时间序列聚类",en:"DTW time series clustering"},
+{name:"thief",zh:"分层时间序列预测",en:"Temporal hierarchical forecasting"},
+{name:"FoReco",zh:"一致分层预测",en:"Coherent forecast reconciliation"},
+{name:"Rcatch22",zh:"catch22时间序列特征",en:"catch22 TS features"},
+{name:"theft",zh:"时间序列特征工具",en:"TS feature tools"},
+{name:"TSrepr",zh:"时间序列表示方法",en:"TS representation methods"},
+{name:"BNPTSclust",zh:"BNP时间序列聚类",en:"BNP TS clustering"},
+{name:"pdc",zh:"置换分布聚类",en:"Permutation distribution clustering"},
+{name:"otsfeatures",zh:"有序时间序列特征",en:"Ordinal TS features"},
+{name:"theftdlc",zh:"深度学习特征比较",en:"Deep learning feature comparison"},
+{name:"FoCo2",zh:"预测组合方法",en:"Forecast combination methods"},
+{name:"FoRecoML",zh:"机器学习分层预测",en:"ML hierarchical forecasting"},
+{name:"bayesRecon",zh:"贝叶斯分层预测调整",en:"Bayesian forecast reconciliation"},
+{name:"htsDegenerateR",zh:"退化分层时间序列",en:"Degenerate hierarchical TS"}
+]},
+{id:"dtw",icon:"🔄",color:"#fb923c",zh:"动态时间规整",en:"Dynamic Time Warping",zhDesc:"DTW距离计算与时间序列对齐",enDesc:"DTW distance computation & time series alignment",packages:[
+{name:"dtw",zh:"动态时间规整算法",en:"Dynamic time warping algorithm",core:true},
+{name:"ptw",zh:"峰值对齐规整",en:"Peak alignment warping"},
+{name:"rucrdtw",zh:"UCR DTW加速",en:"UCR DTW acceleration"},
+{name:"IncDTW",zh:"增量DTW计算",en:"Incremental DTW computation"},
+{name:"twdtw",zh:"时间加权DTW",en:"Time-weighted DTW"}
+]},
+{id:"functional",icon:"📐",color:"#34d399",zh:"函数型时间序列",en:"Functional Time Series",zhDesc:"函数型数据分析与时间序列预测",enDesc:"Functional data analysis & TS forecasting",packages:[
+{name:"ftsa",zh:"函数型时间序列分析",en:"Functional TS analysis",core:true},
+{name:"NTS",zh:"非线性时间序列分析",en:"Nonlinear TS analysis"},
+{name:"Rsfar",zh:"函数型自回归模型",en:"Functional autoregressive models"},
+{name:"fdaACF",zh:"函数型自相关分析",en:"Functional autocorrelation analysis"},
+{name:"STFTS",zh:"时空函数型时间序列",en:"Spatio-temporal functional TS"},
+{name:"hdftsa",zh:"高维函数型时间序列",en:"High-dimensional functional TS"}
+]},
+{id:"matrix",icon:"🧮",color:"#c084fc",zh:"矩阵与张量时间序列",en:"Matrix & Tensor-Valued TS",zhDesc:"矩阵值与张量值时间序列建模",enDesc:"Matrix & tensor-valued TS modeling",packages:[
+{name:"MEFM",zh:"矩阵因子模型",en:"Matrix factor models"},
+{name:"tensorTS",zh:"张量时间序列",en:"Tensor time series"},
+{name:"TensorPreAve",zh:"张量预平均估计",en:"Tensor pre-averaging estimation"},
+{name:"RTFA",zh:"稳健张量因子分析",en:"Robust tensor factor analysis"}
+]},
+{id:"continuous",icon:"🌊",color:"#f472b6",zh:"连续时间模型",en:"Continuous Time Models",zhDesc:"连续时间随机过程与微分方程",enDesc:"Continuous-time stochastic processes & SDEs",packages:[
+{name:"cts",zh:"连续时间AR模型",en:"Continuous-time AR models"},
+{name:"carfima",zh:"连续ARFIMA模型",en:"Continuous ARFIMA models"},
+{name:"sde",zh:"随机微分方程模拟",en:"Stochastic differential equation simulation"},
+{name:"yuima",zh:"统一SDE推断框架",en:"Unified SDE inference framework"},
+{name:"Sim.DiffProc",zh:"扩散过程模拟",en:"Diffusion process simulation"},
+{name:"resde",zh:"随机微分方程估计",en:"SDE estimation"}
+]},
+{id:"resampling",icon:"🎰",color:"#fbbf24",zh:"重抽样",en:"Resampling",zhDesc:"Bootstrap方法与块抽样",enDesc:"Bootstrap methods & block sampling",packages:[
+{name:"boot",zh:"Bootstrap重抽样",en:"Bootstrap resampling",core:true},
+{name:"tseries",zh:"时间序列检验",en:"Time series tests"},
+{name:"meboot",zh:"最大熵Bootstrap",en:"Maximum entropy bootstrap"},
+{name:"blocklength",zh:"块长度选择",en:"Block length selection"},
+{name:"BootPR",zh:"Bootstrap预测区间",en:"Bootstrap prediction intervals"},
+{name:"bootUR",zh:"Bootstrap单位根检验",en:"Bootstrap unit root tests"}
+]},
+{id:"data",icon:"💾",color:"#2dd4bf",zh:"时间序列数据",en:"Time Series Data",zhDesc:"数据集获取与时间序列生成",enDesc:"Dataset access & time series generation",packages:[
+{name:"tsibbledata",zh:"整洁时间序列数据集",en:"Tidy TS datasets",core:true},
+{name:"gratis",zh:"时间序列生成器",en:"TS generator",core:true},
+{name:"fredr",zh:"FRED数据库接口",en:"FRED database interface"},
+{name:"rdbnomics",zh:"DBnomics数据接口",en:"DBnomics data interface"},
+{name:"fpp3",zh:"预测原理与实践数据",en:"Forecasting Principles data"},
+{name:"astsa",zh:"应用统计时间序列数据",en:"Applied statistical TS data"},
+{name:"TSA",zh:"时间序列分析数据",en:"TS analysis data"},
+{name:"FinTS",zh:"金融时间序列数据",en:"Financial TS data"},
+{name:"Mcomp",zh:"M竞赛数据集",en:"M-competition datasets"},
+{name:"pdfetch",zh:"公共数据获取",en:"Public data fetching"},
+{name:"synthesis",zh:"合成时间序列生成",en:"Synthetic TS generation"},
+{name:"tssim",zh:"时间序列模拟",en:"TS simulation"},
+{name:"readabs",zh:"澳大利亚统计局数据",en:"Australian Bureau of Statistics data"},
+{name:"bbk",zh:"德国联邦银行数据",en:"Bundesbank data"},
+{name:"ecb",zh:"欧洲央行数据",en:"ECB data"},
+{name:"dataseries",zh:"瑞士时间序列数据",en:"Swiss time series data"},
+{name:"influxdbr",zh:"InfluxDB接口",en:"InfluxDB interface"},
+{name:"butterfly",zh:"蝴蝶数据集",en:"Butterfly datasets"},
+{name:"reviser",zh:"数据修订分析",en:"Data revision analysis"},
+{name:"fpp2",zh:"预测原理数据(2版)",en:"Forecasting Principles data (v2)"},
+{name:"expsmooth",zh:"指数平滑数据集",en:"Exponential smoothing datasets"},
+{name:"fma",zh:"预测方法与应用数据",en:"Forecasting Methods data"},
+{name:"tswge",zh:"时间序列分析与预测数据",en:"TS analysis & forecasting data"},
+{name:"AER",zh:"应用计量经济学数据",en:"Applied econometrics data"},
+{name:"Ecdat",zh:"计量经济学数据集",en:"Econometrics datasets"},
+{name:"Tcomp",zh:"旅游竞赛数据",en:"Tourism competition data"},
+{name:"bundesbank",zh:"德国联邦银行数据",en:"Bundesbank data"},
+{name:"africamonitor",zh:"非洲监测数据",en:"Africa monitoring data"},
+{name:"ugatsdb",zh:"乌干达时间序列数据库",en:"Uganda TS database"},
+{name:"samadb",zh:"南美宏观数据库",en:"South America macro database"},
+{name:"BLSloadR",zh:"美国劳工统计局数据",en:"Bureau of Labor Statistics data"},
+{name:"ifo",zh:"IFO商业景气数据",en:"IFO business climate data"},
+{name:"tsdb",zh:"时间序列数据库接口",en:"TS database interface"},
+{name:"gseries",zh:"G系列数据工具",en:"G-series data tools"}
+]},
+{id:"misc",icon:"🧩",color:"#94a3b8",zh:"其他",en:"Miscellaneous",zhDesc:"其他时间序列相关工具与包",enDesc:"Other time series related tools & packages",packages:[
+{name:"gsignal",zh:"信号处理工具箱",en:"Signal processing toolbox"},
+{name:"complex",zh:"复数时间序列",en:"Complex time series"},
+{name:"paleoTS",zh:"古生物学时间序列",en:"Paleontological time series"},
+{name:"pastecs",zh:"空间与时间序列分析",en:"Spatial & TS analysis"},
+{name:"surveillance",zh:"流行病学监测",en:"Epidemiological surveillance"},
+{name:"PSF",zh:"模式序列预测",en:"Pattern sequence forecasting"},
+{name:"RSEIS",zh:"地震时间序列分析",en:"Seismic TS analysis"},
+{name:"rts",zh:"实时时间序列",en:"Real-time time series"},
+{name:"spTimer",zh:"时空建模",en:"Spatio-temporal modeling"},
+{name:"Tides",zh:"潮汐数据分析",en:"Tidal data analysis"},
+{name:"tsfknn",zh:"KNN时间序列预测",en:"KNN TS forecasting"},
+{name:"tsModel",zh:"时间序列建模工具",en:"TS modeling tools"},
+{name:"ensembleBMA",zh:"集合贝叶斯模型平均",en:"Ensemble Bayesian model averaging"},
+{name:"CovEsts",zh:"协方差估计",en:"Covariance estimation"},
+{name:"RMAWGEN",zh:"多变量天气生成器",en:"Multivariate weather generator"},
+{name:"RGENERATE",zh:"时间序列生成工具",en:"TS generation tools"}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(59,130,246,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(59,130,246,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>

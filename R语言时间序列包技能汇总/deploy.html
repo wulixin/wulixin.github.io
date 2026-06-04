@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R模型部署包技能汇总 | R Model Deployment Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#0ea5e9;--glow:rgba(14,165,233,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#0ea5e9,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(14,165,233,.2);border-color:rgba(14,165,233,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#0ea5e9,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#0ea5e9,#10b981);color:#fff;box-shadow:0 4px 15px rgba(14,165,233,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(14,165,233,.15);color:#7dd3fc;font-weight:600}
+.pkg-tag.more{background:rgba(16,185,129,.15);color:#6ee7b7}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#7dd3fc}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.3);color:#7dd3fc;font-weight:600}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:12px;border-top:1px solid var(--border)}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:768px){
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.stats-bar{gap:16px}
+.stat-num{font-size:22px}
+.logo h1{font-size:16px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">🚀</span>
+<h1 data-zh="R模型部署包技能汇总" data-en="R Model Deployment Package Skills">R模型部署包技能汇总</h1>
+</div>
+<button class="lang-btn" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">9</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">29</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">4</div><div class="stat-label" data-zh="核心包" data-en="Core Packages">核心包</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" placeholder="搜索包名或关键词..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡" data-en="Cards">技能卡</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Table">包列表</button>
+</div>
+
+<div class="view-container">
+<div id="network-view" class="view active">
+<svg id="network-svg"></svg>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div id="cards-view" class="view"></div>
+<div id="table-view" class="view"></div>
+</div>
+
+<footer>
+<p>数据来源: <a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/ModelDeployment.html" target="_blank">CRAN Task View: Model Deployment</a> | 清华大学开源软件镜像站</p>
+<p style="margin-top:4px">Powered by D3.js v7 | R模型部署包技能汇总 © 2026</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div class="modal-header">
+<span class="modal-icon" id="modal-icon"></span>
+<span class="modal-title" id="modal-title"></span>
+</div>
+<div class="modal-desc" id="modal-desc"></div>
+<div class="modal-pkgs" id="modal-pkgs"></div>
+</div>
+</div>
+
+<script>
+let lang='zh';
+const categories=[
+{id:'pmml',icon:'📄',color:'#0ea5e9',zh:'PMML模型交换格式',en:'PMML Model Exchange Format',zhDesc:'基于XML的预测模型标记语言，实现模型跨平台共享与部署',enDesc:'XML-based Predictive Model Markup Language for cross-platform model sharing and deployment',
+packages:[
+{name:'pmml',zh:'PMML生成主接口(支持多种模型)',en:'PMML generation main interface (multi-model support)',core:true},
+{name:'arules',zh:'关联规则挖掘(频繁项集→PMML输出)',en:'Association rule mining (frequent itemsets→PMML output)'},
+{name:'arulesSequences',zh:'arules序列模式扩展包',en:'arules sequential pattern extension'},
+{name:'arulesCBA',zh:'基于关联规则的分类器(CBA)',en:'Association rule-based classifier (CBA)'}
+]},
+
+{id:'mojo',icon:'☕',color:'#22c55e',zh:'POJO/MOJO模型格式',en:'POJO/MOJO Model Format',zhDesc:'H2O模型导出为Java对象，嵌入任意Java环境进行低延迟推理',enDesc:'H2O models exported as Java objects for low-latency inference in any Java environment',
+packages:[
+{name:'h2o',zh:'H2O分布式ML平台(GLM/DRF/XGBoost→MOJO)',en:'H2O distributed ML platform (GLM/DRF/XGBoost→MOJO)',core:true}
+]},
+
+{id:'tensorflow',icon:'🧠',color:'#8b5cf6',zh:'TensorFlow深度学习部署',en:'TensorFlow Deep Learning Deployment',zhDesc:'TensorFlow模型训练与SavedModel/TFLite格式部署，支持移动端和边缘设备',enDesc:'TensorFlow model training and SavedModel/TFLite deployment for mobile and edge devices',
+packages:[
+{name:'tensorflow',zh:'TensorFlow R接口(完整API访问)',en:'TensorFlow R interface (full API access)',core:true},
+{name:'tfestimators',zh:'TF高级API(Estimator/自定义网络)',en:'TF high-level API (Estimator/custom networks)'},
+{name:'keras',zh:'Keras高级神经网络API',en:'Keras high-level neural network API'}
+]},
+
+{id:'onnx',icon:'🔄',color:'#f59e0b',zh:'ONNX模型互操作',en:'ONNX Model Interoperability',zhDesc:'开放神经网络交换格式，支持TF/PyTorch/MXNet等框架间模型转换',enDesc:'Open Neural Network Exchange format for model conversion between TF/PyTorch/MXNet etc.',
+packages:[
+{name:'onnx',zh:'ONNX接口(跨框架模型转换)',en:'ONNX interface (cross-framework model conversion)'}
+]},
+
+{id:'gbdt',icon:'🌳',color:'#10b981',zh:'GBDT序列化部署',en:'GBDT Serialization Deployment',zhDesc:'梯度提升决策树模型序列化为跨平台格式，供Spark/Dask/treelite等外部系统推理',enDesc:'Gradient boosted decision trees serialized for external inference by Spark/Dask/treelite',
+packages:[
+{name:'xgboost',zh:'XGBoost模型序列化(跨平台文本/二进制)',en:'XGBoost model serialization (cross-platform text/binary)',core:true},
+{name:'lightgbm',zh:'LightGBM模型序列化(跨平台可用)',en:'LightGBM model serialization (cross-platform compatible)'}
+]},
+
+{id:'cloud',icon:'☁️',color:'#06b6d4',zh:'云端平台部署',en:'Cloud Platform Deployment',zhDesc:'模型部署到Google Cloud ML、Domino等云平台，支持版本管理与监控',enDesc:'Model deployment to Google Cloud ML, Domino etc. with versioning and monitoring',
+packages:[
+{name:'vetiver',zh:'模型版本管理/部署/监控(MLOps工具链)',en:'Model versioning/deployment/monitoring (MLOps toolchain)'},
+{name:'cloudml',zh:'Google Cloud ML Engine部署接口',en:'Google Cloud ML Engine deployment interface'},
+{name:'tfdeploy',zh:'TF模型本地测试服务器(CloudML API兼容)',en:'TF model local test server (CloudML API compatible)'},
+{name:'domino',zh:'Domino CLI的R接口(可扩展硬件)',en:'Domino CLI R interface (scalable hardware)'}
+]},
+
+{id:'database',icon:'🗄️',color:'#6366f1',zh:'数据库内预测',en:'In-Database Prediction',zhDesc:'将R预测逻辑翻译为SQL在数据库内执行，避免数据移动突破内存限制',enDesc:'Translate R prediction logic to SQL for in-database execution, avoiding data movement',
+packages:[
+{name:'tidypredict',zh:'dplyr/dbplyr翻译预测为SQL查询',en:'dplyr/dbplyr translate predictions to SQL queries'},
+{name:'ibmdbR',zh:'IBM数据库下推执行(突破R内存限制)',en:'IBM database push-down execution (bypass R memory limits)'}
+]},
+
+{id:'spark',icon:'⚡',color:'#eab308',zh:'Spark分布式部署',en:'Spark Distributed Deployment',zhDesc:'Apache Spark分布式ML库绑定，集群训练与部署，H2O+Spark联合推理',enDesc:'Apache Spark distributed ML bindings for cluster training/deployment and H2O+Spark inference',
+packages:[
+{name:'sparklyr',zh:'Spark MLlib绑定(dplyr接口+集群部署)',en:'Spark MLlib binding (dplyr interface+cluster deploy)'},
+{name:'rsparkling',zh:'sparklyr+H2O联合(Spark部署+H2O建模)',en:'sparklyr+H2O combination (Spark deploy+H2O modeling)'}
+]},
+
+{id:'api',icon:'🌐',color:'#ec4899',zh:'HTTP/API服务框架',en:'HTTP/API Server Frameworks',zhDesc:'构建R模型Web API服务，从底层HTTP到高级REST框架的完整工具链',enDesc:'Build R model Web API services from low-level HTTP to high-level REST frameworks',
+packages:[
+{name:'plumber',zh:'注释驱动的REST API框架(最流行)',en:'Annotation-driven REST API framework (most popular)'},
+{name:'opencpu',zh:'R HTTP API服务器(RPC+数据交换)',en:'R HTTP API server (RPC+data exchange)'},
+{name:'RestRserve',zh:'基于Rserve高性能Web API框架',en:'Rserve-based high-performance Web API framework'},
+{name:'Rserve',zh:'TCP/IP服务器(多语言访问R)',en:'TCP/IP server (multi-language R access)'},
+{name:'RSclient',zh:'Rserve客户端(TCP/IP连接)',en:'Rserve client (TCP/IP connection)'},
+{name:'httpuv',zh:'HTTP/WebSocket底层协议支持',en:'HTTP/WebSocket low-level protocol support'},
+{name:'FastRWeb',zh:'R代码→Web API基础设施',en:'R code→Web API infrastructure'}
+]}
+];
+
+let currentTab='network';
+function t(k){return lang==='zh'?k.zh:k.en}
+function toggleLang(){
+  lang=lang==='zh'?'en':'zh';
+  document.querySelector('.lang-btn').textContent=lang==='zh'?'EN':'中';
+  document.querySelectorAll('[data-zh]').forEach(el=>{
+    const v=el.getAttribute('data-'+lang);
+    if(v)el.textContent=v;
+  });
+  document.getElementById('search-input').placeholder=lang==='zh'?'搜索包名或关键词...':'Search packages or keywords...';
+  renderCurrentView();
+}
+
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['network','cards','table'][i]===tab);
+  });
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(tab+'-view').classList.add('active');
+  renderCurrentView();
+}
+
+function renderCurrentView(){
+  if(currentTab==='network')renderNetwork();
+  else if(currentTab==='cards')renderCards();
+  else renderTable();
+}
+
+let searchQuery='';
+function handleSearch(q){searchQuery=q.toLowerCase();renderCurrentView()}
+
+function getFilteredCategories(){
+  if(!searchQuery)return categories;
+  return categories.map(c=>{
+    const pkgs=c.packages.filter(p=>
+      p.name.toLowerCase().includes(searchQuery)||
+      p.zh.toLowerCase().includes(searchQuery)||
+      p.en.toLowerCase().includes(searchQuery)
+    );
+    if(pkgs.length===0)return null;
+    return{...c,packages:pkgs};
+  }).filter(Boolean);
+}
+
+function renderNetwork(){
+  const svg=d3.select('#network-svg');
+  svg.selectAll('*').remove();
+  const container=document.getElementById('network-view');
+  const w=container.clientWidth,h=container.clientHeight;
+  svg.attr('viewBox',`0 0 ${w} ${h}`);
+
+  const filtered=getFilteredCategories();
+  const nodes=[];
+  const links=[];
+
+  const centerNode={id:'deploy',name:lang==='zh'?'模型部署':'Model Deploy',color:'#0ea5e9',r:35,isCenter:true};
+  nodes.push(centerNode);
+
+  filtered.forEach(cat=>{
+    const catNode={id:cat.id,name:t(cat),color:cat.color,r:22,isCat:true,catData:cat};
+    nodes.push(catNode);
+    links.push({source:centerNode.id,target:catNode.id,value:cat.packages.length});
+
+    cat.packages.forEach(pkg=>{
+      const pkgNode={id:cat.id+'-'+pkg.name,name:pkg.name,color:cat.color,r:(pkg.core?9:5),isPkg:true,pkgData:pkg,catColor:cat.color};
+      nodes.push(pkgNode);
+      links.push({source:catNode.id,target:pkgNode.id,value:1});
+    });
+  });
+
+  const simulation=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(d=>d.id).distance(d=>(d.value>1?100:35)))
+    .force('charge',d3.forceManyBody().strength(d=>(d.isCenter?-300:d.isCat?-80:-15)))
+    .force('center',d3.forceCenter(w/2,h/2))
+    .force('collision',d3.forceCollide().radius(d=>(d.r+3)));
+
+  const link=svg.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke',d=>(d.source.isCenter?'rgba(14,165,233,.15)':'rgba(255,255,255,.06)'))
+    .attr('stroke-width',d=>(d.value>1?2:1));
+
+  const node=svg.append('g').selectAll('g').data(nodes).join('g')
+    .call(d3.drag()
+      .on('start',(e,d)=>{if(!e.active)simulation.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y})
+      .on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y})
+      .on('end',(e,d)=>{if(!e.active)simulation.alphaTarget(0);d.fx=null;d.fy=null}));
+
+  node.append('circle')
+    .attr('r',d=>d.r)
+    .attr('fill',d=>(d.isCenter?'rgba(14,165,233,.2)':d.isCat?d.color+'33':d.catColor+'22'))
+    .attr('stroke',d=>(d.isCenter?'#0ea5e9':d.isCat?d.color:d.catColor))
+    .attr('stroke-width',d=>(d.isCenter?3:d.isCat?2:(d.pkgData&&d.pkgData.core?2:1)));
+
+  node.filter(d=>(d.isCat||d.isCenter)).append('text')
+    .attr('dy',d=>(d.r+14))
+    .attr('text-anchor','middle')
+    .attr('fill',d=>(d.isCenter?'#0ea5e9':d.color))
+    .attr('font-size',d=>(d.isCenter?13:10))
+    .attr('font-weight',d=>(d.isCenter?700:600))
+    .text(d=>(d.name.length>8?d.name.slice(0,8)+'…':d.name));
+
+  const tooltip=document.getElementById('tooltip');
+  node.on('mouseover',(e,d)=>{
+    if(d.isPkg){
+      tooltip.innerHTML='<div class="tooltip-name" style="color:'+d.catColor+'">'+d.name+(d.pkgData.core?' ★':'')+'</div><div class="tooltip-desc">'+t(d.pkgData)+'</div>';
+      tooltip.classList.add('show');
+    }else if(d.isCat){
+      tooltip.innerHTML='<div class="tooltip-name" style="color:'+d.color+'">'+d.name+'</div><div class="tooltip-desc">'+d.catData.packages.length+' packages</div>';
+      tooltip.classList.add('show');
+    }
+    tooltip.style.left=(e.offsetX+15)+'px';
+    tooltip.style.top=(e.offsetY-10)+'px';
+  }).on('mouseout',()=>tooltip.classList.remove('show'));
+
+  node.on('click',(e,d)=>{
+    if(d.isCat)openModal(d.catData);
+  });
+
+  simulation.on('tick',()=>{
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    node.attr('transform',d=>'translate('+d.x+','+d.y+')');
+  });
+
+  const zoom=d3.zoom().scaleExtent([.3,4]).on('zoom',e=>{svg.select('g').attr('transform',e.transform)});
+  svg.call(zoom);
+}
+
+function renderCards(){
+  const container=document.getElementById('cards-view');
+  const filtered=getFilteredCategories();
+  container.innerHTML='<div class="cards-grid">'+filtered.map(cat=>`
+    <div class="category-card" style="border-left-color:${cat.color}" onclick="openModal(categories.find(c=>c.id==='${cat.id}'))">
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${t(cat)}</span>
+      </div>
+      <div class="card-desc">${t({zh:cat.zhDesc,en:cat.enDesc})}</div>
+      <div class="card-tags">
+        ${cat.packages.slice(0,8).map(p=>'<span class="pkg-tag'+(p.core?' core':'')+'">'+p.name+'</span>').join('')}
+        ${cat.packages.length>8?'<span class="pkg-tag more">+'+(cat.packages.length-8)+'</span>':''}
+      </div>
+    </div>`).join('')+'</div>';
+}
+
+function renderTable(){
+  const container=document.getElementById('table-view');
+  const filtered=getFilteredCategories();
+  container.innerHTML=filtered.map(cat=>`
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick="openModal(categories.find(c=>c.id==='${cat.id}'))">
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${t(cat)}</span>
+        <span class="table-cat-count">${cat.packages.length}</span>
+      </div>
+      <table class="pkg-table">
+        <tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th></tr>
+        ${cat.packages.map(p=>`
+          <tr>
+            <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span>${p.core?' <span class="core-star">★</span>':''}</td>
+            <td>${t(p)}</td>
+          </tr>`).join('')}
+      </table>
+    </div>`).join('');
+}
+
+function openModal(cat){
+  if(!cat)return;
+  document.getElementById('modal-icon').textContent=cat.icon;
+  document.getElementById('modal-title').textContent=t(cat);
+  document.getElementById('modal-title').style.color=cat.color;
+  document.getElementById('modal-desc').textContent=t({zh:cat.zhDesc,en:cat.enDesc});
+  document.getElementById('modal-pkgs').innerHTML=cat.packages.map(p=>
+    '<span class="modal-pkg'+(p.core?' core':'')+'" style="'+(p.core?'border-color:'+cat.color+'55;':'')+'">'+p.name+(p.core?' ★':'')+' <span style="color:var(--text2);font-size:11px">— '+t(p)+'</span></span>'
+  ).join('');
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-overlay'))return;
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+// Particles
+const canvas=document.getElementById('particles-canvas');
+const ctx=canvas.getContext('2d');
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+
+for(let i=0;i<60;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    vx:(Math.random()-.5)*.3,
+    vy:(Math.random()-.5)*.3,
+    r:Math.random()*2+.5,
+    color:['rgba(14,165,233,','rgba(16,185,129,','rgba(6,182,212,'][Math.floor(Math.random()*3)]
+  });
+}
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+    if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.color+(.3+Math.random()*.2)+')';ctx.fill();
+  });
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle='rgba(14,165,233,'+(.06*(1-dist/120))+')';ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+renderCurrentView();
+</script>
+</body>
+</html>

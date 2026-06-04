@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R网络分析包技能汇总 | R Network Analysis Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#06b6d4;--glow:rgba(6,182,212,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#06b6d4,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(6,182,212,.2);border-color:rgba(6,182,212,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#06b6d4,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#06b6d4,#10b981);color:#fff;box-shadow:0 4px 15px rgba(6,182,212,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(6,182,212,.15);color:#67e8f9;font-weight:600}
+.pkg-tag.more{background:rgba(16,185,129,.15);color:#6ee7b7}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#67e8f9}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(6,182,212,.12);border-color:rgba(6,182,212,.25);color:#67e8f9;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#22d3ee;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">🕸️</span>
+<h1 data-zh="R网络分析包技能汇总" data-en="R Network Analysis Package Skills">R网络分析包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">122</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">10</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">4</div><div class="stat-label" data-zh="核心" data-en="Core">核心</div></div>
+<div class="stat-item"><div class="stat-num">2025</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/NetworkAnalysis.html" target="_blank">CRAN Task View: Network Analysis</a></p>
+<p style="margin-top:6px" data-zh="2025 · R网络分析生态系统全景" data-en="2025 · R Network Analysis Ecosystem Overview">2025 · R网络分析生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"data_manage",icon:"🗄️",color:"#06b6d4",zh:"数据管理与转换",en:"Data Management & Conversion",zhDesc:"网络数据结构/生态/类转换/导入导出/tidyverse操作/动态网络/自我中心网",enDesc:"Network data structures, ecosystems, class conversion, I/O, tidyverse ops, dynamic & egocentric networks",
+packages:[
+{name:"igraph",zh:"C库网络创建/操作/分析(igraph类)，最大生态系统",en:"C-based network creation, manipulation & analysis (igraph class)",core:true},
+{name:"network",zh:"Statnet基础数据结构(network类)，SNA核心",en:"Statnet basic data structure (network class), SNA core",core:true},
+{name:"manyet",zh:"多类互操作/更完整导入导出/管道语法/教程",en:"Multi-class interop, complete I/O, piped syntax & tutorials",core:true},
+{name:"sna",zh:"社会经济网络常用操作/OLS/网络自相关/逻辑回归",en:"SNA operations: OLS, network autocorrelation & logistic regression",core:true},
+{name:"intergraph",zh:"Statnet↔igraph类转换(兼容工作流)",en:"Convert between Statnet & igraph classes"},
+{name:"netUtils",zh:"辅助函数: 子图提取/基本统计/类转换",en:"Helper functions: subgraphs, stats & class conversion"},
+{name:"tidygraph",zh:"tidyverse框架图数据操作(管道/节点边数据)",en:"Tidyverse framework for graph data manipulation"},
+{name:"networkDynamic",zh:"Statnet动态网络表示与操作",en:"Statnet dynamic network representation & manipulation"},
+{name:"egor",zh:"自我中心网络管理(EgoNet/EgoWeb导入/Shiny可视化)",en:"Ego-centric network management with Shiny visualization"},
+{name:"ionet",zh:"投入产出表→加权邻接矩阵网络构建",en:"Build networks from input-output tables"},
+{name:"rgraph6",zh:"graph6/sparse6/digraph6格式编码与解码",en:"Encode/decode graph6, sparse6 & digraph6 formats"},
+{name:"backbone",zh:"提取网络稀疏无权重骨干子图",en:"Extract sparse unweighted backbone subgraph"},
+{name:"BoolNet",zh:"布尔网络(同步/异步概率)组装分析与可视化",en:"Boolean network assembly, analysis & visualization"}
+]},
+
+{id:"eda_viz",icon:"👁️",color:"#10b981",zh:"探索分析与可视化",en:"Exploratory Analysis & Visualization",zhDesc:"网络描述统计/静态绘图/交互可视化/布局算法/网络距离/隔离度量",enDesc:"Network statistics, static & interactive plots, layouts, distance & segregation measures",
+packages:[
+{name:"manynet",zh:"标记/度量/归属三层: 拓扑/层级/韧性+24种中心性+社区发现",en:"Marks/measures/memberships: topology, hierarchy, resilience, 24 centralities"},
+{name:"autograph",zh:"ggraph扩展: 自动绘图/双模布局/动态GIF/Stocnet诊断",en:"ggraph extension: auto plots, bimodal layouts, dynamic GIFs"},
+{name:"ggraph",zh:"ggplot2风格igraph对象分层绘图",en:"ggplot2-style layered plotting for igraph objects"},
+{name:"ggnetwork",zh:"network对象ggplot2几何图层绘图",en:"ggplot2 geometries for network objects"},
+{name:"multigraph",zh:"多类型网络可视化(多层/多路/时空/二分/符号/Cayley图)",en:"Multigraph viz: multilevel, multiplex, temporal, bipartite & signed"},
+{name:"visNetwork",zh:"vis.js交互网络可视化(缩放/平移/高亮/用户友好)",en:"vis.js interactive network visualization with zoom & highlight"},
+{name:"networkD3",zh:"D3.js网络/树/树状图/Sankey交互绘图",en:"D3.js interactive network, tree, dendrogram & Sankey plots"},
+{name:"ndtv",zh:"networkDynamic动态网络视频/交互动画渲染",en:"Render networkDynamic as videos or interactive animations"},
+{name:"snahelper",zh:"网络可视化分析GUI插件(自动生成代码)",en:"GUI add-on for network visualization & analysis"},
+{name:"graphlayouts",zh:"应力主化布局算法(igraph/ggraph)",en:"Stress majorization layout algorithms for igraph & ggraph"},
+{name:"roughnet",zh:"rough.js手绘风格网络图",en:"Hand-drawn-style networks via rough.js"},
+{name:"g6R",zh:"G6.js图可视化引擎(多种布局/动画/交互/Shiny嵌入)",en:"G6.js engine: layouts, animations, interactions & Shiny embedding"},
+{name:"diagram",zh:"网络流程图/网格图(生态建模配套)",en:"Network flow diagrams & grids (ecological modelling companion)"},
+{name:"neatmaps",zh:"层次/共识聚类+多网络热力图",en:"Hierarchical & consensus clustering with heatmap"},
+{name:"NetworkDistance",zh:"网络间距离度量(谱密度/Hamming/graphon等10+种)",en:"10+ network distance measures (spectral, Hamming, graphon etc.)"},
+{name:"netseg",zh:"网络隔离与同质性描述度量(Freeman/Coleman/谱隔离指数)",en:"Segregation & homophily: Freeman, Coleman & Spectral indices"},
+{name:"tsna",zh:"时间网络探索分析与汇总",en:"Exploratory analysis & summaries of temporal networks"}
+]},
+
+{id:"centrality",icon:"⭐",color:"#f59e0b",zh:"中心性分析",en:"Centrality Analysis",zhDesc:"度/介数/特征向量/PageRank/信息中心性/双模网络中心性/概率排名",enDesc:"Degree, betweenness, eigenvector, PageRank, info centrality, bipartite & probabilistic ranking",
+packages:[
+{name:"centiserve",zh:"数十种igraph中心性: 瓶颈/衰减/熵中心性等",en:"Dozens of centrality measures for igraph: bottleneck, decay, entropy"},
+{name:"birankr",zh:"双模/二分网络中心性优化(高效PageRank/投影)",en:"Optimized bipartite centrality & efficient PageRank"},
+{name:"netrankr",zh:"无指标概率中心性排名(邻域包含/位置优势)",en:"Index-free probabilistic centrality via neighborhood inclusion"},
+{name:"influential",zh:"网络拓扑+SIR模型影响力中心性(留一交叉验证)",en:"Influence centrality via SIR model with leave-one-out CV"},
+{name:"CINNA",zh:"最中心节点识别(双模支持/Dangalchev/调和/桥接中心性)",en:"Identify most central nodes (bipartite, Dangalchev, harmonic, bridging)"}
+]},
+
+{id:"community",icon:"🏘️",color:"#8b5cf6",zh:"社区发现与块模型",en:"Community Detection & Blockmodeling",zhDesc:"模块度社区发现/结构等价块模型/随机块模型(SBM)/潜空间聚类",enDesc:"Modularity communities, structural equivalence blocks, SBM & latent space clustering",
+packages:[
+{name:"blockmodeling",zh:"广义块模型(optRandomParC/结构/正则等价/REGE算法)",en:"Generalized blockmodeling: structural/regular equivalence & REGE"},
+{name:"concorR",zh:"CONCOR迭代相关算法(一/多模有/无向网络)",en:"CONCOR algorithm for one- and multi-mode networks"},
+{name:"BMconcor",zh:"SVD分块同时块模型(结构+正则等价)",en:"Simultaneous blockmodeling via SVD blocks"},
+{name:"BlockmodelingGUI",zh:"广义块模型Shiny图形界面",en:"Shiny GUI for generalized blockmodeling"},
+{name:"kmBlock",zh:"K-means块模型方法(一模/链接网络)",en:"K-means approach to blockmodeling"},
+{name:"dBlockmodeling",zh:"符号/赋值/二分网络块模型",en:"Blockmodeling for signed, valued & bipartite networks"},
+{name:"signnet",zh:"符号网络块模型(结构/广义等价/基于igraph)",en:"Signed network blockmodeling based on igraph"},
+{name:"blockmodels",zh:"SBM/潜块模型(Variational EM/伯努利/泊松/高斯/协变量)",en:"SBM & LBM via Variational EM (Bernoulli, Poisson, Gaussian)"},
+{name:"sbm",zh:"blockmodels扩展: 双/多分+多路网络SBM(R6类+绘图)",en:"SBM extension: bipartite, multipartite & multiplex networks"},
+{name:"greed",zh:"贪心+遗传算法(度校正SBM/LBM)",en:"Greedy + genetic algorithm for degree-corrected SBM"},
+{name:"dynsbm",zh:"时间网络SBM(独立Markov链/二元/加权/冲积图)",en:"Temporal SBM with Markov chains & alluvial plots"},
+{name:"StochBlock",zh:"一模/链接网络随机块模型",en:"Stochastic blockmodeling of one-mode & linked networks"},
+{name:"GREMLINS",zh:"广义多分网络SBM(先验功能群节点划分)",en:"SBM for generalized multipartite networks with a-priori groups"},
+{name:"cencrne",zh:"正则化网络嵌入(同时估计社区结构与数量)",en:"Regularized network embedding for community structure & number"},
+{name:"clustNet",zh:"贝叶斯混合模型网络聚类(含节点/边协变量)",en:"Bayesian mixture model clustering with node/edge covariates"},
+{name:"collpcm",zh:"MCMC坍缩潜空间模型(自动选择聚类数)",en:"MCMC collapsed latent space with automatic cluster number"},
+{name:"graphclust",zh:"凝聚算法SBM混合(最大化集成分类似然)",en:"Agglomerative SBM mixture via integrated classification likelihood"},
+{name:"latentnet",zh:"潜位置/聚类模型拟合(network对象/兼容ergm)",en:"Latent position & cluster models (network objects, ergm compat)"},
+{name:"VBLPCM",zh:"变分贝叶斯EM潜位置聚类(比MCMC更快更准)",en:"Variational Bayes EM latent position (faster than MCMC)"},
+{name:"netClust",zh:"单层/多层网络EM有限混合聚类",en:"EM finite mixture clustering for single & multilayer networks"},
+{name:"oaqc",zh:"轨道感知四元组高效计算",en:"Efficient orbit-aware quad census computation"}
+]},
+
+{id:"ergm",icon:"📊",color:"#ef4444",zh:"ERGM统计建模",en:"ERGM Statistical Modeling",zhDesc:"指数族随机图模型(ERGM)及扩展: 计数/自我中心/多层/贝叶斯/排名",enDesc:"Exponential-family random graph models & extensions: count, egocentric, multilayer, Bayesian & rank",
+packages:[
+{name:"ergm",zh:"指数族随机图模型(ERGM)拟合/模拟/分析(Statnet核心)",en:"ERGM fit, simulate & analyze (Statnet core)"},
+{name:"ergm.count",zh:"计数权重ERGM",en:"ERGM for count weights"},
+{name:"ergm.ego",zh:"自我中心抽样网络ERGM",en:"ERGM for egocentrically sampled networks"},
+{name:"ergm.multi",zh:"多层网络/网络样本ERGM",en:"ERGM for multilayer networks & network samples"},
+{name:"mlergm",zh:"块结构+局部依赖ERGM",en:"ERGM with block structure & local dependence"},
+{name:"ergm.rank",zh:"排名网络ERGM",en:"ERGM for rank-order networks"},
+{name:"ergmito",zh:"小网络样本ERGM",en:"ERGM for samples of small networks"},
+{name:"bigergm",zh:"大型分层ERGM",en:"Large hierarchical ERGMs"},
+{name:"Bergm",zh:"贝叶斯ERGM方法",en:"Bayesian methods for ERGMs"},
+{name:"ergmgp",zh:"ERGM生成过程建模",en:"Modeling ERGM-generating processes"},
+{name:"amen",zh:"加性乘性效应模型(AME/SRM/因子模型/二元/赋值)",en:"Additive & Multiplicative Effect models (AME, SRM, factor)"},
+{name:"bootnet",zh:"自助法评估网络结构与中心性精度稳定性",en:"Bootstrap for accuracy & stability of network structures"},
+{name:"lolog",zh:"潜序Logistic模型(边逐一添加条件分布)",en:"Latent Order Logistic models (edge-by-edge formation)"},
+{name:"MoNAn",zh:"加权流动/分配网络结构分析",en:"Weighted mobility/distribution network analysis"},
+{name:"nda",zh:"非参数降维网络分析(含自动特征选择)",en:"Non-parametric dimensionality reduction with feature selection"},
+{name:"ERPM",zh:"截面/纵向分割指数族模型(非重叠群组)",en:"Exponential-family model for cross-sectional/longitudinal partitions"},
+{name:"networkscaleup",zh:"聚合关系数据估计隐藏群体规模(MLE/贝叶斯)",en:"Estimate hidden population sizes from ARD (MLE & Bayesian)"}
+]},
+
+{id:"dynamic",icon:"⏳",color:"#f97316",zh:"动态网络建模",en:"Dynamic Network Modeling",zhDesc:"关系事件模型/离散时间TERGM/SAOM/网络扩散/传染病模拟",enDesc:"Relational event models, discrete-time TERGM, SAOM, diffusion & epidemic simulation",
+packages:[
+{name:"goldfish",zh:"行动者导向动态网络/关系事件模型拟合模拟(Stocnet)",en:"Actor-oriented dynamic network & REM (Stocnet)"},
+{name:"relevent",zh:"二元导向关系事件模型拟合模拟(无时间戳也可)",en:"Dyad-oriented relational event models (no timestamps needed)"},
+{name:"dream",zh:"大规模REM可扩展工具(案例对照采样/ brokerage/结构洞)",en:"Scalable REM tools: case-control sampling, brokerage, structural holes"},
+{name:"tergm",zh:"离散时间网络序列ERGM扩展(Statnet)",en:"Discrete-time ERGM extension for network series (Statnet)"},
+{name:"btergm",zh:"离散时间网络序列自助推断",en:"Bootstrap inference for discrete-time network series"},
+{name:"dnr",zh:"离散时间网络模型(各时间步独立边/支持变节点集)",en:"Discrete-time with independent edges & varying node sets"},
+{name:"RSiena",zh:"面板数据连续时间随机行动者导向模型(SAOM)",en:"Continuous-time SAOM for panel network data"},
+{name:"EpiModel",zh:"传染病动力学数学模型模拟(Statnet生态)",en:"Mathematical infectious disease dynamics simulation"},
+{name:"netdiffuseR",zh:"网络扩散/传染统计分析(传播率/暴露模型/阈值)",en:"Network diffusion: transmission rates, exposure models, thresholds"},
+{name:"idopNetwork",zh:"静态数据转动态信息/多方向可聚类网络推断",en:"Infer dynamic multi-directional networks from static data"}
+]},
+
+{id:"multimodal",icon:"🔀",color:"#ec4899",zh:"多模/多层网络",en:"Multimodal & Multilevel Networks",zhDesc:"双模/多路/多层/多级网络分析与建模",enDesc:"Two-mode, multiplex, multilevel & multi-layer network analysis & modeling",
+packages:[
+{name:"migraph",zh:"igraph扩展: 多模网络分析",en:"igraph extension for multimodal network analysis"},
+{name:"multinets",zh:"igraph扩展: 多级网络分析",en:"igraph extension for multilevel network analysis"},
+{name:"multiplex",zh:"多路/多模/多级网络数据创建与操作",en:"Create & manipulate multiplex, multimode & multilevel data"},
+{name:"tnet",zh:"二模/加权/纵向网络分析",en:"Two-mode, weighted & longitudinal network analysis"},
+{name:"dyads",zh:"二元网络模型MCMC模拟(j2/p2/b2/多级)",en:"MCMC dyadic network models: j2, p2, b2 & multilevel"},
+{name:"incidentally",zh:"从一模网络生成一致的二模网络",en:"Generate two-mode networks consistent with one-mode"},
+{name:"multinet",zh:"多层社会网络创建生成与分析",en:"Create, generate & analyze multi-layer social networks"}
+]},
+
+{id:"field_eco",icon:"🌿",color:"#84cc16",zh:"领域: 生态与生物网络",en:"Field: Ecological & Biological Networks",zhDesc:"食物网/宿主寄生/传粉网络/基因调控网络/生命科学网络分析",enDesc:"Food webs, host-parasite, pollination, gene regulation & life science network analysis",
+packages:[
+{name:"bipartite",zh:"食物网可视化与生态指标计算",en:"Food web visualization & ecological indices"},
+{name:"WGCNA",zh:"加权相关网络分析(基因选择/拓扑/模块/数据挖掘)",en:"Weighted correlation network analysis (gene selection, topology, modules)"},
+{name:"asnipe",zh:"动物社交网络: 聚类/排列检验/关联率",en:"Animal SNA: clustering, permutation tests & association rates"},
+{name:"aniSNA",zh:"动物GPS遥测网络+社交网络充分性统计检验",en:"Animal GPS telemetry networks & SNA adequacy testing"},
+{name:"ATNr",zh:"异速营养模型(ATN)食物网动态模拟(deSolve)",en:"Allometric trophic models for dynamic food-web simulation"},
+{name:"EcoNetGen",zh:"生态网络模拟与采样",en:"Simulate & sample ecological networks"},
+{name:"econullnetr",zh:"生态网络零模型分析",en:"Null-model analysis for ecological networks"},
+{name:"cassandRa",zh:"生态网络欠采样校正(仅二分网络)",en:"Under-sampling correction for bipartite ecological networks"},
+{name:"c3net",zh:"C3NET基因调控网络推断(直接物理交互)",en:"Gene-regulation network inference via C3NET"},
+{name:"Ac3net",zh:"方向性保守因果核心基因网络推断",en:"Directional conservative causal core gene networks"},
+{name:"bc3net",zh:"贝叶斯C3NET基因调控网络推断",en:"Bayesian C3NET gene-regulation network inference"},
+{name:"Cascade",zh:"级联网络基因选择/逆向工程/预测",en:"Gene selection, reverse engineering & prediction in cascade networks"},
+{name:"BASiNET",zh:"RNA序列网络算法分类",en:"Classify RNA sequences using network algorithms"},
+{name:"BioNAR",zh:"实验元数据拓扑网络分析(突触蛋白质组验证)",en:"Topologically based network analysis from lab meta-data"},
+{name:"bionetdata",zh:"生物化学关系数据集合集",en:"Collection of biological & chemical relation datasets"},
+{name:"BIEN",zh:"植物信息与生态网络数据库R访问",en:"Access Botanical Information & Ecology Network Database"}
+]},
+
+{id:"field_applied",icon:"🌐",color:"#a855f7",zh:"领域: 社科/文献/空间/卫生",en:"Field: Social, Bibliometric, Spatial & Health",zhDesc:"社会金融网络/文献计量/空间网络/公共卫生网络/心理学网络",enDesc:"Social/financial, bibliometric, spatial, public health & psychology networks",
+packages:[
+{name:"FinNet",zh:"金融网络(所有权/董事会连锁/加权/多种格式)",en:"Financial networks: ownership, board interlocks & both"},
+{name:"ITNr",zh:"国际贸易网络清洗/骨干提取/中心性/块模型/区域模式",en:"International trade: cleaning, backbone, centrality & blockmodels"},
+{name:"bibliometrix",zh:"文献计量分析(Scopus/WoS/PubMed/共引/耦合/协作网络)",en:"Bibliometric analysis: co-citation, coupling, collaboration networks"},
+{name:"biblionetwork",zh:"文献计量网络边识别与加权(合著/共引/耦合/大数据优化)",en:"Identify & weight bibliometric edges (optimized for large datasets)"},
+{name:"sfnetworks",zh:"sf+tidygraph地理空间网络(最短路径/清洗/编辑)",en:"sf + tidygraph for geospatial network routines"},
+{name:"spNetwork",zh:"地理网络核密度/空间权重/K函数/k近邻",en:"Geographic networks: KDE, spatial weights & K-functions"},
+{name:"geonetwork",zh:"位置节点网络(空间操作/制图/兼容igraph)",en:"Location-node networks with spatial operations & cartography"},
+{name:"chessboard",zh:"空间网络连接矩阵(棋子移动规则: 象/马/兵/后/车等)",en:"Spatial connectivity matrices with chess-piece movement rules"},
+{name:"epinet",zh:"接触网络贝叶斯推断疾病传播模拟",en:"Contact network Bayesian inference for disease transmission"},
+{name:"hybridModels",zh:"元种群模型(节点→亚群/集群传染/随机模拟)",en:"Meta-population model with cluster contagion & stochastic simulation"},
+{name:"qgraph",zh:"加权网络可视化/高斯图模型(心理学/神经科学)",en:"Weighted network viz & Gaussian graphical model (psych/neuro)"},
+{name:"NetworkToolbox",zh:"神经/认知/心理网络分析(过滤/中心性/社区/聚类)",en:"Network analysis for neuroscience, cognitive science & psychology"},
+{name:"HospitalNetwork",zh:"患者转移构建医院一模网络",en:"Hospital networks from patient transfer two-mode data"},
+{name:"modnets",zh:"截面/时间/多层网络调节变量建模",en:"Moderator variables in cross-sectional, temporal & multilevel networks"},
+{name:"modnets",zh:"截面/时间/多层网络调节变量建模",en:"Moderator variables in cross-sectional, temporal & multilevel networks"},
+{name:"latenetwork",zh:"网络干扰下工具变量因果推断(不依从/未知形式)",en:"Causal inference with noncompliance & unknown network interference"},
+{name:"graphon",zh:"graphon估计/矩阵补全/SBM逼近/随机图生成",en:"Graphon estimation, matrix completion, SBM approximation"},
+{name:"fastnet",zh:"大规模社交网络模拟与度量检索",en:"Simulate large-scale social networks & retrieve metrics"}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(6,182,212,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(6,182,212,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>

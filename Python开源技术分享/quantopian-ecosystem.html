@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantopian 开源生态 · Open Source Ecosystem</title>
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2235;
+  --bg-card-hover: #1f2b42;
+  --text-primary: #e8edf5;
+  --text-secondary: #8899b4;
+  --text-muted: #5a6d8a;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-green: #10b981;
+  --accent-purple: #8b5cf6;
+  --accent-orange: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-pink: #ec4899;
+  --accent-teal: #14b8a6;
+  --border: #1e2d45;
+  --glow-blue: rgba(59,130,246,0.15);
+  --glow-cyan: rgba(6,182,212,0.12);
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Global Reset ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== Animated Background ===== */
+.bg-grid {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(59,130,246,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139,92,246,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(6,182,212,0.04) 0%, transparent 50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===== Language Toggle ===== */
+.lang-toggle {
+  position: fixed; top: 20px; right: 24px; z-index: 1000;
+  display: flex; gap: 0; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 24px; overflow: hidden; box-shadow: var(--shadow);
+}
+.lang-btn {
+  padding: 8px 18px; border: none; background: transparent; color: var(--text-secondary);
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
+}
+.lang-btn.active { background: var(--accent-blue); color: #fff; }
+.lang-btn:hover:not(.active) { color: var(--text-primary); background: var(--bg-card-hover); }
+
+/* ===== Navigation ===== */
+.nav-bar {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 999;
+  display: flex; gap: 4px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 28px; padding: 4px; box-shadow: var(--shadow);
+}
+.nav-link {
+  padding: 8px 18px; border-radius: 24px; color: var(--text-secondary);
+  text-decoration: none; font-size: 13px; font-weight: 500; transition: var(--transition);
+  white-space: nowrap;
+}
+.nav-link:hover, .nav-link.active { background: var(--accent-blue); color: #fff; }
+
+/* ===== Hero Section ===== */
+.hero {
+  position: relative; z-index: 1;
+  text-align: center; padding: 120px 24px 60px;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px; border-radius: 20px;
+  background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25);
+  color: var(--accent-blue); font-size: 13px; font-weight: 500; margin-bottom: 24px;
+}
+.hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero h1 {
+  font-size: clamp(32px, 5vw, 56px); font-weight: 800;
+  background: linear-gradient(135deg, #e8edf5, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 16px; line-height: 1.2;
+}
+.hero .subtitle {
+  font-size: clamp(16px, 2vw, 20px); color: var(--text-secondary);
+  max-width: 720px; margin: 0 auto 32px;
+}
+.hero-stats {
+  display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 32px;
+}
+.stat-item { text-align: center; }
+.stat-num { font-size: 28px; font-weight: 800; color: var(--accent-cyan); }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+/* ===== Section ===== */
+.section {
+  position: relative; z-index: 1;
+  max-width: 1280px; margin: 0 auto; padding: 40px 24px;
+}
+.section-title {
+  font-size: 28px; font-weight: 700; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-title .icon { font-size: 28px; }
+.section-desc { color: var(--text-secondary); font-size: 15px; margin-bottom: 32px; }
+
+/* ===== Network Graph (SVG) ===== */
+.network-container {
+  width: 100%; overflow: visible; margin: 20px 0 40px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.network-svg { width: 100%; height: auto; }
+
+/* ===== Skill Cards Grid ===== */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+.skill-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  transition: var(--transition); position: relative; overflow: hidden;
+}
+.skill-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.skill-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.5); border-color: var(--accent-blue); }
+.skill-card .card-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+.skill-card .card-icon {
+  width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.skill-card .card-title { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+.skill-card .card-lang { font-size: 12px; color: var(--text-muted); }
+.skill-card .card-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.7; }
+.skill-card .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.skill-card .tag {
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;
+  background: rgba(59,130,246,0.1); color: var(--accent-blue); border: 1px solid rgba(59,130,246,0.2);
+}
+.skill-card .tag.green { background: rgba(16,185,129,0.1); color: var(--accent-green); border-color: rgba(16,185,129,0.2); }
+.skill-card .tag.purple { background: rgba(139,92,246,0.1); color: var(--accent-purple); border-color: rgba(139,92,246,0.2); }
+.skill-card .tag.orange { background: rgba(245,158,11,0.1); color: var(--accent-orange); border-color: rgba(245,158,11,0.2); }
+.skill-card .tag.cyan { background: rgba(6,182,212,0.1); color: var(--accent-cyan); border-color: rgba(6,182,212,0.2); }
+.skill-card .tag.red { background: rgba(239,68,68,0.1); color: var(--accent-red); border-color: rgba(239,68,68,0.2); }
+.skill-card .card-stats { display: flex; gap: 16px; font-size: 12px; color: var(--text-muted); }
+.skill-card .card-stats span { display: flex; align-items: center; gap: 4px; }
+
+/* Color themes per category */
+.skill-card[data-cat="core"]::before { background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); }
+.skill-card[data-cat="core"] .card-icon { background: rgba(59,130,246,0.15); }
+.skill-card[data-cat="research"]::before { background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink)); }
+.skill-card[data-cat="research"] .card-icon { background: rgba(139,92,246,0.15); }
+.skill-card[data-cat="data"]::before { background: linear-gradient(90deg, var(--accent-green), var(--accent-teal)); }
+.skill-card[data-cat="data"] .card-icon { background: rgba(16,185,129,0.15); }
+.skill-card[data-cat="infra"]::before { background: linear-gradient(90deg, var(--accent-orange), var(--accent-red)); }
+.skill-card[data-cat="infra"] .card-icon { background: rgba(245,158,11,0.15); }
+.skill-card[data-cat="ml"]::before { background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue)); }
+.skill-card[data-cat="ml"] .card-icon { background: rgba(6,182,212,0.15); }
+.skill-card[data-cat="utils"]::before { background: linear-gradient(90deg, var(--accent-teal), var(--accent-green)); }
+.skill-card[data-cat="utils"] .card-icon { background: rgba(20,184,166,0.15); }
+
+/* ===== Application Directions ===== */
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.app-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  transition: var(--transition); cursor: default;
+}
+.app-card:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
+.app-card .app-icon { font-size: 32px; margin-bottom: 12px; }
+.app-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.app-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+.app-card .app-tools { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
+.app-card .app-tools .mini-tag {
+  padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 600;
+  background: rgba(6,182,212,0.1); color: var(--accent-cyan); border: 1px solid rgba(6,182,212,0.15);
+}
+
+/* ===== Timeline ===== */
+.timeline { position: relative; padding-left: 32px; }
+.timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.timeline-item { position: relative; margin-bottom: 24px; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -26px; top: 6px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent-blue); border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 8px var(--accent-blue);
+}
+.timeline-item .year { font-size: 13px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px; }
+.timeline-item .event { font-size: 14px; color: var(--text-secondary); }
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center; padding: 48px 24px 32px; color: var(--text-muted);
+  font-size: 13px; border-top: 1px solid var(--border); margin-top: 60px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .nav-bar { display: none; }
+  .hero { padding-top: 80px; }
+  .hero-stats { gap: 24px; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .app-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Scroll animations ===== */
+.fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-grid"></div>
+
+<!-- Language Toggle -->
+<div class="lang-toggle">
+  <button class="lang-btn active" onclick="setLang('zh')">中文</button>
+  <button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- Navigation -->
+<nav class="nav-bar">
+  <a href="#overview" class="nav-link" data-zh="概览" data-en="Overview">概览</a>
+  <a href="#network" class="nav-link" data-zh="知识网络" data-en="Network">知识网络</a>
+  <a href="#projects" class="nav-link" data-zh="核心项目" data-en="Projects">核心项目</a>
+  <a href="#directions" class="nav-link" data-zh="应用方向" data-en="Applications">应用方向</a>
+  <a href="#history" class="nav-link" data-zh="发展历程" data-en="History">发展历程</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="overview">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    <span data-zh="量化交易开源先驱 · 2011–2020" data-en="Pioneer in Open-Source Quant · 2011–2020">量化交易开源先驱 · 2011–2020</span>
+  </div>
+  <h1 data-zh="Quantopian 开源技术生态" data-en="Quantopian Open Source Ecosystem">Quantopian 开源技术生态</h1>
+  <p class="subtitle" data-zh="从算法交易引擎到风险分析框架，从贝叶斯推断到高性能数据管道——Quantopian 留下了当代量化金融领域最完整的开源工具链" data-en="From algorithmic trading engines to risk analytics frameworks, from Bayesian inference to high-performance data pipelines — Quantopian left behind the most complete open-source toolchain in modern quantitative finance.">从算法交易引擎到风险分析框架，从贝叶斯推断到高性能数据管道——Quantopian 留下了当代量化金融领域最完整的开源工具链</p>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">97</div><div class="stat-label" data-zh="开源仓库" data-en="Repos">开源仓库</div></div>
+    <div class="stat-item"><div class="stat-num">36K+</div><div class="stat-label" data-zh="GitHub 星标" data-en="Stars">GitHub 星标</div></div>
+    <div class="stat-item"><div class="stat-num">10K+</div><div class="stat-label" data-zh="Fork 数" data-en="Forks">Fork 数</div></div>
+    <div class="stat-item"><div class="stat-num">6</div><div class="stat-label" data-zh="核心领域" data-en="Domains">核心领域</div></div>
+  </div>
+</section>
+
+<!-- ====== Network Graph ====== -->
+<section class="section" id="network">
+  <h2 class="section-title">
+    <span class="icon">🕸️</span>
+    <span data-zh="知识关联网络" data-en="Knowledge Network">知识关联网络</span>
+  </h2>
+  <p class="section-desc" data-zh="Quantopian 开源项目之间的技术依赖与生态关联——核心交易引擎驱动上下游分析链路" data-en="Technical dependencies and ecosystem connections among Quantopian projects — the core trading engine drives the upstream-downstream analytics pipeline.">Quantopian 开源项目之间的技术依赖与生态关联——核心交易引擎驱动上下游分析链路</p>
+  <div class="network-container">
+    <svg class="network-svg" viewBox="0 0 1200 750" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="none" stroke="#3b82f680" stroke-width="1"/>
+        </marker>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <radialGradient id="g-blue"><stop offset="0%" stop-color="#3b82f640"/><stop offset="100%" stop-color="#3b82f608"/></radialGradient>
+        <radialGradient id="g-purple"><stop offset="0%" stop-color="#8b5cf640"/><stop offset="100%" stop-color="#8b5cf608"/></radialGradient>
+        <radialGradient id="g-green"><stop offset="0%" stop-color="#10b98140"/><stop offset="100%" stop-color="#10b98108"/></radialGradient>
+        <radialGradient id="g-cyan"><stop offset="0%" stop-color="#06b6d440"/><stop offset="100%" stop-color="#06b6d408"/></radialGradient>
+        <radialGradient id="g-orange"><stop offset="0%" stop-color="#f59e0b40"/><stop offset="100%" stop-color="#f59e0b08"/></radialGradient>
+        <radialGradient id="g-teal"><stop offset="0%" stop-color="#14b8a640"/><stop offset="100%" stop-color="#14b8a608"/></radialGradient>
+      </defs>
+
+      <!-- Connection Lines -->
+      <g opacity="0.5">
+        <!-- zipline connections -->
+        <line x1="600" y1="340" x2="260" y2="180" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+        <line x1="600" y1="340" x2="940" y2="180" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+        <line x1="600" y1="340" x2="160" y2="480" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+        <line x1="600" y1="340" x2="440" y2="580" stroke="#06b6d4" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+        <!-- alphalens -> zipline -->
+        <line x1="260" y1="180" x2="600" y2="340" stroke="#3b82f680" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- pyfolio -> empyrical -->
+        <line x1="940" y1="180" x2="1040" y2="400" stroke="#8b5cf680" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- empyrical -> zipline -->
+        <line x1="1040" y1="400" x2="600" y2="340" stroke="#8b5cf680" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- trading_calendars -> zipline -->
+        <line x1="160" y1="480" x2="600" y2="340" stroke="#10b98180" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- bayesalpha -> pyfolio -->
+        <line x1="780" y1="500" x2="940" y2="180" stroke="#8b5cf680" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- mlfinlab -> zipline -->
+        <line x1="440" y1="580" x2="600" y2="340" stroke="#06b6d480" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- research_public -> all -->
+        <path d="M600 660 Q400 650 260 180" stroke="#ec4899" stroke-width="0.8" stroke-dasharray="3,5" fill="none"/>
+        <path d="M600 660 Q800 650 940 180" stroke="#ec4899" stroke-width="0.8" stroke-dasharray="3,5" fill="none"/>
+        <!-- qgrid -> research_public -->
+        <line x1="880" y1="600" x2="600" y2="660" stroke="#14b8a680" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- blaze -> odo -->
+        <line x1="1080" y1="520" x2="1080" y2="640" stroke="#10b98180" stroke-width="1" stroke-dasharray="4,4"/>
+      </g>
+
+      <!-- Node: Zipline (Center) -->
+      <g filter="url(#glow)">
+        <circle cx="600" cy="340" r="65" fill="url(#g-blue)" stroke="#3b82f6" stroke-width="2"/>
+        <text x="600" y="332" text-anchor="middle" fill="#e8edf5" font-size="18" font-weight="700">Zipline</text>
+        <text x="600" y="355" text-anchor="middle" fill="#8899b4" font-size="11">⭐ 19.8K</text>
+      </g>
+
+      <!-- Node: Alphalens -->
+      <g filter="url(#glow)">
+        <circle cx="260" cy="180" r="45" fill="url(#g-blue)" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="260" y="174" text-anchor="middle" fill="#e8edf5" font-size="14" font-weight="600">Alphalens</text>
+        <text x="260" y="194" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 4.3K</text>
+      </g>
+
+      <!-- Node: Pyfolio -->
+      <g filter="url(#glow)">
+        <circle cx="940" cy="180" r="50" fill="url(#g-purple)" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="940" y="174" text-anchor="middle" fill="#e8edf5" font-size="14" font-weight="600">Pyfolio</text>
+        <text x="940" y="194" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 6.3K</text>
+      </g>
+
+      <!-- Node: Empyrical -->
+      <g filter="url(#glow)">
+        <circle cx="1040" cy="400" r="35" fill="url(#g-purple)" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="1040" y="396" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Empyrical</text>
+        <text x="1040" y="413" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 1.5K</text>
+      </g>
+
+      <!-- Node: Trading Calendars -->
+      <g filter="url(#glow)">
+        <circle cx="160" cy="480" r="38" fill="url(#g-green)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="160" y="474" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">Trading</text>
+        <text x="160" y="490" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">Calendars</text>
+      </g>
+
+      <!-- Node: MlFinLab -->
+      <g filter="url(#glow)">
+        <circle cx="440" cy="580" r="35" fill="url(#g-cyan)" stroke="#06b6d4" stroke-width="1.5"/>
+        <text x="440" y="576" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">MlFinLab</text>
+        <text x="440" y="593" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 63</text>
+      </g>
+
+      <!-- Node: BayesAlpha -->
+      <g filter="url(#glow)">
+        <circle cx="780" cy="500" r="32" fill="url(#g-purple)" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="780" y="497" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">BayesAlpha</text>
+        <text x="780" y="513" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 113</text>
+      </g>
+
+      <!-- Node: Research Public -->
+      <g filter="url(#glow)">
+        <circle cx="600" cy="660" r="40" fill="url(#g-orange)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="600" y="654" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">Research</text>
+        <text x="600" y="670" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">Public</text>
+      </g>
+
+      <!-- Node: Qgrid -->
+      <g filter="url(#glow)">
+        <circle cx="880" cy="600" r="35" fill="url(#g-teal)" stroke="#14b8a6" stroke-width="1.5"/>
+        <text x="880" y="596" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Qgrid</text>
+        <text x="880" y="613" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 3.1K</text>
+      </g>
+
+      <!-- Node: Blaze -->
+      <g filter="url(#glow)">
+        <circle cx="1080" cy="520" r="28" fill="url(#g-green)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="1080" y="518" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">Blaze</text>
+      </g>
+
+      <!-- Node: Odo -->
+      <g filter="url(#glow)">
+        <circle cx="1080" cy="640" r="22" fill="url(#g-green)" stroke="#10b981" stroke-width="1"/>
+        <text x="1080" y="644" text-anchor="middle" fill="#e8edf5" font-size="10" font-weight="500">Odo</text>
+      </g>
+
+      <!-- Node: Warp Prism -->
+      <g filter="url(#glow)">
+        <circle cx="60" cy="340" r="25" fill="url(#g-green)" stroke="#10b981" stroke-width="1"/>
+        <text x="60" y="337" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">Warp</text>
+        <text x="60" y="350" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">Prism</text>
+      </g>
+
+      <!-- Node: Libpy -->
+      <g filter="url(#glow)">
+        <circle cx="60" cy="180" r="22" fill="url(#g-teal)" stroke="#14b8a6" stroke-width="1"/>
+        <text x="60" y="184" text-anchor="middle" fill="#e8edf5" font-size="10" font-weight="500">Libpy</text>
+      </g>
+
+      <!-- Node: TA-Lib -->
+      <g filter="url(#glow)">
+        <circle cx="340" cy="480" r="25" fill="url(#g-cyan)" stroke="#06b6d4" stroke-width="1"/>
+        <text x="340" y="484" text-anchor="middle" fill="#e8edf5" font-size="10" font-weight="500">TA-Lib</text>
+      </g>
+
+      <!-- Legend -->
+      <g transform="translate(20, 20)">
+        <rect x="0" y="0" width="180" height="140" rx="8" fill="#111827cc" stroke="#1e2d45" stroke-width="1"/>
+        <text x="14" y="24" fill="#8899b4" font-size="11" font-weight="600">Category Legend</text>
+        <circle cx="24" cy="44" r="5" fill="#3b82f6"/><text x="38" y="48" fill="#8899b4" font-size="10">Core Trading</text>
+        <circle cx="24" cy="64" r="5" fill="#8b5cf6"/><text x="38" y="68" fill="#8899b4" font-size="10">Risk &amp; Analytics</text>
+        <circle cx="24" cy="84" r="5" fill="#10b981"/><text x="38" y="88" fill="#8899b4" font-size="10">Data &amp; Calendar</text>
+        <circle cx="24" cy="104" r="5" fill="#06b6d4"/><text x="38" y="108" fill="#8899b4" font-size="10">ML &amp; Bayes</text>
+        <circle cx="24" cy="124" r="5" fill="#f59e0b"/><text x="38" y="128" fill="#8899b4" font-size="10">Research &amp; Edu</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ====== Core Projects ====== -->
+<section class="section" id="projects">
+  <h2 class="section-title">
+    <span class="icon">🧩</span>
+    <span data-zh="核心项目卡片" data-en="Core Project Cards">核心项目卡片</span>
+  </h2>
+  <p class="section-desc" data-zh="按技术领域分类，展示 Quantopian 留下的 20+ 核心开源项目及其技能标签" data-en="Categorized by technical domain, showcasing 20+ core open-source projects and their skill tags.">按技术领域分类，展示 Quantopian 留下的 20+ 核心开源项目及其技能标签</p>
+
+  <div class="skills-grid">
+
+    <!-- ===== Core Trading ===== -->
+    <div class="skill-card fade-in" data-cat="core">
+      <div class="card-header">
+        <div class="card-icon">⚡</div>
+        <div>
+          <div class="card-title">Zipline</div>
+          <div class="card-lang">Python · ⭐ 19,802 · 🍴 4,995</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="Quantopian 的核心算法交易引擎。提供事件驱动的回测框架，支持自定义交易策略、分钟级/日级数据回放、滑点与佣金建模。是整个生态的基石——Alphalens、Pyfolio 均围绕 Zipline 构建。" data-en="Quantopian's core algorithmic trading engine. Provides an event-driven backtesting framework supporting custom strategies, minute/daily data replay, slippage and commission modeling. The cornerstone of the entire ecosystem — Alphalens and Pyfolio are built around Zipline.">Quantopian 的核心算法交易引擎。提供事件驱动的回测框架，支持自定义交易策略、分钟级/日级数据回放、滑点与佣金建模。是整个生态的基石——Alphalens、Pyfolio 均围绕 Zipline 构建。</div>
+      <div class="card-tags">
+        <span class="tag">回测引擎</span>
+        <span class="tag green">事件驱动</span>
+        <span class="tag purple">算法交易</span>
+        <span class="tag orange">滑点建模</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/zipline" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="core">
+      <div class="card-header">
+        <div class="card-icon">🔍</div>
+        <div>
+          <div class="card-title">Alphalens</div>
+          <div class="card-lang">Jupyter Notebook · ⭐ 4,281 · 🍴 1,313</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="Alpha 因子性能分析工具。评估预测性股票因子的收益能力、换手率、因子衰减、板块中性化等，输出标准化分析报告（IC、分位数收益、事件研究）。与 Zipline 无缝衔接。" data-en="Alpha factor performance analysis tool. Evaluates predictive stock factors for returns, turnover, decay, sector neutralization, etc., outputting standardized reports (IC, quantile returns, event study). Seamlessly integrates with Zipline.">Alpha 因子性能分析工具。评估预测性股票因子的收益能力、换手率、因子衰减、板块中性化等，输出标准化分析报告（IC、分位数收益、事件研究）。与 Zipline 无缝衔接。</div>
+      <div class="card-tags">
+        <span class="tag">因子分析</span>
+        <span class="tag green">IC 值</span>
+        <span class="tag purple">分位数回测</span>
+        <span class="tag cyan">事件研究</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/alphalens" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <!-- ===== Risk & Analytics ===== -->
+    <div class="skill-card fade-in" data-cat="research">
+      <div class="card-header">
+        <div class="card-icon">📊</div>
+        <div>
+          <div class="card-title">Pyfolio</div>
+          <div class="card-lang">Jupyter Notebook · ⭐ 6,313 · 🍴 1,881</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="组合与风险分析的瑞士军刀。一键生成 tear sheet（全面诊断单），包含收益曲线、最大回撤、滚动夏普、杠杆分析、贝叶斯风险评估等。依赖 Empyrical 计算底层指标。" data-en="The Swiss Army knife for portfolio and risk analytics. Generates tear sheets with one click — return curves, max drawdown, rolling Sharpe, leverage analysis, Bayesian risk assessment. Relies on Empyrical for underlying metrics.">组合与风险分析的瑞士军刀。一键生成 tear sheet（全面诊断单），包含收益曲线、最大回撤、滚动夏普、杠杆分析、贝叶斯风险评估等。依赖 Empyrical 计算底层指标。</div>
+      <div class="card-tags">
+        <span class="tag">Tear Sheet</span>
+        <span class="tag green">夏普比率</span>
+        <span class="tag purple">风险分析</span>
+        <span class="tag orange">回撤</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/pyfolio" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="research">
+      <div class="card-header">
+        <div class="card-icon">📐</div>
+        <div>
+          <div class="card-title">Empyrical</div>
+          <div class="card-lang">Python · ⭐ 1,481 · 🍴 452</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="通用金融风险与绩效指标计算库。提供夏普比率、索提诺比率、卡尔玛比率、最大回撤、年化波动率等 30+ 标准指标的函数式 API。Pyfolio 和 Zipline 的底层计算引擎。" data-en="Common financial risk and performance metrics library. Provides functional APIs for 30+ standard metrics: Sharpe, Sortino, Calmar, max drawdown, annualized volatility, etc. The computational engine behind Pyfolio and Zipline.">通用金融风险与绩效指标计算库。提供夏普比率、索提诺比率、卡尔玛比率、最大回撤、年化波动率等 30+ 标准指标的函数式 API。Pyfolio 和 Zipline 的底层计算引擎。</div>
+      <div class="card-tags">
+        <span class="tag">风险指标</span>
+        <span class="tag green">绩效评估</span>
+        <span class="tag purple">夏普/索提诺</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/empyrical" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <!-- ===== Data & Calendar ===== -->
+    <div class="skill-card fade-in" data-cat="data">
+      <div class="card-header">
+        <div class="card-icon">📅</div>
+        <div>
+          <div class="card-title">Trading Calendars</div>
+          <div class="card-lang">Python · ⭐ 657 · 🍴 417</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="全球证券交易日历库。覆盖纽交所、纳斯达克、伦交所、港交所、上交所等 40+ 交易所的开收盘时间、节假日、半天交易日。Zipline 回测的时间基准。" data-en="Global securities exchange trading calendars. Covers 40+ exchanges (NYSE, NASDAQ, LSE, HKEX, SSE, etc.) with open/close times, holidays, half-days. The time基准 of Zipline backtests.">全球证券交易日历库。覆盖纽交所、纳斯达克、伦交所、港交所、上交所等 40+ 交易所的开收盘时间、节假日、半天交易日。Zipline 回测的时间基准。</div>
+      <div class="card-tags">
+        <span class="tag">交易日历</span>
+        <span class="tag green">40+ 交易所</span>
+        <span class="tag purple">节假日规则</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/trading_calendars" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="data">
+      <div class="card-header">
+        <div class="card-icon">🚀</div>
+        <div>
+          <div class="card-title">Warp Prism</div>
+          <div class="card-lang">C · ⭐ 65 · 🍴 29</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="高性能 PostgreSQL 到 NumPy/Pandas 数据搬运工具。用 C 实现零拷贝数据传输，将数据库查询结果直接映射为 NumPy 数组，跳过 Python 中间层，速度提升 10–50x。" data-en="High-performance PostgreSQL to NumPy/Pandas data mover. Zero-copy data transfer in C, mapping query results directly to NumPy arrays, bypassing the Python layer for 10–50x speedup.">高性能 PostgreSQL 到 NumPy/Pandas 数据搬运工具。用 C 实现零拷贝数据传输，将数据库查询结果直接映射为 NumPy 数组，跳过 Python 中间层，速度提升 10–50x。</div>
+      <div class="card-tags">
+        <span class="tag">零拷贝</span>
+        <span class="tag green">PostgreSQL</span>
+        <span class="tag purple">高性能</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/warp_prism" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="data">
+      <div class="card-header">
+        <div class="card-icon">🔄</div>
+        <div>
+          <div class="card-title">Blaze</div>
+          <div class="card-lang">Python · ⭐ 35 · 🍴 24</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="大数据的 NumPy/Pandas 接口层。统一访问 CSV、SQL、HDF5、Spark 等异构数据源，将 Pandas 式操作翻译为底层查询。与 Odo 搭配实现数据迁移管道。" data-en="NumPy/Pandas interface to Big Data. Unified access to CSV, SQL, HDF5, Spark and other heterogeneous data sources, translating Pandas-like operations to underlying queries. Pairs with Odo for data migration pipelines.">大数据的 NumPy/Pandas 接口层。统一访问 CSV、SQL、HDF5、Spark 等异构数据源，将 Pandas 式操作翻译为底层查询。与 Odo 搭配实现数据迁移管道。</div>
+      <div class="card-tags">
+        <span class="tag">大数据</span>
+        <span class="tag green">Pandas 接口</span>
+        <span class="tag purple">异构数据源</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/blaze" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <!-- ===== ML & Bayes ===== -->
+    <div class="skill-card fade-in" data-cat="ml">
+      <div class="card-header">
+        <div class="card-icon">🧠</div>
+        <div>
+          <div class="card-title">BayesAlpha</div>
+          <div class="card-lang">Python · ⭐ 113 · 🍴 59</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="贝叶斯模型评估收益与 Alpha 的不确定性。用 PyMC3 构建层次化贝叶斯模型，量化策略收益的置信区间与后验分布。可与 Pyfolio 集成生成贝叶斯 tear sheet。" data-en="Bayesian models for computing performance and uncertainty of returns and alpha. Uses PyMC3 to build hierarchical Bayesian models, quantifying confidence intervals and posterior distributions of strategy returns. Integrates with Pyfolio for Bayesian tear sheets.">贝叶斯模型评估收益与 Alpha 的不确定性。用 PyMC3 构建层次化贝叶斯模型，量化策略收益的置信区间与后验分布。可与 Pyfolio 集成生成贝叶斯 tear sheet。</div>
+      <div class="card-tags">
+        <span class="tag">贝叶斯</span>
+        <span class="tag green">PyMC3</span>
+        <span class="tag purple">不确定性</span>
+        <span class="tag orange">后验分布</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/bayesalpha" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="ml">
+      <div class="card-header">
+        <div class="card-icon">🤖</div>
+        <div>
+          <div class="card-title">MlFinLab</div>
+          <div class="card-lang">Python · ⭐ 63 · 🍴 85</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="机器学习金融实验室。提供可复现、可解释的 ML 工具，帮助基金经理和交易员利用机器学习。涵盖元标签（Meta-Labeling）、三重屏障法、样本权重等 Advances in Financial Machine Learning 核心方法。" data-en="Machine Learning Finance Lab. Provides reproducible, interpretable ML tools for portfolio managers and traders. Covers meta-labeling, triple-barrier method, sample weighting — core techniques from Advances in Financial Machine Learning.">机器学习金融实验室。提供可复现、可解释的 ML 工具，帮助基金经理和交易员利用机器学习。涵盖元标签（Meta-Labeling）、三重屏障法、样本权重等 Advances in Financial Machine Learning 核心方法。</div>
+      <div class="card-tags">
+        <span class="tag">ML金融</span>
+        <span class="tag green">元标签</span>
+        <span class="tag purple">三重屏障</span>
+        <span class="tag orange">AFML</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/mlfinlab" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="ml">
+      <div class="card-header">
+        <div class="card-icon">🎲</div>
+        <div>
+          <div class="card-title">Probabilistic Programming &amp; Bayesian Methods for Hackers</div>
+          <div class="card-lang">Jupyter Notebook · ⭐ 7,900 (fork) · 🍴 75</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="贝叶斯方法与概率编程入门经典。以计算理解优先、数学推导其次的教学理念，用纯 Python 实现贝叶斯推断、MCMC 采样、PyMC 应用。Quantopian 的 Fork 版本。" data-en="Classic introduction to Bayesian methods and probabilistic programming. Computation-first, mathematics-second pedagogy, implementing Bayesian inference, MCMC sampling, and PyMC applications in pure Python. Quantopian's fork edition.">贝叶斯方法与概率编程入门经典。以计算理解优先、数学推导其次的教学理念，用纯 Python 实现贝叶斯推断、MCMC 采样、PyMC 应用。Quantopian 的 Fork 版本。</div>
+      <div class="card-tags">
+        <span class="tag">贝叶斯</span>
+        <span class="tag green">概率编程</span>
+        <span class="tag purple">MCMC</span>
+        <span class="tag cyan">PyMC</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ MIT</span>
+      </div>
+    </div>
+
+    <!-- ===== Research & Edu ===== -->
+    <div class="skill-card fade-in" data-cat="infra">
+      <div class="card-header">
+        <div class="card-icon">📚</div>
+        <div>
+          <div class="card-title">Research Public</div>
+          <div class="card-lang">Jupyter Notebook · ⭐ 2,817 · 🍴 1,726</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="量化研究与教育资料库。包含因子挖掘、配对交易、均值方差优化、动量策略等完整 Jupyter Notebook 教程。社区引用量最大的量化学习资源之一。" data-en="Quantitative research and educational materials. Complete Jupyter Notebook tutorials covering factor mining, pairs trading, mean-variance optimization, momentum strategies. One of the most referenced quant learning resources in the community.">量化研究与教育资料库。包含因子挖掘、配对交易、均值方差优化、动量策略等完整 Jupyter Notebook 教程。社区引用量最大的量化学习资源之一。</div>
+      <div class="card-tags">
+        <span class="tag">教程</span>
+        <span class="tag green">因子挖掘</span>
+        <span class="tag purple">配对交易</span>
+        <span class="tag orange">策略研究</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/research_public" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="infra">
+      <div class="card-header">
+        <div class="card-icon">🧪</div>
+        <div>
+          <div class="card-title">Algorithm Component Library</div>
+          <div class="card-lang">Python · ⭐ 112 · 🍴 105</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="交易算法组件库。提供可复用的代码片段（技术指标计算、订单类型、风控逻辑），像搭积木一样组合成完整交易策略。是 Zipline 策略开发的速查手册。" data-en="Trading algorithm component library. Provides reusable code snippets (technical indicators, order types, risk logic) that can be assembled into complete trading strategies like building blocks. A quick-reference manual for Zipline strategy development.">交易算法组件库。提供可复用的代码片段（技术指标计算、订单类型、风控逻辑），像搭积木一样组合成完整交易策略。是 Zipline 策略开发的速查手册。</div>
+      <div class="card-tags">
+        <span class="tag">代码片段</span>
+        <span class="tag green">策略组件</span>
+        <span class="tag purple">风控逻辑</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/algorithm-component-library" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="infra">
+      <div class="card-header">
+        <div class="card-icon">📝</div>
+        <div>
+          <div class="card-title">Quantopian Algos</div>
+          <div class="card-lang">Python · ⭐ 187 · 🍴 89</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="社区交易算法脚本合集。收录用户在 Quantopian 平台上提交的实盘与回测算法，涵盖均值回归、动量、统计套利等多种策略风格的完整实现。" data-en="Community trading algorithm scripts. Collects live and backtested algorithms submitted by users on the Quantopian platform, covering mean reversion, momentum, statistical arbitrage, and more strategy styles.">社区交易算法脚本合集。收录用户在 Quantopian 平台上提交的实盘与回测算法，涵盖均值回归、动量、统计套利等多种策略风格的完整实现。</div>
+      <div class="card-tags">
+        <span class="tag">策略脚本</span>
+        <span class="tag green">实盘算法</span>
+        <span class="tag purple">均值回归</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/quantopian-algos" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <!-- ===== Utils ===== -->
+    <div class="skill-card fade-in" data-cat="utils">
+      <div class="card-header">
+        <div class="card-icon">🎛️</div>
+        <div>
+          <div class="card-title">Qgrid</div>
+          <div class="card-lang">Python · ⭐ 3,080 · 🍴 422</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="Jupyter 中的交互式 DataFrame 网格组件。支持排序、过滤、编辑 Pandas DataFrame，是数据探索与清洗的利器。与 SlickGrid 集成实现前端渲染。" data-en="Interactive DataFrame grid widget for Jupyter. Supports sorting, filtering, and editing Pandas DataFrames — a powerful tool for data exploration and cleaning. Integrates SlickGrid for frontend rendering.">Jupyter 中的交互式 DataFrame 网格组件。支持排序、过滤、编辑 Pandas DataFrame，是数据探索与清洗的利器。与 SlickGrid 集成实现前端渲染。</div>
+      <div class="card-tags">
+        <span class="tag">Jupyter</span>
+        <span class="tag green">DataFrame</span>
+        <span class="tag purple">交互式</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/qgrid" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ MIT</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="utils">
+      <div class="card-header">
+        <div class="card-icon">🐛</div>
+        <div>
+          <div class="card-title">Qdb</div>
+          <div class="card-lang">Python · ⭐ 316 · 🍴 115</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="Quantopian 远程 Python 调试器。可在远程服务器上设置断点、检查变量、单步执行，专为分布式算法交易环境设计。比 pdb 更适合云端调试。" data-en="Quantopian Remote Debugger for Python. Set breakpoints, inspect variables, and step through code on remote servers — designed specifically for distributed algorithmic trading environments. Better than pdb for cloud debugging.">Quantopian 远程 Python 调试器。可在远程服务器上设置断点、检查变量、单步执行，专为分布式算法交易环境设计。比 pdb 更适合云端调试。</div>
+      <div class="card-tags">
+        <span class="tag">远程调试</span>
+        <span class="tag green">断点</span>
+        <span class="tag purple">分布式</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/qdb" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="utils">
+      <div class="card-header">
+        <div class="card-icon">🔧</div>
+        <div>
+          <div class="card-title">Libpy</div>
+          <div class="card-lang">C++ · ⭐ 84 · 🍴 30</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="C++ 扩展模块工具库。提供高效的 Python/C++ 互操作工具，用于编写高性能的 C++ 扩展。是 Zipline 和 Warp Prism 底层性能优化的基础设施。" data-en="Utilities for writing C++ extension modules. Provides efficient Python/C++ interop tools for writing high-performance C++ extensions. The infrastructure behind Zipline and Warp Prism's low-level performance optimization.">C++ 扩展模块工具库。提供高效的 Python/C++ 互操作工具，用于编写高性能的 C++ 扩展。是 Zipline 和 Warp Prism 底层性能优化的基础设施。</div>
+      <div class="card-tags">
+        <span class="tag">C++扩展</span>
+        <span class="tag green">高性能</span>
+        <span class="tag purple">Python绑定</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/libpy" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="utils">
+      <div class="card-header">
+        <div class="card-icon">📈</div>
+        <div>
+          <div class="card-title">TA-Lib (Python Wrapper)</div>
+          <div class="card-lang">C · ⭐ 22 · 🍴 14</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="技术分析库的 Python 封装。提供 150+ 技术指标（MACD、RSI、布林带、KDJ 等），底层为 C 实现，计算速度极快。Quantopian 维护的 Fork 版本。" data-en="Python wrapper for the TA-Lib technical analysis library. Provides 150+ technical indicators (MACD, RSI, Bollinger Bands, KDJ, etc.), backed by C for extreme speed. Quantopian's maintained fork.">技术分析库的 Python 封装。提供 150+ 技术指标（MACD、RSI、布林带、KDJ 等），底层为 C 实现，计算速度极快。Quantopian 维护的 Fork 版本。</div>
+      <div class="card-tags">
+        <span class="tag">技术指标</span>
+        <span class="tag green">150+指标</span>
+        <span class="tag purple">C底层</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/ta-lib" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="data">
+      <div class="card-header">
+        <div class="card-icon">🐙</div>
+        <div>
+          <div class="card-title">Robintrack</div>
+          <div class="card-lang">Python · ⭐ 15 · 🍴 26</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="Robinhood 平台散户持仓数据爬虫。抓取 Robinhood API 获取个股持仓人数与价格数据，用于分析散户情绪与反向指标。" data-en="Robinhood platform retail holding data scraper. Scrapes the Robinhood API for stock popularity and price data, used to analyze retail sentiment and contrarian indicators.">Robinhood 平台散户持仓数据爬虫。抓取 Robinhood API 获取个股持仓人数与价格数据，用于分析散户情绪与反向指标。</div>
+      <div class="card-tags">
+        <span class="tag">散户数据</span>
+        <span class="tag green">Robinhood</span>
+        <span class="tag purple">情绪分析</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/robintrack" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="utils">
+      <div class="card-header">
+        <div class="card-icon">📒</div>
+        <div>
+          <div class="card-title">PgContents</div>
+          <div class="card-lang">Python · ⭐ 150 · 🍴 86</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="基于 PostgreSQL 的 Jupyter 内容管理器。将 Jupyter Notebook 的文件系统后端替换为 PostgreSQL，支持多用户协作、版本控制与云存储。" data-en="PostgreSQL-backed ContentsManager for Jupyter. Replaces Jupyter Notebook's file system backend with PostgreSQL, supporting multi-user collaboration, version control, and cloud storage.">基于 PostgreSQL 的 Jupyter 内容管理器。将 Jupyter Notebook 的文件系统后端替换为 PostgreSQL，支持多用户协作、版本控制与云存储。</div>
+      <div class="card-tags">
+        <span class="tag">Jupyter</span>
+        <span class="tag green">PostgreSQL</span>
+        <span class="tag purple">多用户</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/pgcontents" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="utils">
+      <div class="card-header">
+        <div class="card-icon">🔔</div>
+        <div>
+          <div class="card-title">Coal Mine</div>
+          <div class="card-lang">Python · ⭐ 117 · 🍴 40</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="定时任务执行监控器。监控 Cron 作业是否按时完成，支持多通道告警（邮件、Slack、PagerDuty），确保数据管道与回测调度不遗漏。" data-en="Periodic task execution monitor. Monitors whether Cron jobs complete on time, with multi-channel alerting (email, Slack, PagerDuty), ensuring data pipelines and backtest schedules aren't missed.">定时任务执行监控器。监控 Cron 作业是否按时完成，支持多通道告警（邮件、Slack、PagerDuty），确保数据管道与回测调度不遗漏。</div>
+      <div class="card-tags">
+        <span class="tag">监控</span>
+        <span class="tag green">Cron</span>
+        <span class="tag purple">告警</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/coal-mine" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="utils">
+      <div class="card-header">
+        <div class="card-icon">🖥️</div>
+        <div>
+          <div class="card-title">PenguinDome</div>
+          <div class="card-lang">Python · ⭐ 94 · 🍴 28</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="Linux 移动设备管理（MDM）工具。简化 Linux 设备的批量部署、策略推送与补丁管理，Quantopian 基础设施团队的运维利器。" data-en="Simple Linux Mobile Device Management (MDM) tool. Simplifies batch deployment, policy push, and patch management for Linux devices — an ops tool from Quantopian's infrastructure team.">Linux 移动设备管理（MDM）工具。简化 Linux 设备的批量部署、策略推送与补丁管理，Quantopian 基础设施团队的运维利器。</div>
+      <div class="card-tags">
+        <span class="tag">MDM</span>
+        <span class="tag green">Linux</span>
+        <span class="tag purple">运维</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/quantopian/PenguinDome" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ====== Application Directions ====== -->
+<section class="section" id="directions">
+  <h2 class="section-title">
+    <span class="icon">🧭</span>
+    <span data-zh="技术应用方向" data-en="Application Directions">技术应用方向</span>
+  </h2>
+  <p class="section-desc" data-zh="基于 Quantopian 开源工具链可延伸的六大应用场景" data-en="Six extended application scenarios based on the Quantopian open-source toolchain">基于 Quantopian 开源工具链可延伸的六大应用场景</p>
+
+  <div class="app-grid">
+
+    <div class="app-card fade-in">
+      <div class="app-icon">🏦</div>
+      <h3 data-zh="量化策略研发平台" data-en="Quant Strategy R&amp;D Platform">量化策略研发平台</h3>
+      <p data-zh="基于 Zipline 回测引擎 + Alphalens 因子分析 + Pyfolio 组合诊断，构建端到端的策略研发闭环。支持从因子挖掘、信号生成、组合构建到风险归因的全流程。" data-en="Build an end-to-end strategy R&amp;D loop based on Zipline backtesting + Alphalens factor analysis + Pyfolio portfolio diagnostics. Supports the full pipeline from factor mining, signal generation, portfolio construction to risk attribution.">基于 Zipline 回测引擎 + Alphalens 因子分析 + Pyfolio 组合诊断，构建端到端的策略研发闭环。支持从因子挖掘、信号生成、组合构建到风险归因的全流程。</p>
+      <div class="app-tools">
+        <span class="mini-tag">Zipline</span>
+        <span class="mini-tag">Alphalens</span>
+        <span class="mini-tag">Pyfolio</span>
+        <span class="mini-tag">Empyrical</span>
+      </div>
+    </div>
+
+    <div class="app-card fade-in">
+      <div class="app-icon">🧬</div>
+      <h3 data-zh="Alpha 因子工厂" data-en="Alpha Factor Factory">Alpha 因子工厂</h3>
+      <p data-zh="用 Alphalens 批量评估因子的 IC、衰减、换手率；结合 TA-Lib 的 150+ 技术指标库快速生成候选因子；MlFinLab 的元标签方法实现因子组合与信号增强。" data-en="Batch evaluate factor IC, decay, turnover with Alphalens; rapidly generate candidate factors with TA-Lib's 150+ indicators; use MlFinLab's meta-labeling for factor combination and signal enhancement.">用 Alphalens 批量评估因子的 IC、衰减、换手率；结合 TA-Lib 的 150+ 技术指标库快速生成候选因子；MlFinLab 的元标签方法实现因子组合与信号增强。</p>
+      <div class="app-tools">
+        <span class="mini-tag">Alphalens</span>
+        <span class="mini-tag">TA-Lib</span>
+        <span class="mini-tag">MlFinLab</span>
+      </div>
+    </div>
+
+    <div class="app-card fade-in">
+      <div class="app-icon">⚖️</div>
+      <h3 data-zh="风险管理仪表板" data-en="Risk Management Dashboard">风险管理仪表板</h3>
+      <p data-zh="Empyrical 提供 30+ 风险指标的计算核心，Pyfolio 输出可视化 tear sheet，BayesAlpha 量化不确定性。三者结合构建实时风险监控与归因系统。" data-en="Empyrical provides 30+ risk metric calculations, Pyfolio outputs visual tear sheets, BayesAlpha quantifies uncertainty. Combine all three to build real-time risk monitoring and attribution systems.">Empyrical 提供 30+ 风险指标的计算核心，Pyfolio 输出可视化 tear sheet，BayesAlpha 量化不确定性。三者结合构建实时风险监控与归因系统。</p>
+      <div class="app-tools">
+        <span class="mini-tag">Empyrical</span>
+        <span class="mini-tag">Pyfolio</span>
+        <span class="mini-tag">BayesAlpha</span>
+      </div>
+    </div>
+
+    <div class="app-card fade-in">
+      <div class="app-icon">🔬</div>
+      <h3 data-zh="贝叶斯量化研究" data-en="Bayesian Quant Research">贝叶斯量化研究</h3>
+      <p data-zh="BayesAlpha 的层次化贝叶斯模型评估策略收益置信区间；Probabilistic Programming 教程提供理论入门；PyMC3 生态构建自定义推断模型。" data-en="BayesAlpha's hierarchical Bayesian models evaluate strategy return confidence intervals; Probabilistic Programming tutorials provide theoretical introduction; PyMC3 ecosystem for custom inference models.">BayesAlpha 的层次化贝叶斯模型评估策略收益置信区间；Probabilistic Programming 教程提供理论入门；PyMC3 生态构建自定义推断模型。</p>
+      <div class="app-tools">
+        <span class="mini-tag">BayesAlpha</span>
+        <span class="mini-tag">ProbProg</span>
+        <span class="mini-tag">PyMC3</span>
+      </div>
+    </div>
+
+    <div class="app-card fade-in">
+      <div class="app-icon">🗄️</div>
+      <h3 data-zh="高性能金融数据管道" data-en="High-Performance Financial Data Pipeline">高性能金融数据管道</h3>
+      <p data-zh="Warp Prism 实现数据库到 NumPy 的零拷贝传输，Blaze 统一异构数据源访问，Odo 完成数据格式转换，Trading Calendars 保证时间对齐。端到端的数据采集→清洗→回测管道。" data-en="Warp Prism for zero-copy DB-to-NumPy transfer, Blaze for unified heterogeneous data access, Odo for format conversion, Trading Calendars for time alignment. An end-to-end data collection → cleaning → backtesting pipeline.">Warp Prism 实现数据库到 NumPy 的零拷贝传输，Blaze 统一异构数据源访问，Odo 完成数据格式转换，Trading Calendars 保证时间对齐。端到端的数据采集→清洗→回测管道。</p>
+      <div class="app-tools">
+        <span class="mini-tag">Warp Prism</span>
+        <span class="mini-tag">Blaze</span>
+        <span class="mini-tag">Odo</span>
+        <span class="mini-tag">TradingCal</span>
+      </div>
+    </div>
+
+    <div class="app-card fade-in">
+      <div class="app-icon">🎓</div>
+      <h3 data-zh="量化金融教育平台" data-en="Quant Finance Education Platform">量化金融教育平台</h3>
+      <p data-zh="Research Public 提供完整 Jupyter 教程，Algorithm Component Library 供应可复用代码模板，Qgrid 实现交互式数据探索，PgContents 支持多用户云端笔记本。" data-en="Research Public provides complete Jupyter tutorials, Algorithm Component Library supplies reusable code templates, Qgrid enables interactive data exploration, PgContents supports multi-user cloud notebooks.">Research Public 提供完整 Jupyter 教程，Algorithm Component Library 供应可复用代码模板，Qgrid 实现交互式数据探索，PgContents 支持多用户云端笔记本。</p>
+      <div class="app-tools">
+        <span class="mini-tag">Research</span>
+        <span class="mini-tag">ACL</span>
+        <span class="mini-tag">Qgrid</span>
+        <span class="mini-tag">PgContents</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ====== History ====== -->
+<section class="section" id="history">
+  <h2 class="section-title">
+    <span class="icon">📜</span>
+    <span data-zh="发展历程" data-en="Development History">发展历程</span>
+  </h2>
+  <p class="section-desc" data-zh="从众包对冲基金到开源遗产" data-en="From crowdsourced hedge fund to open-source legacy">从众包对冲基金到开源遗产</p>
+
+  <div class="timeline">
+    <div class="timeline-item fade-in">
+      <div class="year">2011</div>
+      <div class="event" data-zh="Quantopian 成立，开创「众包量化交易」模式——让全球量化爱好者提交算法，优秀策略获资金实盘交易" data-en="Quantopian founded, pioneering the 'crowdsourced quant trading' model — letting quant enthusiasts worldwide submit algorithms, with the best strategies receiving capital for live trading">Quantopian 成立，开创「众包量化交易」模式——让全球量化爱好者提交算法，优秀策略获资金实盘交易</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2012–2014</div>
+      <div class="event" data-zh="发布 Zipline 开源回测引擎，建立 Blaze/Odo 大数据管道，Fork 并维护 Pandas、IPython 等核心项目" data-en="Released Zipline open-source backtesting engine, built Blaze/Odo big data pipeline, forked and maintained core projects like Pandas and IPython">发布 Zipline 开源回测引擎，建立 Blaze/Odo 大数据管道，Fork 并维护 Pandas、IPython 等核心项目</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2015–2016</div>
+      <div class="event" data-zh="推出 Alphalens（因子分析）、Pyfolio（组合诊断）、Trading Calendars（交易日历）三件套，形成完整的策略研发→评估→风控闭环" data-en="Launched the triple combo of Alphalens (factor analysis), Pyfolio (portfolio diagnostics), and Trading Calendars, forming a complete strategy R&amp;D → evaluation → risk control loop">推出 Alphalens（因子分析）、Pyfolio（组合诊断）、Trading Calendars（交易日历）三件套，形成完整的策略研发→评估→风控闭环</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2017–2018</div>
+      <div class="event" data-zh="发行众包对冲基金，管理资产达 $250M；发布 Research Public 教育资料库与 Qgrid 交互组件；开始探索贝叶斯方法（BayesAlpha）" data-en="Issued crowdsourced hedge fund, AUM reached $250M; released Research Public educational repository and Qgrid interactive widget; began exploring Bayesian methods (BayesAlpha)">发行众包对冲基金，管理资产达 $250M；发布 Research Public 教育资料库与 Qgrid 交互组件；开始探索贝叶斯方法（BayesAlpha）</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2019</div>
+      <div class="event" data-zh="发布 Empyrical 独立风险指标库，将 Pyfolio 底层计算标准化；MlFinLab 引入 AFML 机器学习方法论；Warp Prism 解决数据库性能瓶颈" data-en="Released Empyrical as an independent risk metrics library, standardizing Pyfolio's underlying calculations; MlFinLab introduced AFML machine learning methodology; Warp Prism solved database performance bottlenecks">发布 Empyrical 独立风险指标库，将 Pyfolio 底层计算标准化；MlFinLab 引入 AFML 机器学习方法论；Warp Prism 解决数据库性能瓶颈</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2020</div>
+      <div class="event" data-zh="Quantopian 关闭实盘交易业务，但全部开源项目继续由社区维护。Zipline 被 QuantConnect 接管，Pyfolio/Alphalens/Empyrical 活跃至今" data-en="Quantopian closed its live trading business, but all open-source projects continue to be maintained by the community. Zipline was taken over by QuantConnect; Pyfolio/Alphalens/Empyrical remain active to this day">Quantopian 关闭实盘交易业务，但全部开源项目继续由社区维护。Zipline 被 QuantConnect 接管，Pyfolio/Alphalens/Empyrical 活跃至今</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2021–至今</div>
+      <div class="event" data-zh="开源遗产持续影响量化生态：Zipline 3.x 由 QuantConnect 演进，Alphalens/Pyfolio 成为因子研究与风险分析的事实标准，Empyrical 被 OpenBB 等新平台采用" data-en="Open-source legacy continues to shape the quant ecosystem: Zipline 3.x evolved by QuantConnect, Alphalens/Pyfolio became de facto standards for factor research and risk analysis, Empyrical adopted by new platforms like OpenBB">开源遗产持续影响量化生态：Zipline 3.x 由 QuantConnect 演进，Alphalens/Pyfolio 成为因子研究与风险分析的事实标准，Empyrical 被 OpenBB 等新平台采用</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Ecosystem Map (Second SVG) ====== -->
+<section class="section">
+  <h2 class="section-title">
+    <span class="icon">🗺️</span>
+    <span data-zh="技术栈全景图" data-en="Technology Stack Panorama">技术栈全景图</span>
+  </h2>
+  <p class="section-desc" data-zh="按技术层次展示 Quantopian 开源项目的定位与关系" data-en="Position and relationships of Quantopian open-source projects by technology layer">按技术层次展示 Quantopian 开源项目的定位与关系</p>
+
+  <div class="network-container">
+    <svg class="network-svg" viewBox="0 0 1100 560" xmlns="http://www.w3.org/2000/svg">
+      <!-- Layer backgrounds -->
+      <rect x="20" y="20" width="1060" height="100" rx="12" fill="#3b82f608" stroke="#3b82f630" stroke-width="1"/>
+      <text x="40" y="50" fill="#3b82f6" font-size="14" font-weight="700" data-zh="🎯 应用层" data-en="🎯 Application Layer">🎯 应用层</text>
+
+      <rect x="20" y="140" width="1060" height="100" rx="12" fill="#8b5cf608" stroke="#8b5cf630" stroke-width="1"/>
+      <text x="40" y="170" fill="#8b5cf6" font-size="14" font-weight="700" data-zh="📊 分析层" data-en="📊 Analytics Layer">📊 分析层</text>
+
+      <rect x="20" y="260" width="1060" height="100" rx="12" fill="#10b98108" stroke="#10b98130" stroke-width="1"/>
+      <text x="40" y="290" fill="#10b981" font-size="14" font-weight="700" data-zh="⚙️ 引擎层" data-en="⚙️ Engine Layer">⚙️ 引擎层</text>
+
+      <rect x="20" y="380" width="1060" height="80" rx="12" fill="#06b6d408" stroke="#06b6d430" stroke-width="1"/>
+      <text x="40" y="408" fill="#06b6d4" font-size="14" font-weight="700" data-zh="💾 数据层" data-en="💾 Data Layer">💾 数据层</text>
+
+      <rect x="20" y="478" width="1060" height="70" rx="12" fill="#f59e0b08" stroke="#f59e0b30" stroke-width="1"/>
+      <text x="40" y="505" fill="#f59e0b" font-size="14" font-weight="700" data-zh="🔧 基础设施" data-en="🔧 Infrastructure">🔧 基础设施</text>
+
+      <!-- Application Layer Nodes -->
+      <g>
+        <rect x="180" y="38" width="160" height="60" rx="8" fill="#1a2235" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="260" y="66" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">Research Public</text>
+        <text x="260" y="84" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 2,817 · 教程与策略</text>
+      </g>
+      <g>
+        <rect x="380" y="38" width="160" height="60" rx="8" fill="#1a2235" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="460" y="66" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">Quantopian Algos</text>
+        <text x="460" y="84" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 187 · 算法脚本</text>
+      </g>
+      <g>
+        <rect x="580" y="38" width="160" height="60" rx="8" fill="#1a2235" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="660" y="66" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">ACL</text>
+        <text x="660" y="84" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 112 · 策略组件库</text>
+      </g>
+      <g>
+        <rect x="780" y="38" width="160" height="60" rx="8" fill="#1a2235" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="860" y="66" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">Bayesian Hackers</text>
+        <text x="860" y="84" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 7,900 · 贝叶斯教程</text>
+      </g>
+
+      <!-- Analytics Layer Nodes -->
+      <g>
+        <rect x="120" y="155" width="150" height="60" rx="8" fill="#1a2235" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="195" y="183" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">Alphalens</text>
+        <text x="195" y="201" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 4,281 · 因子分析</text>
+      </g>
+      <g>
+        <rect x="310" y="155" width="150" height="60" rx="8" fill="#1a2235" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="385" y="183" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">Pyfolio</text>
+        <text x="385" y="201" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 6,313 · 组合诊断</text>
+      </g>
+      <g>
+        <rect x="500" y="155" width="150" height="60" rx="8" fill="#1a2235" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="575" y="183" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">Empyrical</text>
+        <text x="575" y="201" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 1,481 · 风险指标</text>
+      </g>
+      <g>
+        <rect x="690" y="155" width="150" height="60" rx="8" fill="#1a2235" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="765" y="183" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">BayesAlpha</text>
+        <text x="765" y="201" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 113 · 贝叶斯推断</text>
+      </g>
+      <g>
+        <rect x="880" y="155" width="150" height="60" rx="8" fill="#1a2235" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="955" y="183" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">MlFinLab</text>
+        <text x="955" y="201" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 63 · ML金融</text>
+      </g>
+
+      <!-- Engine Layer Nodes -->
+      <g>
+        <rect x="320" y="280" width="200" height="60" rx="8" fill="#1a2235" stroke="#10b981" stroke-width="2"/>
+        <text x="420" y="308" text-anchor="middle" fill="#e8edf5" font-size="16" font-weight="700">Zipline</text>
+        <text x="420" y="326" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 19,802 · 回测引擎</text>
+      </g>
+      <g>
+        <rect x="570" y="280" width="160" height="60" rx="8" fill="#1a2235" stroke="#10b981" stroke-width="1.5"/>
+        <text x="650" y="308" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">Trading Calendars</text>
+        <text x="650" y="326" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 657 · 交易日历</text>
+      </g>
+      <g>
+        <rect x="120" y="280" width="160" height="60" rx="8" fill="#1a2235" stroke="#10b981" stroke-width="1.5"/>
+        <text x="200" y="308" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">TA-Lib</text>
+        <text x="200" y="326" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 22 · 技术指标</text>
+      </g>
+      <g>
+        <rect x="780" y="280" width="160" height="60" rx="8" fill="#1a2235" stroke="#10b981" stroke-width="1.5"/>
+        <text x="860" y="308" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">Qgrid</text>
+        <text x="860" y="326" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 3,080 · 交互表格</text>
+      </g>
+
+      <!-- Data Layer Nodes -->
+      <g>
+        <rect x="120" y="398" width="150" height="50" rx="8" fill="#1a2235" stroke="#06b6d4" stroke-width="1.5"/>
+        <text x="195" y="428" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Warp Prism</text>
+      </g>
+      <g>
+        <rect x="310" y="398" width="130" height="50" rx="8" fill="#1a2235" stroke="#06b6d4" stroke-width="1.5"/>
+        <text x="375" y="428" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Blaze</text>
+      </g>
+      <g>
+        <rect x="480" y="398" width="130" height="50" rx="8" fill="#1a2235" stroke="#06b6d4" stroke-width="1.5"/>
+        <text x="545" y="428" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Odo</text>
+      </g>
+      <g>
+        <rect x="650" y="398" width="150" height="50" rx="8" fill="#1a2235" stroke="#06b6d4" stroke-width="1.5"/>
+        <text x="725" y="428" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Robintrack</text>
+      </g>
+      <g>
+        <rect x="840" y="398" width="130" height="50" rx="8" fill="#1a2235" stroke="#06b6d4" stroke-width="1.5"/>
+        <text x="905" y="428" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Libpy</text>
+      </g>
+
+      <!-- Infrastructure Nodes -->
+      <g>
+        <rect x="120" y="490" width="140" height="44" rx="8" fill="#1a2235" stroke="#f59e0b" stroke-width="1"/>
+        <text x="190" y="517" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="500">PgContents</text>
+      </g>
+      <g>
+        <rect x="300" y="490" width="130" height="44" rx="8" fill="#1a2235" stroke="#f59e0b" stroke-width="1"/>
+        <text x="365" y="517" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="500">Coal Mine</text>
+      </g>
+      <g>
+        <rect x="470" y="490" width="140" height="44" rx="8" fill="#1a2235" stroke="#f59e0b" stroke-width="1"/>
+        <text x="540" y="517" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="500">PenguinDome</text>
+      </g>
+      <g>
+        <rect x="650" y="490" width="100" height="44" rx="8" fill="#1a2235" stroke="#f59e0b" stroke-width="1"/>
+        <text x="700" y="517" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="500">Qdb</text>
+      </g>
+      <g>
+        <rect x="790" y="490" width="160" height="44" rx="8" fill="#1a2235" stroke="#f59e0b" stroke-width="1"/>
+        <text x="870" y="517" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="500">Argo/K8s/Helm</text>
+      </g>
+
+      <!-- Vertical dependency arrows -->
+      <g opacity="0.3">
+        <line x1="260" y1="98" x2="260" y2="140" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="385" y1="215" x2="385" y2="260" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="575" y1="215" x2="480" y2="280" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="420" y1="340" x2="375" y2="398" stroke="#10b981" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="420" y1="340" x2="195" y2="398" stroke="#10b981" stroke-width="1" stroke-dasharray="4,3"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p data-zh="Quantopian Open Source Ecosystem · 数据来源：GitHub · 构建：WorkBuddy" data-en="Quantopian Open Source Ecosystem · Data Source: GitHub · Built with WorkBuddy">Quantopian Open Source Ecosystem · 数据来源：GitHub · 构建：WorkBuddy</p>
+  <p style="margin-top:8px;color:var(--text-muted);" data-zh="⚠️ Quantopian 已于 2020 年关闭运营，所有项目由社区继续维护" data-en="⚠️ Quantopian ceased operations in 2020; all projects are now community-maintained">⚠️ Quantopian 已于 2020 年关闭运营，所有项目由社区继续维护</p>
+</footer>
+
+<script>
+// ===== Language Toggle =====
+let currentLang = 'zh';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.documentElement.lang = lang === 'zh' ? 'zh' : 'en';
+
+  document.querySelectorAll('[data-zh][data-en]').forEach(el => {
+    const text = el.getAttribute(`data-${lang}`);
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = text;
+    } else {
+      el.textContent = text;
+    }
+  });
+
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.textContent = link.getAttribute(`data-${lang}`);
+  });
+}
+
+// ===== Scroll Animation =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ===== Nav Active State =====
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100;
+    if (pageYOffset >= sectionTop) {
+      current = section.getAttribute('id');
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+});
+</script>
+</body>
+</html>

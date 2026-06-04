@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R自然语言处理包技能汇总 | R NLP Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#06b6d4;--glow:rgba(6,182,212,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#06b6d4,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(6,182,212,.2);border-color:rgba(6,182,212,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#06b6d4,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#06b6d4,#3b82f6);color:#fff;box-shadow:0 4px 15px rgba(6,182,212,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(6,182,212,.15);color:#67e8f9;font-weight:600}
+.pkg-tag.more{background:rgba(59,130,246,.15);color:#93c5fd}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#67e8f9}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(6,182,212,.12);border-color:rgba(6,182,212,.25);color:#67e8f9;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#22d3ee;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">💬</span>
+<h1 data-zh="R自然语言处理包技能汇总" data-en="R NLP Package Skills">R自然语言处理包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">58</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">9</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">1</div><div class="stat-label" data-zh="核心" data-en="Core">核心</div></div>
+<div class="stat-item"><div class="stat-num">2025</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/NaturalLanguageProcessing.html" target="_blank">CRAN Task View: Natural Language Processing</a></p>
+<p style="margin-top:6px" data-zh="2025 · R自然语言处理生态系统全景" data-en="2025 · R NLP Ecosystem Overview">2025 · R自然语言处理生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"framework",icon:"🏗️",color:"#06b6d4",zh:"文本挖掘框架",en:"Text Mining Frameworks",zhDesc:"语料构建/清洗/DTM/插件生态/tidyverse风格/标注框架",enDesc:"Corpus building, cleaning, DTM, plugin ecosystem, tidyverse style & annotation frameworks",
+packages:[
+{name:"tm",zh:"文本挖掘核心框架(语料/DTM/聚类/分类/字符串核)",en:"Core text mining framework: corpus, DTM, clustering & classification",core:true},
+{name:"tm.plugin.dc",zh:"tm分布式语料库插件(本地/Hadoop HDFS存储)",en:"tm plugin for distributed corpus on local storage & HDFS"},
+{name:"tm.plugin.mail",zh:"tm邮件导入插件(Thunderbird mbox/eml格式)",en:"tm plugin for importing Thunderbird mbox & eml archives"},
+{name:"tm.plugin.alceste",zh:"tm Alceste格式语料库导入插件",en:"tm plugin for importing Alceste format text corpora"},
+{name:"RcmdrPlugin.temis",zh:"R Commander文本挖掘集成插件(导入/清洗/计数/共现/聚类)",en:"R Commander plugin for integrated text mining workflow"},
+{name:"openNLP",zh:"Apache OpenNLP接口(句子检测/分词/词性标注/句法分析/NER)",en:"Apache OpenNLP: sentence detection, POS tagging, parsing & NER"},
+{name:"RWeka",zh:"Weka接口(分词/词干提取/分类/聚类/ML算法集)",en:"Weka interface: tokenization, stemming, classification & ML"},
+{name:"tidytext",zh:"tidyverse风格文本挖掘(dplyr/ggplot2/情感分析)",en:"Tidyverse-style text mining with dplyr & ggplot2"},
+{name:"udpipe",zh:"语言无关标注(分词/词性/词形还原/依存句法/模型训练)",en:"Language-agnostic: tokenization, POS, lemmatization & dependency parsing"}
+]},
+
+{id:"tokenize",icon:"✂️",color:"#3b82f6",zh:"分词与词干提取",en:"Tokenization & Stemming",zhDesc:"分词器/词干提取/字符串处理/正则/编码/语音算法/OCR/拼写检查",enDesc:"Tokenizers, stemming, string processing, regex, encoding, phonetics, OCR & spell check",
+packages:[
+{name:"tokenizers",zh:"文本分词器(n-gram/词/句子/段落/字符/shingl)",en:"Text tokenizers: n-gram, word, sentence, paragraph & character"},
+{name:"tokenizers.bpe",zh:"字节对编码分词(BPE/音节token)",en:"Byte-pair encoding tokenizer for syllable-level tokens"},
+{name:"sentencepiece",zh:"无监督分词器(BPE/Unigram/Char/Word模型)",en:"Unsupervised tokenizer: BPE, Unigram, Char & Word models"},
+{name:"SnowballC",zh:"Snowball词干提取(多语言/Porter/Schinke)",en:"Snowball stemming for multiple languages via Porter algorithm"},
+{name:"hunspell",zh:"词干提取与拼写检查(丰富形态/复合词语言)",en:"Stemming & spell checking for morphologically rich languages"},
+{name:"stringi",zh:"ICU字符串操作(编码/搜索/排序/Unicode/边界分析)",en:"ICU string operations: encoding, search, sort & Unicode"},
+{name:"stringdist",zh:"近似字符串匹配(Levenshtein/Jaccard/Jaro-Winkler等)",en:"Approximate string matching: Levenshtein, Jaccard & Jaro-Winkler"},
+{name:"ore",zh:"Onigmo正则表达式(编译对象/部分匹配/命名捕获)",en:"Onigmo regex: compiled objects, partial match & named capture"},
+{name:"tau",zh:"字符串基础操作(编码/语言处理/模式计数/分词)",en:"String basics: encoding, language processing, pattern counting"},
+{name:"gsubfn",zh:"按内容提取字符串(非分隔符/正则替换)",en:"Extract strings by content rather than delimiters"},
+{name:"phonics",zh:"语音算法集(Soundex/Metaphone/NYSIIS/Caverphone)",en:"Phonetic algorithms: Soundex, Metaphone, NYSIIS & Caverphone"},
+{name:"tesseract",zh:"OCR引擎(100+语言/UTF-8/图像文字识别)",en:"OCR engine supporting 100+ languages with UTF-8"}
+]},
+
+{id:"lexical",icon:"📖",color:"#8b5cf6",zh:"词汇与语料统计",en:"Lexical & Corpus Statistics",zhDesc:"词频分布/词汇增长/可读性/词汇多样性/语料库频率分析/关键词排列",enDesc:"Word frequency, vocabulary growth, readability, diversity, corpus frequency & keyword permutation",
+packages:[
+{name:"koRpus",zh:"语言检测/连字符/词汇多样性/可读性指数(Flesch/SMOG)",en:"Language detection, hyphenation, diversity & readability indices"},
+{name:"zipfR",zh:"词频分布统计模型(加载/操作/可视化/词汇增长曲线)",en:"Word frequency distribution models with visualization & growth curves"},
+{name:"languageR",zh:"语言学数据分析工具(Baayen教材配套数据与函数)",en:"Linguistic data analysis tools & datasets (Baayen textbook)"},
+{name:"corpora",zh:"语料库频率数据统计工具(假设检验/置信区间)",en:"Corpus frequency statistics: hypothesis tests & confidence intervals"},
+{name:"keyperm",zh:"排列检验关键词分析(识别显著频繁词)",en:"Permutation-based keyword analysis for significantly frequent words"},
+{name:"wordnet",zh:"WordNet词汇数据库R接口(同义词/上位词/下位词)",en:"WordNet lexical database interface: synonyms, hypernyms & hyponyms"},
+{name:"RKEA",zh:"KEA关键短语提取(自由索引/受控词汇索引)",en:"KEA keyphrase extraction with free & controlled vocabulary indexing"}
+]},
+
+{id:"semantic",icon:"🧠",color:"#d946ef",zh:"语义分析与主题模型",en:"Semantic Analysis & Topic Models",zhDesc:"LSA/LDA/CTM/STM/词嵌入/文本向量化/GloVe/Word2Vec/语义向量空间",enDesc:"LSA, LDA, CTM, STM, word embeddings, text vectorization, GloVe, Word2Vec & semantic vector space",
+packages:[
+{name:"lsa",zh:"潜在语义分析(截断SVD/克服同义多义问题)",en:"Latent Semantic Analysis via truncated SVD for synonymy/polysemy"},
+{name:"topicmodels",zh:"LDA与CTM主题模型(C/C++接口/困惑度)",en:"LDA & CTM topic models via C/C++ with perplexity"},
+{name:"BTM",zh:"词项共现主题模型(Biterm/短文本适用)",en:"Biterm Topic Model for short text topic discovery"},
+{name:"topicdoc",zh:"主题模型诊断(主题质量/多样性/连贯性评估)",en:"Topic-level diagnostics for LDA & CTM model quality"},
+{name:"lda",zh:"LDA及相关主题模型实现(Collapsed Gibbs)",en:"LDA & related topic models via Collapsed Gibbs sampling"},
+{name:"stm",zh:"结构主题模型(文档元数据/模型选择/可视化)",en:"Structural Topic Model with metadata, selection & visualization"},
+{name:"text2vec",zh:"文本向量化(LDA/LSA/GloVe词嵌入/相似度)",en:"Text vectorization: LDA, LSA, GloVe embeddings & similarity"},
+{name:"word2vec",zh:"Word2Vec词嵌入(CBOW/Skip-gram/向量表示)",en:"Word2Vec embeddings via CBOW & Skip-gram architectures"},
+{name:"svs",zh:"语义向量空间(LSA/PLSA/NMF/EM聚类/对应分析)",en:"Semantic vector space: LSA, PLSA, NMF, EM clustering & CA"},
+{name:"textcat",zh:"n-gram文本分类(语言识别/文档归类)",en:"n-gram text classification for language ID & document categorization"},
+{name:"skmeans",zh:"球面k-means聚类(多种算法/TF-IDF向量)",en:"Spherical k-means clustering with multiple algorithms"},
+{name:"movMF",zh:"von Mises-Fisher分布聚类(方向数据)",en:"Clustering via von Mises-Fisher distribution for directional data"}
+]},
+
+{id:"sentiment",icon:"🎭",color:"#f43f5e",zh:"情感分析与文本挖掘",en:"Sentiment Analysis & Text Mining",zhDesc:"情感分析/上下文感知/情感预测/文本挖掘/评分回归/字符串核",enDesc:"Sentiment analysis, context-aware, sentiment prediction, text mining, score regression & string kernels",
+packages:[
+{name:"sentiment.ai",zh:"句子级上下文情感分析(Google USE/预训练/GPU加速)",en:"Sentence-level contextual sentiment via Google USE & GPU"},
+{name:"sentometrics",zh:"文本情感优化预测(跨文本/时间情感计算与聚合)",en:"Optimized sentiment prediction across text & time dimensions"},
+{name:"textir",zh:"文本情感挖掘工具集(评分回归/变量选择)",en:"Text & sentiment mining: score regression & variable selection"},
+{name:"mscsweblm4r",zh:"微软Web语言模型API(词序列概率/补全)",en:"Microsoft Web LM API: word sequence probability & completion"},
+{name:"mscstexta4r",zh:"微软文本分析API(情感/主题/语言检测/关键词)",en:"Microsoft Text Analytics API: sentiment, topic & keyword extraction"},
+{name:"kernlab",zh:"字符串核(频谱核/全字符串核/tm文档格式)",en:"String kernels: spectrum & full string kernel for tm documents"},
+{name:"wordcloud",zh:"词云可视化(按频率缩放字体/颜色/形状)",en:"Word cloud visualization with frequency-scaled fonts & colors"}
+]},
+
+{id:"similarity",icon:"🔗",color:"#f59e0b",zh:"文本相似与摘要",en:"Text Similarity & Summarization",zhDesc:"文档相似度/文本重用检测/n-gram/MinHash/LSH/PageRank摘要",enDesc:"Document similarity, text reuse detection, n-gram, MinHash, LSH & PageRank summarization",
+packages:[
+{name:"textreuse",zh:"文档相似性与文本重用检测(n-gram/MinHash/LSH)",en:"Document similarity & text reuse via n-gram, MinHash & LSH"},
+{name:"textrank",zh:"PageRank文本摘要(句子间关系/关键词提取)",en:"PageRank-based text summarization & keyword extraction"},
+{name:"boilerpipeR",zh:"HTML文本提取清理(移除广告/侧边栏/导航)",en:"Extract & clean text from HTML, removing ads & navigation"}
+]},
+
+{id:"discourse",icon:"🗣️",color:"#10b981",zh:"话语分析与定量分析",en:"Discourse & Quantitative Text Analysis",zhDesc:"话语分析/转录本分析/文本定量分析/文档特征矩阵/词项权重",enDesc:"Discourse analysis, transcript analysis, quantitative text analysis, DFM & term weighting",
+packages:[
+{name:"quanteda",zh:"文本定量分析(DFM/词项权重/语料操作/统计/绘图)",en:"Quantitative text analysis: DFM, weighting, corpus ops & plots"},
+{name:"qdap",zh:"转录本定量话语分析(对话/轮次/句法/情感)",en:"Quantitative discourse analysis of transcripts & dialogues"}
+]},
+
+{id:"viz",icon:"📊",color:"#ec4899",zh:"语料库可视化与探索",en:"Corpus Visualization & Exploration",zhDesc:"语料库交互浏览/过滤/Shiny应用/文档级/句子级可视化",enDesc:"Interactive corpus browsing, filtering, Shiny apps & document/sentence-level visualization",
+packages:[
+{name:"corporaexplorer",zh:"语料库交互探索(过滤/Shiny/信息检索/时间线)",en:"Interactive corpus exploration with Shiny filtering & timeline"},
+{name:"textplot",zh:"语料库可视化(文档/句子/词语/时间线/网络图)",en:"Corpus visualization: document, sentence, word & timeline plots"}
+]},
+
+{id:"import",icon:"📥",color:"#64748b",zh:"语料库导入插件",en:"Corpus Import Plugins",zhDesc:"Factiva/LexisNexis/Europresse新闻语料导入tm插件",enDesc:"Factiva, LexisNexis & Europresse news corpus import tm plugins",
+packages:[
+{name:"tm.plugin.factiva",zh:"tm Factiva新闻语料导入(Dow Jones)",en:"tm plugin for importing Dow Jones Factiva news corpora"},
+{name:"tm.plugin.lexisnexis",zh:"tm LexisNexis新闻语料导入",en:"tm plugin for importing LexisNexis news corpora"},
+{name:"tm.plugin.europresse",zh:"tm Europresse新闻语料导入",en:"tm plugin for importing Europresse news corpora"}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(6,182,212,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(6,182,212,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>

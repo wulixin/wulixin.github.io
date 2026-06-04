@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R混合模型包技能汇总 | R Mixed Models Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#6366f1;--glow:rgba(99,102,241,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#6366f1,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#6366f1,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#6366f1,#a78bfa);color:#fff;box-shadow:0 4px 15px rgba(99,102,241,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(99,102,241,.15);color:#a5b4fc;font-weight:600}
+.pkg-tag.more{background:rgba(167,139,250,.15);color:#c4b5fd}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#a5b4fc}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(99,102,241,.12);border-color:rgba(99,102,241,.25);color:#a5b4fc;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#818cf8;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">🧬</span>
+<h1 data-zh="R混合模型包技能汇总" data-en="R Mixed Models Package Skills">R混合模型包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">180</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">12</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">10</div><div class="stat-label" data-zh="核心" data-en="Core">核心</div></div>
+<div class="stat-item"><div class="stat-num">2025</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/MixedModels.html" target="_blank">CRAN Task View: Mixed, Multilevel, and Hierarchical Models</a></p>
+<p style="margin-top:6px" data-zh="2025 · R混合模型生态系统全景" data-en="2025 · R Mixed Models Ecosystem Overview">2025 · R混合模型生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"lmm_glmm",icon:"📊",color:"#6366f1",zh:"线性与广义线性混合模型",en:"Linear & Generalized Linear Mixed Models",zhDesc:"频率派LMM/GLMM/贝叶斯GLMM/MAP估计/零膨胀/灵活分布族",enDesc:"Frequentist LMM & GLMM, Bayesian GLMM, MAP estimation, zero-inflated & flexible families",
+packages:[
+{name:"lme4",zh:"频率派LMM/GLMM核心(lmer/glmer/REML/ML/稀疏矩阵)",en:"Frequentist LMM & GLMM core (lmer/glmer, REML/ML, sparse)",core:true},
+{name:"nlme",zh:"频率派LMM/NLMM(lme/nlme/相关结构/异方差)",en:"Frequentist LMM & NLMM (lme/nlme, correlation, heteroscedasticity)",core:true},
+{name:"glmmTMB",zh:"GLMM(Laplace逼近/零膨胀/灵活分布族/时空相关)",en:"GLMM via Laplace approximation, zero-inflated & flexible families",core:true},
+{name:"brms",zh:"贝叶斯GLMM(Stan/HMC/多种分布/非线性/分层先验)",en:"Bayesian GLMM via Stan/HMC, multi-family, nonlinear & priors",core:true},
+{name:"MCMCglmm",zh:"贝叶斯GLMM(Gibbs采样/动物模型/多变量/系谱)",en:"Bayesian GLMM via Gibbs sampling, animal model & multivariate",core:true},
+{name:"MASS",zh:"R内置glmmPQL(PQL近似/GLMM/过度离散)",en:"Built-in glmmPQL for GLMM via PQL approximation"},
+{name:"GLMMadaptive",zh:"自适应高斯求积GLMM(删失/有序/零膨胀)",en:"GLMM via adaptive Gaussian quadrature, censored & ordinal"},
+{name:"hglm",zh:"分层广义线性模型(HGLM/随机效应分布选择)",en:"Hierarchical GLM with random-effect distribution selection"},
+{name:"glmm",zh:"Monte Carlo似然GLMM(精确似然/优化)",en:"GLMM via Monte Carlo likelihood approximation"},
+{name:"glmmEP",zh:"期望传播GLMM(高效近似推断)",en:"GLMM via expectation propagation for efficient inference"},
+{name:"mbest",zh:"极大似然GLMM(大内存/并行/多组比较)",en:"ML GLMM with large memory, parallel & multiple comparisons"},
+{name:"galamm",zh:"广义加性潜变量混合模型(因子/加性/多层)",en:"Generalized additive latent variable mixed model"},
+{name:"blme",zh:"贝叶斯LMM/GLMM(MAP估计/正则化先验/避免奇异)",en:"Bayesian LMM/GLMM via MAP with regularizing priors"},
+{name:"bamlss",zh:"贝叶斯加性模型位置尺度形状(分布回归/灵活)",en:"Bayesian additive models for location scale & shape"},
+{name:"rstanarm",zh:"Stan贝叶斯回归(glmer/stan_glmer/先验/诊断)",en:"Stan Bayesian regression (glmer, stan_glmer, priors & diagnostics)"},
+{name:"INLA",zh:"集成嵌套拉普拉斯近似(潜高斯模型/空间/时空)",en:"Integrated nested Laplace approximation for latent Gaussian models"},
+{name:"inlabru",zh:"INLA空间建模扩展(点过程/地理统计/灵活协变量)",en:"INLA spatial extension: point processes & geostatistics"},
+{name:"inlatools",zh:"INLA模型诊断工具(残差/校准/预测检查)",en:"INLA diagnostic tools: residuals, calibration & prediction checks"},
+{name:"vglmer",zh:"变分推断GLMM(大规模近似/随机效应)",en:"Variational inference for GLMM with large-scale approximation"}
+]},
+
+{id:"nlmm",icon:"📐",color:"#8b5cf6",zh:"非线性与分位混合模型",en:"Nonlinear & Quantile Mixed Models",zhDesc:"非线性混合效应模型/药代动力学/分位回归/随机微分方程",enDesc:"Nonlinear mixed-effects models, pharmacokinetics, quantile regression & stochastic differential equations",
+packages:[
+{name:"nlmixr2",zh:"非线性混合效应药代动力学(群体PKPD/SAEM/FOCEI)",en:"Nonlinear mixed-effects pharmacokinetics (population PKPD)"},
+{name:"saemix",zh:"SAEM算法非线性混合效应模型(EM变体/群体分析)",en:"SAEM algorithm for NLMM (EM variant, population analysis)"},
+{name:"qrNLMM",zh:"分位非线性混合效应模型(AL算法/异方差)",en:"Quantile NLMM via AL algorithm with heteroscedasticity"},
+{name:"qrLMM",zh:"分位线性混合模型(AL算法/非正态随机效应)",en:"Quantile LMM via AL algorithm with non-Gaussian random effects"},
+{name:"lqmm",zh:"分位线性混合模型(多水平/非正态/条件分位)",en:"Linear quantile mixed model: multilevel & non-Gaussian"},
+{name:"repeated",zh:"重复测量非线性混合模型(gnlmm/非高斯随机效应)",en:"Repeated measures NLMM with non-Gaussian random effects"},
+{name:"mixedsde",zh:"混合随机微分方程(群体/个体参数估计)",en:"Mixed stochastic differential equations for population dynamics"},
+{name:"skewlmm",zh:"偏态线性混合模型(偏正态/偏t/EM估计)",en:"Skew-normal & skew-t linear mixed model via EM"}
+]},
+
+{id:"gee",icon:"🔄",color:"#0ea5e9",zh:"广义估计方程",en:"Generalized Estimating Equations",zhDesc:"GEE边际模型/相关结构/稳健标准误/整群随机试验/双重稳健",enDesc:"GEE marginal models, correlation structures, robust SE, CRT & doubly robust",
+packages:[
+{name:"geepack",zh:"GEE估计(独立/可交换/AR-1/无结构相关)",en:"GEE estimation with independent, exchangeable, AR-1 & unstructured",core:true},
+{name:"gee",zh:"GEE估计(经典实现/多种相关结构)",en:"Classic GEE estimation with various correlation structures"},
+{name:"geeM",zh:"GEE矩阵实现(大尺度/内存高效)",en:"Matrix-based GEE for large-scale & memory-efficient analysis"},
+{name:"geesmv",zh:"GEE加权方差修正(改进稳健标准误)",en:"GEE with weighted variance modification for robust SE"},
+{name:"multgee",zh:"多分类/有序GEE(边际模型/相关结构)",en:"Multinomial & ordinal GEE with marginal models"},
+{name:"glmtoolbox",zh:"GLM工具集(GEE/广义线性诊断/过度离散)",en:"GLM toolbox: GEE, diagnostics & overdispersion"},
+{name:"MIIPW",zh:"逆概率加权GEE(缺失数据/边际结构模型)",en:"IPW-GEE for missing data & marginal structural models"},
+{name:"CRTgeeDR",zh:"整群随机试验双重稳健GEE(因果推断)",en:"CRT doubly robust GEE for causal inference"},
+{name:"drgee",zh:"双重稳健GEE(暴露模型/结果模型)",en:"Doubly robust GEE with exposure & outcome models"},
+{name:"geeCRT",zh:"整群随机试验GEE(设计效应/ICC估计)",en:"GEE for CRT with design effects & ICC estimation"}
+]},
+
+{id:"specialized",icon:"🔬",color:"#14b8a6",zh:"专业领域模型",en:"Specialized Domain Models",zhDesc:"系统发育/家系遗传/空间模型/面板数据/生存分析/运动分析",enDesc:"Phylogenetic, kinship-genetic, spatial, panel, survival & sports models",
+packages:[
+{name:"pedigreemm",zh:"系谱结构混合模型(亲缘矩阵/lme4扩展)",en:"Pedigree-based mixed model via kinship matrix & lme4 extension"},
+{name:"coxme",zh:"Cox混合效应生存模型(随机效应/分层)",en:"Cox mixed-effects survival model with random effects & stratification"},
+{name:"kinship2",zh:"家系图绘制与亲缘矩阵计算",en:"Pedigree drawing & kinship matrix computation"},
+{name:"sommer",zh:"灵活相关结构/多性状/数量遗传(AA/AD/AAA模型)",en:"Flexible correlation, multi-trait & quantitative genetics (AA/AD/AAA)",core:true},
+{name:"lme4breeding",zh:"育种混合模型(亲缘/GxE/基因组选择)",en:"Breeding mixed model with kinship, GxE & genomic selection"},
+{name:"rrBLUP",zh:"岭回归BLUP(基因组预测/标记效应)",en:"Ridge regression BLUP for genomic prediction & marker effects"},
+{name:"BGLR",zh:"贝叶斯基因组线性回归(多种先验/变量选择)",en:"Bayesian genomic linear regression with various priors"},
+{name:"lme4GS",zh:"lme4基因组选择扩展(标记/亲缘/GBLUP)",en:"lme4 extension for genomic selection: markers, kinship & GBLUP"},
+{name:"lme4qtl",zh:"lme4 QTL定位扩展(亲缘矩阵/基因组扫描)",en:"lme4 QTL mapping extension with kinship & genome scan"},
+{name:"cpgen",zh:"基因组预测(贝叶斯/BLUP/大标记集)",en:"Genomic prediction: Bayesian, BLUP & large marker sets"},
+{name:"QTLRel",zh:"QTL定位(区间映射/亲缘控制/置换检验)",en:"QTL mapping with interval mapping, kinship & permutation"},
+{name:"dmm",zh:"多性状直接加性模型(遗传参数/协方差)",en:"Direct additive model for multi-trait genetic parameters"},
+{name:"phyr",zh:"系统发育混合模型(比较方法/lme4/社区生态)",en:"Phylogenetic mixed models for comparative & community ecology"},
+{name:"pez",zh:"系统发育生态学(多样性/社区/系统发育信号)",en:"Phylogenetic ecology: diversity, community & phylo signal"},
+{name:"plm",zh:"面板数据线性模型(固定/随机效应/工具变量)",en:"Panel data linear model: FE, RE & instrumental variables"},
+{name:"spmodel",zh:"空间统计模型(地统计/空间回归/CRF)",en:"Spatial statistical models: geostatistics, spatial regression & CRF"},
+{name:"CARBayesST",zh:"时空自回归贝叶斯模型(CAR/空间面板)",en:"Spatio-temporal Bayesian CAR model for spatial panels"},
+{name:"spaMM",zh:"空间混合模型(Matern相关/非高斯随机效应)",en:"Spatial mixed model with Matérn correlation & non-Gaussian RE"},
+{name:"glmmfields",zh:"空间场混合模型(GP/非高斯/时空/异常值)",en:"Spatial field mixed model with GP, non-Gaussian & outliers"},
+{name:"sphet",zh:"空间异质面板模型(空间滞后/误差/Durbin)",en:"Spatial heteroskedastic panel: lag, error & Durbin models"},
+{name:"mvglmmRank",zh:"运动排名多变量GLMM(主效应/交互)",en:"Sports ranking multivariate GLMM with main & interaction effects"},
+{name:"MCMC.qpcr",zh:"qPCR贝叶斯混合模型(基因表达/归一化)",en:"Bayesian mixed model for qPCR gene expression & normalization"},
+{name:"QGglmm",zh:"GLMM数量遗传参数(均值/方差/遗传力)",en:"Quantitative genetics parameters from GLMM (heritability)"},
+{name:"CpGassoc",zh:"CpG位点关联分析(表观遗传/混合模型)",en:"CpG association analysis with mixed models for epigenetics"}
+]},
+
+{id:"additive",icon:"📈",color:"#f59e0b",zh:"加性与平滑模型",en:"Additive & Smooth Models",zhDesc:"广义加性混合模型/样条/平滑/GAMLSS/位置尺度形状建模",enDesc:"GAMM, splines, smoothing, GAMLSS & location-scale-shape modeling",
+packages:[
+{name:"mgcv",zh:"广义加性混合模型(样条/GAMM/张量积/变量选择)",en:"Generalized additive mixed model with splines, GAMM & tensor"},
+{name:"gamm4",zh:"lme4后端GAMM(mgcv样条+lme4随机效应)",en:"GAMM with lme4 backend (mgcv splines + lme4 random effects)"},
+{name:"lmeSplines",zh:"混合模型样条(平滑样条随机效应/P样条)",en:"Splines as random effects in mixed models (P-splines)"},
+{name:"gamlss",zh:"广义加性位置尺度形状(分布回归/多参数建模)",en:"Generalized additive models for location scale & shape"},
+{name:"LMMsolver",zh:"LMM求解器(样条/空间/动物模型/稀疏矩阵)",en:"LMM solver for splines, spatial & animal models"},
+{name:"R2BayesX",zh:"BayesX R接口(结构加性/空间/贝叶斯样条)",en:"BayesX R interface: structured additive & spatial Bayes splines"},
+{name:"GLMMRR",zh:"GLMM随机响应(项目反应理论/随机截距)",en:"GLMM randomized response for item response theory"},
+{name:"mclogit",zh:"混合条件logit(多分类/面板/配对)",en:"Mixed conditional logit for multinomial & panel data"}
+]},
+
+{id:"ordinal_zero",icon:"🔀",color:"#ec4899",zh:"有序/零膨胀/偏态模型",en:"Ordinal, Zero-Inflated & Skewed Models",zhDesc:"有序回归/零膨胀/零一膨胀Beta/过度离散/Box-Cox变换/偏态",enDesc:"Ordinal regression, zero-inflated, zero-one inflated Beta, overdispersion, Box-Cox & skewness",
+packages:[
+{name:"ordinal",zh:"有序回归混合模型(累积logit/比例优势/CLMM)",en:"Ordinal regression mixed model (cumulative logit, CLMM)"},
+{name:"cplm",zh:"复合Poisson线性混合模型(Tweedie/零膨胀)",en:"Compound Poisson linear mixed model (Tweedie, zero-inflated)"},
+{name:"zoib",zh:"零一膨胀Beta回归(边界值/混合效应)",en:"Zero-one inflated Beta regression with mixed effects"},
+{name:"ordbetareg",zh:"有序Beta回归(比例数据/0-1边界)",en:"Ordered Beta regression for proportional data with boundaries"},
+{name:"aod",zh:"过度离散模型分析(Beta二项/负二项/假设检验)",en:"Overdispersion analysis: Beta-binomial, NB & hypothesis tests"},
+{name:"aods3",zh:"过度离散模型扩展(拟似然/诊断/回归)",en:"Overdispersion extension: quasi-likelihood, diagnostics & regression"},
+{name:"boxcoxmix",zh:"Box-Cox变换混合模型(偏态响应/非正态随机效应)",en:"Box-Cox transformation mixed model for skewed responses"},
+{name:"bcmixed",zh:"Box-Cox混合模型(偏态数据/变换选择)",en:"Box-Cox mixed model for skewed data & transformation selection"},
+{name:"tramME",zh:"变换混合效应模型(LM/Box-Cox/有序/删失)",en:"Transformation mixed-effects model: LM, Box-Cox, ordinal & censored"},
+{name:"aster",zh:"Aster模型(生命周期/多变量/有序/零膨胀)",en:"Aster models for life history, multivariate & zero-inflated"}
+]},
+
+{id:"latent_sem",icon:"🔗",color:"#d946ef",zh:"潜变量与结构方程",en:"Latent Variables & Structural Equation Models",zhDesc:"SEM/CFA/潜增长/分段SEM/验证性因子/贝叶斯SEM/树结构SEM",enDesc:"SEM, CFA, latent growth, piecewise SEM, confirmatory factor & Bayesian SEM",
+packages:[
+{name:"lavaan",zh:"潜变量与结构方程模型(CFA/SEM/多组/中介)",en:"Latent variable & SEM: CFA, multi-group & mediation",core:true},
+{name:"blavaan",zh:"贝叶斯lavaan(JAGS/Stan/贝叶斯SEM/CFA)",en:"Bayesian lavaan via JAGS/Stan for Bayesian SEM & CFA"},
+{name:"sem",zh:"结构方程模型(经典SEM/路径分析/工具变量)",en:"Structural equation model: classic SEM & path analysis"},
+{name:"piecewiseSEM",zh:"分段结构方程模型(混合模型/非独立/Shipley)",en:"Piecewise SEM with mixed models & non-independence (Shipley)"},
+{name:"semtree",zh:"SEM树(递归分割/亚组差异/混合效应)",en:"SEM tree: recursive partitioning for subgroup differences"},
+{name:"nlmm",zh:"非参数LMM(约束/半参数/分布自由)",en:"Nonparametric LMM: constrained, semi-parametric & distribution-free"},
+{name:"gllvm",zh:"广义潜变量模型(多物种/因子/有序/零膨胀)",en:"Generalized latent variable model: multi-species & ordinal"},
+{name:"MegaLMM",zh:"大规模多变量混合模型(因子/基因组选择)",en:"Mega multivariate mixed model with factors & genomic selection"}
+]},
+
+{id:"robust",icon:"🛡️",color:"#ef4444",zh:"稳健与正则化方法",en:"Robust & Regularized Methods",zhDesc:"稳健估计/重尾/异常值/LASSO/惩罚/双层分层/缺失值/权重",enDesc:"Robust estimation, heavy tails, outliers, LASSO, penalty, double hierarchical, missing & weights",
+packages:[
+{name:"robustlmm",zh:"稳健线性混合模型(M估计/异常值抵抗)",en:"Robust LMM via M-estimation with outlier resistance"},
+{name:"splmm",zh:"稀疏LMM(LASSO/组LASSO/变量选择)",en:"Sparse LMM: LASSO, group LASSO & variable selection"},
+{name:"glmmLasso",zh:"GLMM LASSO变量选择(路径算法/交叉验证)",en:"GLMM LASSO variable selection with path algorithm & CV"},
+{name:"ggmix",zh:"组LASSO混合模型(高维/惩罚/群体结构)",en:"Group LASSO mixed model for high-dim & population structure"},
+{name:"dhglm",zh:"双层分层广义线性模型(均值+散度随机效应)",en:"Double hierarchical GLM: mean & dispersion random effects"},
+{name:"mdhglm",zh:"多层双层分层GLM(嵌套随机/异方差)",en:"Multi-level double hierarchical GLM with nested random effects"},
+{name:"mice",zh:"多重插补(链式方程/混合模型/缺失值处理)",en:"Multiple imputation via chained equations & mixed models"},
+{name:"micemd",zh:"多重插补混合模型(多水平/纵向缺失)",en:"Multiple imputation for multilevel & longitudinal missing data"},
+{name:"JointAI",zh:"联合分析插补(贝叶斯/纵向/生存/缺失)",en:"Joint analysis imputation: Bayesian, longitudinal & survival"},
+{name:"mdmb",zh:"模型插补(混合模型/选择模型/模式混合)",en:"Model-based imputation: selection & pattern-mixture models"},
+{name:"pan",zh:"面板数据多重插补(混合效应/纵向)",en:"Panel data multiple imputation via mixed-effects models"},
+{name:"WeMix",zh:"加权混合模型(调查权重/多层次)",en:"Weighted mixed model with survey weights & multilevel"},
+{name:"svylme",zh:"调查数据线性混合模型(抽样权重/复杂设计)",en:"Survey data LMM with sampling weights & complex design"}
+]},
+
+{id:"framework",icon:"⚡",color:"#f97316",zh:"建模框架与接口",en:"Modeling Frameworks & Interfaces",zhDesc:"Stan/JAGS/TMB/Nimble接口/MCMC引擎/商业软件桥接",enDesc:"Stan, JAGS, TMB, Nimble interfaces, MCMC engines & commercial bridges",
+packages:[
+{name:"rstan",zh:"Stan R接口(HMC/NUTS/贝叶斯推断/诊断)",en:"Stan R interface: HMC, NUTS, Bayesian inference & diagnostics"},
+{name:"cmdstanr",zh:"CmdStan R接口(命令行/最新Stan/轻量)",en:"CmdStan R interface: command-line, latest Stan & lightweight"},
+{name:"rethinking",zh:"统计再思考课程包(贝叶斯分层模型/因果)",en:"Statistical Rethinking package: Bayesian hierarchical & causal"},
+{name:"R2jags",zh:"JAGS R接口(rjags封装/自动绘图/诊断)",en:"JAGS R interface: rjags wrapper with auto-plots & diagnostics"},
+{name:"rjags",zh:"JAGS直接接口(MCMC/贝叶斯/灵活模型)",en:"Direct JAGS interface: MCMC, Bayesian & flexible models"},
+{name:"R2OpenBUGS",zh:"OpenBUGS R接口(经典MCMC/贝叶斯分层)",en:"OpenBUGS R interface: classic MCMC & Bayesian hierarchical"},
+{name:"TMB",zh:"模板模型构建器(AD算法/Laplace/大规模)",en:"Template Model Builder: AD, Laplace & large-scale"},
+{name:"RTMB",zh:"R端TMB(无需C++/R语法/自动微分)",en:"R-side TMB: no C++, R syntax & automatic differentiation"},
+{name:"tmbstan",zh:"TMB+Stan联合(TMB似然+Stan采样)",en:"TMB + Stan: TMB likelihood with Stan sampling"},
+{name:"nimble",zh:"Nimble编译贝叶斯(MCMC/可定制/BUGS兼容)",en:"Nimble compiled Bayesian: customizable MCMC & BUGS compat"},
+{name:"MplusAutomation",zh:"Mplus自动化接口(SEM/多层/潜类/批量分析)",en:"Mplus automation: SEM, multilevel, latent class & batch"},
+{name:"asremlPlus",zh:"ASReml-R扩展(预测/诊断/育种试验)",en:"ASReml-R extension: prediction, diagnostics & breeding trials"},
+{name:"babelmixr2",zh:"nlmixr2↔Monolix/NONMEM桥接(PKPD交叉验证)",en:"nlmixr2 bridge to Monolix/NONMEM for PKPD validation"}
+]},
+
+{id:"diagnostics",icon:"🩺",color:"#22c55e",zh:"模型诊断与汇总统计",en:"Diagnostics & Summary Statistics",zhDesc:"残差/影响点/R²/ICC/信息准则/稳健方差/导数/模型比较",enDesc:"Residuals, influence, R², ICC, information criteria, robust VC, derivatives & comparison",
+packages:[
+{name:"DHARMa",zh:"混合模型残差诊断(仿真残差/过度离散/零膨胀)",en:"Mixed model residual diagnostics via simulated residuals"},
+{name:"performance",zh:"模型性能指标(R²/ICC/AIC/BIC/检验力/诊断)",en:"Model performance: R², ICC, AIC, BIC, power & diagnostics"},
+{name:"HLMdiag",zh:"分层线性模型诊断(残差/影响/杠杆值)",en:"HLM diagnostics: residuals, influence & leverage"},
+{name:"influence.ME",zh:"混合模型影响点诊断(DFBETAS/ cooks距离)",en:"Mixed model influence diagnostics: DFBETAS & Cook's distance"},
+{name:"influence.SEM",zh:"SEM影响点诊断(路径/因子/修正指标)",en:"SEM influence diagnostics: paths, factors & modification indices"},
+{name:"merTools",zh:"lme4工具(预测/模拟/绘图/不确定性)",en:"lme4 tools: prediction, simulation, plots & uncertainty"},
+{name:"multilevelTools",zh:"多层次工具(效应量/ICC/模型比较)",en:"Multilevel tools: effect sizes, ICC & model comparison"},
+{name:"rockchalk",zh:"混合模型辅助(诊断/绘图/汇总/中心化)",en:"Mixed model auxiliary: diagnostics, plots, summary & centering"},
+{name:"mlmtools",zh:"多层次工具(R²/诊断/可视化/ICC)",en:"Multilevel tools: R², diagnostics, visualization & ICC"},
+{name:"r2glmm",zh:"混合模型R²(Nakagawa/条件/边际/δ法)",en:"Mixed model R²: Nakagawa, conditional, marginal & delta"},
+{name:"MuMIn",zh:"模型选择与平均(AICc/变量重要性/R²/多模型)",en:"Model selection & averaging: AICc, var importance, R² & multi-model"},
+{name:"partR2",zh:"部分R²(方差分解/随机效应贡献/置信区间)",en:"Partial R²: variance partitioning & random effect contribution"},
+{name:"rr2",zh:"R²计算(多层/系统发育/贝叶斯/多种定义)",en:"R² computation: multilevel, phylogenetic, Bayesian & more"},
+{name:"iccbeta",zh:"组内相关系数Beta(二分类/方差分解)",en:"Intraclass correlation for binary outcomes & variance partition"},
+{name:"rptR",zh:"重复性估计(方差分量/Bootstrap/多重一致性)",en:"Repeatability estimation with variance components & bootstrap"},
+{name:"cAIC4",zh:"条件AIC(随机效应模型选择/逐步选择)",en:"Conditional AIC for random effect model selection & stepwise"},
+{name:"clubSandwich",zh:"稳健方差估计(聚类稳健/小样本校正)",en:"Robust variance estimation: cluster-robust & small-sample correction"},
+{name:"merDeriv",zh:"lme4导数(梯度/Hessian/稳健标准误)",en:"lme4 derivatives: gradient, Hessian & robust standard errors"},
+{name:"lmeInfo",zh:"nlme信息提取(方差分量/梯度/期望信息)",en:"nlme info extraction: variance components, gradient & expected info"},
+{name:"mlmhelpr",zh:"多层次模型辅助(R²/Bootstrap/中心化/模型比较)",en:"Multilevel model helper: R², bootstrap, centering & comparison"},
+{name:"confintROB",zh:"稳健置信区间(Bootstrap/偏差校正)",en:"Robust confidence intervals via bootstrap & bias correction"}
+]},
+
+{id:"inference",icon:"🎯",color:"#3b82f6",zh:"推断与模型选择",en:"Inference & Model Selection",zhDesc:"固定效应检验/随机效应检验/自由度/边际均值/自助法/功效分析/模拟",enDesc:"Fixed & random effect tests, df, marginal means, bootstrapping, power & simulation",
+packages:[
+{name:"lmerTest",zh:"lmer扩展(Satterthwaite/Kenward-Roger自由度/p值)",en:"lmer extension: Satterthwaite & Kenward-Roger df & p-values"},
+{name:"pbkrtest",zh:"参数自助/Kenward-Roger检验(模型比较/p值)",en:"Parametric bootstrap & Kenward-Roger test for model comparison"},
+{name:"car",zh:"方差分析/线性假设检验(Type II/III SS)",en:"ANOVA & linear hypothesis tests: Type II & III SS"},
+{name:"afex",zh:"混合模型方差分析(lmer/glmer/Type III/对比)",en:"Mixed model ANOVA: lmer/glmer, Type III & contrasts"},
+{name:"emmeans",zh:"估计边际均值(最小二乘均值/对比/趋势/绘图)",en:"Estimated marginal means: LS-means, contrasts, trends & plots"},
+{name:"ggeffects",zh:"边际效应绘图(预测值/交互/分类/可视化)",en:"Marginal effects plots: predictions, interactions & visualization"},
+{name:"effects",zh:"效应图(线性/混合/广义线性模型可视化)",en:"Effect displays for linear, mixed & GLM visualization"},
+{name:"marginaleffects",zh:"边际效应(AME/对比/斜率/预测/绘图)",en:"Marginal effects: AME, contrasts, slopes, predictions & plots"},
+{name:"margins",zh:"边际效应(偏导数/离散变化/平均效应)",en:"Marginal effects: partial derivatives, discrete changes & average"},
+{name:"varTestnlme",zh:"随机效应方差检验(nlme/似然比/边界)",en:"Random effect variance test for nlme: LRT & boundary"},
+{name:"RLRsim",zh:"随机效应似然比检验(有限样本/限制参数)",en:"Restricted likelihood ratio test for random effects"},
+{name:"CLME",zh:"约束线性混合效应(序约束/自定义假设)",en:"Constrained linear mixed effects with order constraints"},
+{name:"simr",zh:"混合模型功效分析(蒙特卡罗/样本量/效应量)",en:"Mixed model power analysis via Monte Carlo simulation"},
+{name:"longpower",zh:"纵向设计功效(样本量/重复测量)",en:"Longitudinal design power & sample size for repeated measures"},
+{name:"pass.lme",zh:"lme功效分析(样本量/检测限/模拟)",en:"lme power analysis: sample size, detectable effect & simulation"},
+{name:"mixedpower",zh:"混合模型功效(多因素/模拟/小样本)",en:"Mixed model power: multi-factor, simulation & small sample"},
+{name:"powerEQTL",zh:"eQTL功效分析(样本量/MAF/效应量)",en:"eQTL power analysis: sample size, MAF & effect size"},
+{name:"faux",zh:"仿真数据生成(相关/多水平/纵向/混合设计)",en:"Simulated data: correlated, multilevel, longitudinal & mixed"},
+{name:"lmeresampler",zh:"混合模型自助采样(参数/残差/案例)",en:"Mixed model resampling: parametric, residual & case bootstrap"},
+{name:"boot.pval",zh:"自助p值(百分位/BCa/置信区间)",en:"Bootstrap p-values: percentile, BCa & confidence intervals"},
+{name:"buildmer",zh:"逐步模型构建(随机效应/固定效应/公式搜索)",en:"Stepwise model building: RE & FE search & formula selection"},
+{name:"glmmsel",zh:"GLMM模型选择(LASSO正则/信息准则)",en:"GLMM model selection via LASSO regularization & IC"},
+{name:"lmmpar",zh:"并行混合模型(大数据/分布式计算)",en:"Parallel mixed models for big data & distributed computing"}
+]},
+
+{id:"presentation",icon:"📋",color:"#84cc16",zh:"展示与便捷工具",en:"Presentation & Convenience Tools",zhDesc:"模型汇总表/可视化/参数整理/变量选择/中心化/数据集/树模型",enDesc:"Summary tables, visualization, parameter tidying, variable selection, centering, datasets & tree models",
+packages:[
+{name:"broom.mixed",zh:"混合模型整洁输出(tibble/系数/随机效应/多模型)",en:"Tidy mixed model output: tibble, coefficients & random effects",core:true},
+{name:"multilevelmod",zh:"多层次建模便捷接口(parsnip/统一API)",en:"Multilevel modeling convenience interface via parsnip",core:true},
+{name:"parameters",zh:"模型参数整理(系数/置信区间/效应量/表格)",en:"Model parameters: coefficients, CI, effect sizes & tables"},
+{name:"modelsummary",zh:"模型汇总表(多模型/LaTeX/HTML/Word/星号)",en:"Model summary tables: multi-model, LaTeX, HTML & Word"},
+{name:"huxtable",zh:"美观表格(模型输出/LaTeX/HTML/Word导出)",en:"Beautiful tables: model output export to LaTeX, HTML & Word"},
+{name:"sjPlot",zh:"混合模型可视化表格(系数图/交互图/诊断图)",en:"Mixed model visual tables: coefficient, interaction & diagnostic plots"},
+{name:"dotwhisker",zh:"系数点须图(多模型比较/置信区间)",en:"Dot-and-whisker coefficient plots for multi-model comparison"},
+{name:"insight",zh:"模型信息提取(参数/数据/预测/多包兼容)",en:"Model info extraction: parameters, data, predictions & compat"},
+{name:"ez",zh:"ezANOVA便捷接口(混合ANOVA/绘图/效应量)",en:"ezANOVA convenience: mixed ANOVA, plots & effect sizes"},
+{name:"mixlm",zh:"混合线性模型界面(回归/ANOVA/逐步/诊断)",en:"Mixed LM interface: regression, ANOVA, stepwise & diagnostics"},
+{name:"arm",zh:"应用回归建模(标准化/模拟/display/ Gelman)",en:"Applied regression: standardize, simulate & display (Gelman)"},
+{name:"LMERConvenienceFunctions",zh:"lmer便捷函数(变量选择/绘图/模型简化)",en:"lmer convenience: variable selection, plots & model simplification"},
+{name:"glmulti",zh:"自动模型选择(所有子集/AIC/遗传算法)",en:"Automatic model selection: all subsets, AIC & genetic algorithm"},
+{name:"mlmRev",zh:"多层次模型示例数据集(教育/学校/重复测量)",en:"Multilevel model example datasets: education & repeated measures"},
+{name:"SASmixed",zh:"SAS混合模型数据集(经典SAS示例转换)",en:"SAS mixed model datasets converted from classic SAS examples"},
+{name:"StroupGLMM",zh:"Stroup GLMM示例数据(广义线性混合教材)",en:"Stroup GLMM example data from GLMM textbook"},
+{name:"nlmeU",zh:"nlme配套数据集(Pinheiro/Bates教材)",en:"nlme companion datasets from Pinheiro & Bates textbook"},
+{name:"glmertree",zh:"混合效应树(lme4+partykit/亚组发现)",en:"Mixed-effects tree: lme4 + partykit for subgroup discovery"},
+{name:"gpboost",zh:"GPBoost(LightGBM+高斯过程/混合效应树)",en:"GPBoost: LightGBM + Gaussian process & mixed-effects tree"}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(99,102,241,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(99,102,241,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>

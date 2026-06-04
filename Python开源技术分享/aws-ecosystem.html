@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS 开源生态 · AWS Open Source Ecosystem</title>
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2235;
+  --bg-card-hover: #1f2b42;
+  --text-primary: #e8edf5;
+  --text-secondary: #8899b4;
+  --text-muted: #5a6d8a;
+  --accent-orange: #f90;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-green: #10b981;
+  --accent-purple: #8b5cf6;
+  --accent-red: #ef4444;
+  --accent-pink: #ec4899;
+  --accent-teal: #14b8a6;
+  --accent-amber: #f59e0b;
+  --border: #1e2d45;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', 'PingFang SC', sans-serif;
+  background: var(--bg-primary); color: var(--text-primary);
+  line-height: 1.6; overflow-x: hidden;
+}
+.bg-grid {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-image:
+    radial-gradient(circle at 15% 30%, rgba(255,153,0,0.05) 0%, transparent 50%),
+    radial-gradient(circle at 85% 60%, rgba(59,130,246,0.05) 0%, transparent 50%),
+    radial-gradient(circle at 50% 90%, rgba(139,92,246,0.04) 0%, transparent 50%);
+  z-index: 0; pointer-events: none;
+}
+.lang-toggle {
+  position: fixed; top: 20px; right: 24px; z-index: 1000;
+  display: flex; gap: 0; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 24px; overflow: hidden; box-shadow: var(--shadow);
+}
+.lang-btn {
+  padding: 8px 18px; border: none; background: transparent; color: var(--text-secondary);
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: var(--transition);
+}
+.lang-btn.active { background: var(--accent-orange); color: #000; }
+.lang-btn:hover:not(.active) { color: var(--text-primary); background: var(--bg-card-hover); }
+.nav-bar {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 999;
+  display: flex; gap: 4px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 28px; padding: 4px; box-shadow: var(--shadow);
+}
+.nav-link {
+  padding: 8px 18px; border-radius: 24px; color: var(--text-secondary);
+  text-decoration: none; font-size: 13px; font-weight: 500; transition: var(--transition);
+  white-space: nowrap;
+}
+.nav-link:hover, .nav-link.active { background: var(--accent-orange); color: #000; }
+.hero {
+  position: relative; z-index: 1; text-align: center; padding: 120px 24px 60px;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 16px; border-radius: 20px;
+  background: rgba(255,153,0,0.12); border: 1px solid rgba(255,153,0,0.25);
+  color: var(--accent-orange); font-size: 13px; font-weight: 500; margin-bottom: 24px;
+}
+.hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.hero h1 {
+  font-size: clamp(32px, 5vw, 56px); font-weight: 800;
+  background: linear-gradient(135deg, #f90, #ff6600, #3b82f6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 16px; line-height: 1.2;
+}
+.hero .subtitle { font-size: clamp(16px, 2vw, 20px); color: var(--text-secondary); max-width: 780px; margin: 0 auto 32px; }
+.hero-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 32px; }
+.stat-item { text-align: center; }
+.stat-num { font-size: 28px; font-weight: 800; color: var(--accent-orange); }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.section {
+  position: relative; z-index: 1;
+  max-width: 1280px; margin: 0 auto; padding: 40px 24px;
+}
+.section-title { font-size: 28px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.section-title .icon { font-size: 28px; }
+.section-desc { color: var(--text-secondary); font-size: 15px; margin-bottom: 32px; }
+.network-container {
+  width: 100%; overflow: visible; margin: 20px 0 40px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+}
+.network-svg { width: 100%; height: auto; }
+.skills-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px;
+}
+.skill-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  transition: var(--transition); position: relative; overflow: hidden;
+}
+.skill-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.skill-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.5); border-color: var(--accent-orange); }
+.skill-card .card-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+.skill-card .card-icon {
+  width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.skill-card .card-title { font-size: 17px; font-weight: 700; margin-bottom: 2px; }
+.skill-card .card-lang { font-size: 12px; color: var(--text-muted); }
+.skill-card .card-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 14px; line-height: 1.7; }
+.skill-card .card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.skill-card .tag {
+  padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;
+  background: rgba(255,153,0,0.1); color: var(--accent-orange); border: 1px solid rgba(255,153,0,0.2);
+}
+.skill-card .tag.green { background: rgba(16,185,129,0.1); color: var(--accent-green); border-color: rgba(16,185,129,0.2); }
+.skill-card .tag.purple { background: rgba(139,92,246,0.1); color: var(--accent-purple); border-color: rgba(139,92,246,0.2); }
+.skill-card .tag.blue { background: rgba(59,130,246,0.1); color: var(--accent-blue); border-color: rgba(59,130,246,0.2); }
+.skill-card .tag.cyan { background: rgba(6,182,212,0.1); color: var(--accent-cyan); border-color: rgba(6,182,212,0.2); }
+.skill-card .tag.red { background: rgba(239,68,68,0.1); color: var(--accent-red); border-color: rgba(239,68,68,0.2); }
+.skill-card .tag.amber { background: rgba(245,158,11,0.1); color: var(--accent-amber); border-color: rgba(245,158,11,0.2); }
+.skill-card .card-stats { display: flex; gap: 16px; font-size: 12px; color: var(--text-muted); }
+.skill-card .card-stats span { display: flex; align-items: center; gap: 4px; }
+/* Category colors */
+.skill-card[data-cat="sdk"]::before { background: linear-gradient(90deg, #f90, #ff6600); }
+.skill-card[data-cat="sdk"] .card-icon { background: rgba(255,153,0,0.15); }
+.skill-card[data-cat="k8s"]::before { background: linear-gradient(90deg, #3b82f6, #06b6d4); }
+.skill-card[data-cat="k8s"] .card-icon { background: rgba(59,130,246,0.15); }
+.skill-card[data-cat="ml"]::before { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+.skill-card[data-cat="ml"] .card-icon { background: rgba(139,92,246,0.15); }
+.skill-card[data-cat="security"]::before { background: linear-gradient(90deg, #10b981, #14b8a6); }
+.skill-card[data-cat="security"] .card-icon { background: rgba(16,185,129,0.15); }
+.skill-card[data-cat="serverless"]::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+.skill-card[data-cat="serverless"] .card-icon { background: rgba(245,158,11,0.15); }
+.skill-card[data-cat="data"]::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
+.skill-card[data-cat="data"] .card-icon { background: rgba(6,182,212,0.15); }
+.skill-card[data-cat="infra"]::before { background: linear-gradient(90deg, #14b8a6, #10b981); }
+.skill-card[data-cat="infra"] .card-icon { background: rgba(20,184,166,0.15); }
+.skill-card[data-cat="ai"]::before { background: linear-gradient(90deg, #ec4899, #8b5cf6); }
+.skill-card[data-cat="ai"] .card-icon { background: rgba(236,72,153,0.15); }
+.skill-card[data-cat="iot"]::before { background: linear-gradient(90deg, #10b981, #f59e0b); }
+.skill-card[data-cat="iot"] .card-icon { background: rgba(16,185,129,0.15); }
+.app-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+}
+.app-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  transition: var(--transition); cursor: default;
+}
+.app-card:hover { border-color: var(--accent-orange); transform: translateY(-2px); }
+.app-card .app-icon { font-size: 32px; margin-bottom: 12px; }
+.app-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.app-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; }
+.app-card .app-tools { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
+.app-card .app-tools .mini-tag {
+  padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 600;
+  background: rgba(255,153,0,0.1); color: var(--accent-orange); border: 1px solid rgba(255,153,0,0.15);
+}
+.timeline { position: relative; padding-left: 32px; }
+.timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.timeline-item { position: relative; margin-bottom: 24px; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -26px; top: 6px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent-orange); border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 8px var(--accent-orange);
+}
+.timeline-item .year { font-size: 13px; font-weight: 700; color: var(--accent-orange); margin-bottom: 4px; }
+.timeline-item .event { font-size: 14px; color: var(--text-secondary); }
+.footer {
+  text-align: center; padding: 48px 24px 32px; color: var(--text-muted);
+  font-size: 13px; border-top: 1px solid var(--border); margin-top: 60px;
+}
+@media (max-width: 768px) {
+  .nav-bar { display: none; }
+  .hero { padding-top: 80px; }
+  .hero-stats { gap: 24px; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .app-grid { grid-template-columns: 1fr; }
+}
+.fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s, transform 0.6s; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<div class="lang-toggle">
+  <button class="lang-btn active" onclick="setLang('zh')">中文</button>
+  <button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
+
+<nav class="nav-bar">
+  <a href="#overview" class="nav-link" data-zh="概览" data-en="Overview">概览</a>
+  <a href="#network" class="nav-link" data-zh="知识网络" data-en="Network">知识网络</a>
+  <a href="#projects" class="nav-link" data-zh="核心项目" data-en="Projects">核心项目</a>
+  <a href="#directions" class="nav-link" data-zh="应用方向" data-en="Applications">应用方向</a>
+  <a href="#history" class="nav-link" data-zh="发展历程" data-en="History">发展历程</a>
+  <a href="#stack" class="nav-link" data-zh="技术栈" data-en="Tech Stack">技术栈</a>
+</nav>
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="overview">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    <span data-zh="云基础设施开源领导者 · 550+ 公开仓库" data-en="Cloud Infrastructure Open Source Leader · 550+ Public Repos">云基础设施开源领导者 · 550+ 公开仓库</span>
+  </div>
+  <h1 data-zh="AWS 开源技术生态" data-en="AWS Open Source Ecosystem">AWS 开源技术生态</h1>
+  <p class="subtitle" data-zh="从 SDK 到 K8s 编排，从 SageMaker 到 s2n 加密，从 Lambda 到 IoT——AWS 构建了云计算领域最庞大的开源工具版图" data-en="From SDKs to K8s orchestration, from SageMaker to s2n encryption, from Lambda to IoT — AWS has built the most extensive open-source tool landscape in cloud computing.">从 SDK 到 K8s 编排，从 SageMaker 到 s2n 加密，从 Lambda 到 IoT——AWS 构建了云计算领域最庞大的开源工具版图</p>
+  <div class="hero-stats">
+    <div class="stat-item"><div class="stat-num">550+</div><div class="stat-label" data-zh="开源仓库" data-en="Repos">开源仓库</div></div>
+    <div class="stat-item"><div class="stat-num">200K+</div><div class="stat-label" data-zh="GitHub 星标" data-en="Stars">GitHub 星标</div></div>
+    <div class="stat-item"><div class="stat-num">50K+</div><div class="stat-label" data-zh="Fork 数" data-en="Forks">Fork 数</div></div>
+    <div class="stat-item"><div class="stat-num">8</div><div class="stat-label" data-zh="核心领域" data-en="Domains">核心领域</div></div>
+  </div>
+</section>
+
+<!-- ===== Network Graph ===== -->
+<section class="section" id="network">
+  <h2 class="section-title">
+    <span class="icon">🕸️</span>
+    <span data-zh="知识关联网络" data-en="Knowledge Network">知识关联网络</span>
+  </h2>
+  <p class="section-desc" data-zh="AWS 开源项目之间的技术依赖与生态关联——CDK 与 SDK 为双核驱动基础设施即代码与云服务集成" data-en="Technical dependencies and ecosystem connections among AWS open-source projects — CDK and SDK as the dual-core driving IaC and cloud service integration.">AWS 开源项目之间的技术依赖与生态关联——CDK 与 SDK 为双核驱动基础设施即代码与云服务集成</p>
+  <div class="network-container">
+    <svg class="network-svg" viewBox="0 0 1200 750" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6" fill="none" stroke="#f9080" stroke-width="1"/>
+        </marker>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <radialGradient id="g-orange"><stop offset="0%" stop-color="#f9040"/><stop offset="100%" stop-color="#f9008"/></radialGradient>
+        <radialGradient id="g-blue"><stop offset="0%" stop-color="#3b82f640"/><stop offset="100%" stop-color="#3b82f608"/></radialGradient>
+        <radialGradient id="g-purple"><stop offset="0%" stop-color="#8b5cf640"/><stop offset="100%" stop-color="#8b5cf608"/></radialGradient>
+        <radialGradient id="g-green"><stop offset="0%" stop-color="#10b98140"/><stop offset="100%" stop-color="#10b98108"/></radialGradient>
+        <radialGradient id="g-cyan"><stop offset="0%" stop-color="#06b6d440"/><stop offset="100%" stop-color="#06b6d408"/></radialGradient>
+        <radialGradient id="g-amber"><stop offset="0%" stop-color="#f59e0b40"/><stop offset="100%" stop-color="#f59e0b08"/></radialGradient>
+        <radialGradient id="g-pink"><stop offset="0%" stop-color="#ec489940"/><stop offset="100%" stop-color="#ec489908"/></radialGradient>
+        <radialGradient id="g-teal"><stop offset="0%" stop-color="#14b8a640"/><stop offset="100%" stop-color="#14b8a608"/></radialGradient>
+      </defs>
+
+      <!-- Connection Lines -->
+      <g opacity="0.4">
+        <!-- CDK connections -->
+        <line x1="420" y1="300" x2="180" y2="160" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <line x1="420" y1="300" x2="700" y2="160" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <line x1="420" y1="300" x2="160" y2="440" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <line x1="420" y1="300" x2="950" y2="300" stroke="#f90" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <!-- SAM -> CDK -->
+        <line x1="950" y1="300" x2="420" y2="300" stroke="#f9080" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- SAM -> Lambda -->
+        <line x1="950" y1="300" x2="880" y2="460" stroke="#f59e0b80" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Lambda -> Runtimes -->
+        <line x1="880" y1="460" x2="1080" y2="540" stroke="#f59e0b80" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Karpenter -> EKS -->
+        <line x1="180" y1="160" x2="420" y2="300" stroke="#3b82f680" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- EKS -> VPC CNI -->
+        <line x1="180" y1="160" x2="120" y2="560" stroke="#3b82f680" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- SageMaker SDK -> DLC -->
+        <line x1="700" y1="160" x2="700" y2="460" stroke="#8b5cf680" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- s2n -> aws-lc -->
+        <line x1="160" y1="440" x2="360" y2="560" stroke="#10b98180" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- s2n-quic -->
+        <line x1="160" y1="440" x2="120" y2="300" stroke="#10b98180" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Nova Act -->
+        <line x1="800" y1="560" x2="700" y2="460" stroke="#ec489980" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Bedrock SDK -->
+        <line x1="580" y1="560" x2="700" y2="460" stroke="#ec489980" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Copilot -> SAM -->
+        <line x1="1080" y1="160" x2="950" y2="300" stroke="#f9080" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Chime SDK -->
+        <line x1="580" y1="460" x2="420" y2="300" stroke="#14b8a680" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- IoT SDK -->
+        <line x1="360" y1="680" x2="580" y2="560" stroke="#10b98180" stroke-width="0.8" stroke-dasharray="3,5"/>
+      </g>
+
+      <!-- Node: CDK (Center) -->
+      <g filter="url(#glow)">
+        <circle cx="420" cy="300" r="60" fill="url(#g-orange)" stroke="#f90" stroke-width="2"/>
+        <text x="420" y="292" text-anchor="middle" fill="#e8edf5" font-size="18" font-weight="700">AWS CDK</text>
+        <text x="420" y="315" text-anchor="middle" fill="#8899b4" font-size="11">⭐ 12,784</text>
+      </g>
+
+      <!-- Node: Karpenter -->
+      <g filter="url(#glow)">
+        <circle cx="180" cy="160" r="48" fill="url(#g-blue)" stroke="#3b82f6" stroke-width="1.5"/>
+        <text x="180" y="154" text-anchor="middle" fill="#e8edf5" font-size="14" font-weight="600">Karpenter</text>
+        <text x="180" y="174" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 7,636</text>
+      </g>
+
+      <!-- Node: SageMaker SDK -->
+      <g filter="url(#glow)">
+        <circle cx="700" cy="160" r="42" fill="url(#g-purple)" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="700" y="154" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">SageMaker</text>
+        <text x="700" y="172" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 2,248</text>
+      </g>
+
+      <!-- Node: SAM CLI -->
+      <g filter="url(#glow)">
+        <circle cx="950" cy="300" r="42" fill="url(#g-amber)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="950" y="294" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">SAM CLI</text>
+        <text x="950" y="312" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 6,717</text>
+      </g>
+
+      <!-- Node: s2n-tls -->
+      <g filter="url(#glow)">
+        <circle cx="160" cy="440" r="40" fill="url(#g-green)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="160" y="436" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">s2n-tls</text>
+        <text x="160" y="454" text-anchor="middle" fill="#8899b4" font-size="10">⭐ 4,726</text>
+      </g>
+
+      <!-- Node: Lambda Web Adapter -->
+      <g filter="url(#glow)">
+        <circle cx="880" cy="460" r="35" fill="url(#g-amber)" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="880" y="454" text-anchor="middle" fill="#e8edf5" font-size="10" font-weight="600">Lambda</text>
+        <text x="880" y="468" text-anchor="middle" fill="#e8edf5" font-size="10" font-weight="600">Web Adapter</text>
+      </g>
+
+      <!-- Node: AWS-LC -->
+      <g filter="url(#glow)">
+        <circle cx="360" cy="560" r="30" fill="url(#g-green)" stroke="#10b981" stroke-width="1.5"/>
+        <text x="360" y="564" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">AWS-LC</text>
+      </g>
+
+      <!-- Node: s2n-quic -->
+      <g filter="url(#glow)">
+        <circle cx="120" cy="300" r="28" fill="url(#g-green)" stroke="#10b981" stroke-width="1"/>
+        <text x="120" y="304" text-anchor="middle" fill="#e8edf5" font-size="10" font-weight="600">s2n-quic</text>
+      </g>
+
+      <!-- Node: Copilot CLI -->
+      <g filter="url(#glow)">
+        <circle cx="1080" cy="160" r="32" fill="url(#g-orange)" stroke="#f90" stroke-width="1.5"/>
+        <text x="1080" y="156" text-anchor="middle" fill="#e8edf5" font-size="10" font-weight="600">Copilot</text>
+        <text x="1080" y="170" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 3,737</text>
+      </g>
+
+      <!-- Node: Deep Learning Containers -->
+      <g filter="url(#glow)">
+        <circle cx="700" cy="460" r="32" fill="url(#g-purple)" stroke="#8b5cf6" stroke-width="1"/>
+        <text x="700" y="456" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">Deep Learning</text>
+        <text x="700" y="470" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">Containers</text>
+      </g>
+
+      <!-- Node: Nova Act -->
+      <g filter="url(#glow)">
+        <circle cx="800" cy="560" r="28" fill="url(#g-pink)" stroke="#ec4899" stroke-width="1"/>
+        <text x="800" y="564" text-anchor="middle" fill="#e8edf5" font-size="10" font-weight="600">Nova Act</text>
+      </g>
+
+      <!-- Node: Bedrock AgentCore SDK -->
+      <g filter="url(#glow)">
+        <circle cx="580" cy="560" r="30" fill="url(#g-pink)" stroke="#ec4899" stroke-width="1"/>
+        <text x="580" y="556" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">Bedrock</text>
+        <text x="580" y="570" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">AgentCore</text>
+      </g>
+
+      <!-- Node: VPC CNI -->
+      <g filter="url(#glow)">
+        <circle cx="120" cy="560" r="26" fill="url(#g-blue)" stroke="#3b82f6" stroke-width="1"/>
+        <text x="120" y="558" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">VPC</text>
+        <text x="120" y="570" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="600">CNI</text>
+      </g>
+
+      <!-- Node: Chime SDK -->
+      <g filter="url(#glow)">
+        <circle cx="580" cy="460" r="26" fill="url(#g-teal)" stroke="#14b8a6" stroke-width="1"/>
+        <text x="580" y="464" text-anchor="middle" fill="#e8edf5" font-size="10" font-weight="600">Chime SDK</text>
+      </g>
+
+      <!-- Node: IoT SDK -->
+      <g filter="url(#glow)">
+        <circle cx="360" cy="680" r="22" fill="url(#g-green)" stroke="#10b981" stroke-width="1"/>
+        <text x="360" y="684" text-anchor="middle" fill="#e8edf5" font-size="9" font-weight="500">IoT SDK</text>
+      </g>
+
+      <!-- Node: Lambda Rust -->
+      <g filter="url(#glow)">
+        <circle cx="1080" cy="540" r="25" fill="url(#g-amber)" stroke="#f59e0b" stroke-width="1"/>
+        <text x="1080" y="536" text-anchor="middle" fill="#e8edf5" font-size="8" font-weight="600">Lambda</text>
+        <text x="1080" y="548" text-anchor="middle" fill="#e8edf5" font-size="8" font-weight="600">Rust</text>
+      </g>
+
+      <!-- Legend -->
+      <g transform="translate(20, 20)">
+        <rect x="0" y="0" width="200" height="160" rx="8" fill="#111827cc" stroke="#1e2d45" stroke-width="1"/>
+        <text x="14" y="24" fill="#8899b4" font-size="11" font-weight="600" data-zh="分类图例" data-en="Category Legend">分类图例</text>
+        <circle cx="24" cy="44" r="5" fill="#f90"/><text x="38" y="48" fill="#8899b4" font-size="10" data-zh="IaC / CLI" data-en="IaC / CLI">IaC / CLI</text>
+        <circle cx="24" cy="64" r="5" fill="#3b82f6"/><text x="38" y="68" fill="#8899b4" font-size="10" data-zh="Kubernetes / 容器" data-en="K8s / Containers">Kubernetes / 容器</text>
+        <circle cx="24" cy="84" r="5" fill="#8b5cf6"/><text x="38" y="88" fill="#8899b4" font-size="10" data-zh="ML / SageMaker" data-en="ML / SageMaker">ML / SageMaker</text>
+        <circle cx="24" cy="104" r="5" fill="#10b981"/><text x="38" y="108" fill="#8899b4" font-size="10" data-zh="安全 / 加密" data-en="Security / Crypto">安全 / 加密</text>
+        <circle cx="24" cy="124" r="5" fill="#ec4899"/><text x="38" y="128" fill="#8899b4" font-size="10" data-zh="AI Agent / GenAI" data-en="AI Agent / GenAI">AI Agent / GenAI</text>
+        <circle cx="24" cy="144" r="5" fill="#f59e0b"/><text x="38" y="148" fill="#8899b4" font-size="10" data-zh="Serverless" data-en="Serverless">Serverless</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ===== Core Projects ===== -->
+<section class="section" id="projects">
+  <h2 class="section-title">
+    <span class="icon">🧩</span>
+    <span data-zh="核心项目卡片" data-en="Core Project Cards">核心项目卡片</span>
+  </h2>
+  <p class="section-desc" data-zh="按技术领域分类，展示 AWS 最具影响力的 25+ 核心开源项目及其技能标签" data-en="Categorized by technical domain, showcasing 25+ of AWS's most impactful open-source projects with skill tags.">按技术领域分类，展示 AWS 最具影响力的 25+ 核心开源项目及其技能标签</p>
+
+  <div class="skills-grid">
+
+    <!-- ===== SDK & CLI ===== -->
+    <div class="skill-card fade-in" data-cat="sdk">
+      <div class="card-header">
+        <div class="card-icon">📦</div>
+        <div>
+          <div class="card-title">AWS CDK</div>
+          <div class="card-lang">TypeScript · ⭐ 12,784 · 🍴 4,510</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="AWS 云开发工具包——用代码定义云基础设施。支持 TypeScript、Python、Java、Go 等 8 种语言，通过构造器（Constructs）组合可复用基础设施组件，编译为 CloudFormation 模板部署。AWS IaC 生态的核心枢纽。" data-en="AWS Cloud Development Kit — define cloud infrastructure in code. Supports 8 languages (TypeScript, Python, Java, Go, etc.), composes reusable infrastructure components via Constructs, compiles to CloudFormation templates. The core hub of AWS IaC ecosystem.">AWS 云开发工具包——用代码定义云基础设施。支持 TypeScript、Python、Java、Go 等 8 种语言，通过构造器（Constructs）组合可复用基础设施组件，编译为 CloudFormation 模板部署。AWS IaC 生态的核心枢纽。</div>
+      <div class="card-tags">
+        <span class="tag">IaC</span>
+        <span class="tag green">Constructs</span>
+        <span class="tag purple">多语言</span>
+        <span class="tag blue">CloudFormation</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-cdk" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="sdk">
+      <div class="card-header">
+        <div class="card-icon">🖥️</div>
+        <div>
+          <div class="card-title">AWS CLI</div>
+          <div class="card-lang">Python · ⭐ 16,990 · 🍴 4,554</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="AWS 统一命令行接口。管理所有 AWS 服务的通用 CLI 工具，支持 Shell 脚本自动化、JSON 输出过滤、多配置文件切换。是 AWS 开发者的日常入口。" data-en="Universal Command Line Interface for AWS. Manages all AWS services via CLI, supporting shell scripting automation, JSON output filtering, multi-profile switching. The daily entry point for AWS developers.">AWS 统一命令行接口。管理所有 AWS 服务的通用 CLI 工具，支持 Shell 脚本自动化、JSON 输出过滤、多配置文件切换。是 AWS 开发者的日常入口。</div>
+      <div class="card-tags">
+        <span class="tag">CLI</span>
+        <span class="tag green">自动化</span>
+        <span class="tag purple">多服务</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-cli" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="sdk">
+      <div class="card-header">
+        <div class="card-icon">🐍</div>
+        <div>
+          <div class="card-title">AWS SDK for Python (Boto3)</div>
+          <div class="card-lang">Python · ⭐ 4,111 · 🍴 729 (aws-sdk-pandas)</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="AWS 的 Python SDK 生态。Boto3 是核心 SDK，aws-sdk-pandas 提供与 Athena、Glue、Redshift、S3 等服务的 Pandas 深度集成，是数据分析与 ETL 管道的首选工具。" data-en="AWS Python SDK ecosystem. Boto3 is the core SDK; aws-sdk-pandas provides deep Pandas integration with Athena, Glue, Redshift, S3, etc. — the top choice for data analysis and ETL pipelines.">AWS 的 Python SDK 生态。Boto3 是核心 SDK，aws-sdk-pandas 提供与 Athena、Glue、Redshift、S3 等服务的 Pandas 深度集成，是数据分析与 ETL 管道的首选工具。</div>
+      <div class="card-tags">
+        <span class="tag">Python</span>
+        <span class="tag green">Boto3</span>
+        <span class="tag purple">Pandas</span>
+        <span class="tag blue">ETL</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-sdk-pandas" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="sdk">
+      <div class="card-header">
+        <div class="card-icon">⚡</div>
+        <div>
+          <div class="card-title">AWS SAM CLI</div>
+          <div class="card-lang">Python · ⭐ 6,717 · 🍴 1,223</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="Serverless 应用模型命令行工具。在 SAM 模板上构建、测试、调试和部署无服务器应用。支持本地 Lambda 模拟调用、API Gateway 本地测试、Step Functions 可视化调试。" data-en="Serverless Application Model CLI. Build, test, debug, and deploy serverless applications on SAM templates. Supports local Lambda invocation, API Gateway local testing, Step Functions visual debugging.">Serverless 应用模型命令行工具。在 SAM 模板上构建、测试、调试和部署无服务器应用。支持本地 Lambda 模拟调用、API Gateway 本地测试、Step Functions 可视化调试。</div>
+      <div class="card-tags">
+        <span class="tag">Serverless</span>
+        <span class="tag green">SAM</span>
+        <span class="tag purple">本地调试</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-sam-cli" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <!-- ===== Kubernetes ===== -->
+    <div class="skill-card fade-in" data-cat="k8s">
+      <div class="card-header">
+        <div class="card-icon">☸️</div>
+        <div>
+          <div class="card-title">Karpenter</div>
+          <div class="card-lang">Go · ⭐ 7,636 · 🍴 1,256</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="高性能 Kubernetes 节点自动扩缩器。替代 Cluster Autoscaler，直接操控 EC2 实例而非 ASG，启动速度提升 5-10x。支持 Graviton、Spot、GPU 等多种实例类型智能调度。" data-en="High-performance Kubernetes Node Autoscaler. Replaces Cluster Autoscaler by directly provisioning EC2 instances instead of ASGs, 5-10x faster launch. Supports intelligent scheduling across Graviton, Spot, GPU instance types.">高性能 Kubernetes 节点自动扩缩器。替代 Cluster Autoscaler，直接操控 EC2 实例而非 ASG，启动速度提升 5-10x。支持 Graviton、Spot、GPU 等多种实例类型智能调度。</div>
+      <div class="card-tags">
+        <span class="tag">自动扩缩</span>
+        <span class="tag green">EKS</span>
+        <span class="tag purple">Spot实例</span>
+        <span class="tag blue">Graviton</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/karpenter-provider-aws" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="k8s">
+      <div class="card-header">
+        <div class="card-icon">📐</div>
+        <div>
+          <div class="card-title">EKS Best Practices</div>
+          <div class="card-lang">Python · ⭐ 2,152 · 🍴 562</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="EKS 最佳实践指南。涵盖运维卓越、安全、可靠性、性能效率和成本优化五大支柱，是 EKS 生产环境部署的权威参考。" data-en="EKS Best Practices Guide. Covers five pillars: operational excellence, security, reliability, performance efficiency, and cost optimization. The authoritative reference for EKS production deployments.">EKS 最佳实践指南。涵盖运维卓越、安全、可靠性、性能效率和成本优化五大支柱，是 EKS 生产环境部署的权威参考。</div>
+      <div class="card-tags">
+        <span class="tag">最佳实践</span>
+        <span class="tag green">安全</span>
+        <span class="tag purple">成本优化</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-eks-best-practices" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="k8s">
+      <div class="card-header">
+        <div class="card-icon">🌐</div>
+        <div>
+          <div class="card-title">Amazon VPC CNI for K8s</div>
+          <div class="card-lang">Go · ⭐ 2,439 · 🍴 814</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="EKS Pod 网络插件。为 Kubernetes Pod 分配原生 VPC IP 地址，实现 Pod 与 VPC 网络的直接集成。支持 Security Group for Pod、IPv4/IPv6 双栈、前缀委托等高级特性。" data-en="EKS Pod networking plugin. Assigns native VPC IP addresses to Kubernetes Pods, enabling direct VPC network integration. Supports Security Group for Pod, IPv4/IPv6 dual-stack, prefix delegation.">EKS Pod 网络插件。为 Kubernetes Pod 分配原生 VPC IP 地址，实现 Pod 与 VPC 网络的直接集成。支持 Security Group for Pod、IPv4/IPv6 双栈、前缀委托等高级特性。</div>
+      <div class="card-tags">
+        <span class="tag">网络</span>
+        <span class="tag green">VPC</span>
+        <span class="tag purple">CNI</span>
+        <span class="tag blue">双栈</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/amazon-vpc-cni-k8s" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <!-- ===== ML / SageMaker ===== -->
+    <div class="skill-card fade-in" data-cat="ml">
+      <div class="card-header">
+        <div class="card-icon">🧠</div>
+        <div>
+          <div class="card-title">SageMaker Python SDK</div>
+          <div class="card-lang">Python · ⭐ 2,248 · 🍴 1,264</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="SageMaker 机器学习 Python SDK。用 Python 脚本训练和部署 ML 模型，支持 PyTorch、TensorFlow、HuggingFace、XGBoost 等主流框架。是 SageMaker 生态的开发入口。" data-en="SageMaker ML Python SDK. Train and deploy ML models using Python scripts, supporting PyTorch, TensorFlow, HuggingFace, XGBoost, etc. The developer entry point to the SageMaker ecosystem.">SageMaker 机器学习 Python SDK。用 Python 脚本训练和部署 ML 模型，支持 PyTorch、TensorFlow、HuggingFace、XGBoost 等主流框架。是 SageMaker 生态的开发入口。</div>
+      <div class="card-tags">
+        <span class="tag">ML训练</span>
+        <span class="tag green">模型部署</span>
+        <span class="tag purple">PyTorch</span>
+        <span class="tag blue">HuggingFace</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/sagemaker-python-sdk" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="ml">
+      <div class="card-header">
+        <div class="card-icon">📓</div>
+        <div>
+          <div class="card-title">Amazon SageMaker Examples</div>
+          <div class="card-lang">Jupyter Notebook · ⭐ 10,939 · 🍴 6,980</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="SageMaker 示例笔记本集。AWS 星标最高的学习资源之一，涵盖端到端 ML 工作流：数据预处理、特征工程、模型训练、超参调优、批量推理、模型监控。" data-en="SageMaker example notebook collection. One of AWS's highest-starred learning resources, covering end-to-end ML workflows: data preprocessing, feature engineering, model training, hyperparameter tuning, batch inference, model monitoring.">SageMaker 示例笔记本集。AWS 星标最高的学习资源之一，涵盖端到端 ML 工作流：数据预处理、特征工程、模型训练、超参调优、批量推理、模型监控。</div>
+      <div class="card-tags">
+        <span class="tag">教程</span>
+        <span class="tag green">Jupyter</span>
+        <span class="tag purple">端到端</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/amazon-sagemaker-examples" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="ml">
+      <div class="card-header">
+        <div class="card-icon">🐳</div>
+        <div>
+          <div class="card-title">Deep Learning Containers</div>
+          <div class="card-lang">Python · ⭐ 1,163 · 🍴 539</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="AWS 深度学习容器镜像。预装 PyTorch、TensorFlow、HuggingFace 等框架的 Docker 镜像，针对 AWS 基础设施（GPU/Inferentia/Trainium）优化，可直接用于 SageMaker 或 EKS。" data-en="AWS Deep Learning Container images. Docker images pre-installed with PyTorch, TensorFlow, HuggingFace, etc., optimized for AWS infrastructure (GPU/Inferentia/Trainium). Usable with SageMaker or EKS.">AWS 深度学习容器镜像。预装 PyTorch、TensorFlow、HuggingFace 等框架的 Docker 镜像，针对 AWS 基础设施（GPU/Inferentia/Trainium）优化，可直接用于 SageMaker 或 EKS。</div>
+      <div class="card-tags">
+        <span class="tag">Docker</span>
+        <span class="tag green">GPU优化</span>
+        <span class="tag purple">Trainium</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/deep-learning-containers" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <!-- ===== Security ===== -->
+    <div class="skill-card fade-in" data-cat="security">
+      <div class="card-header">
+        <div class="card-icon">🔐</div>
+        <div>
+          <div class="card-title">s2n-tls</div>
+          <div class="card-lang">C · ⭐ 4,726 · 🍴 781</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="AWS 的 TLS/SSL 协议实现。以「简单、小巧、快速」为设计哲学，通过形式化验证确保安全性。被 AWS 内部所有 TLS 连接使用，处理全球数万亿请求。" data-en="AWS's implementation of the TLS/SSL protocols. Design philosophy: 'simple, small, fast', with formal verification for security. Used by all internal AWS TLS connections, handling trillions of requests globally.">AWS 的 TLS/SSL 协议实现。以「简单、小巧、快速」为设计哲学，通过形式化验证确保安全性。被 AWS 内部所有 TLS 连接使用，处理全球数万亿请求。</div>
+      <div class="card-tags">
+        <span class="tag">TLS</span>
+        <span class="tag green">形式化验证</span>
+        <span class="tag purple">加密</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/s2n-tls" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="security">
+      <div class="card-header">
+        <div class="card-icon">🛡️</div>
+        <div>
+          <div class="card-title">AWS-LC</div>
+          <div class="card-lang">Assembly · ⭐ 778 · 🍴 184</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="AWS 通用密码学库。基于 Google BoringSSL 和 OpenSSL，由 AWS 密码学团队维护。提供高性能加密原语，是 s2n-tls 和 aws-lc-rs 的底层依赖。" data-en="AWS general-purpose cryptographic library. Based on Google BoringSSL and OpenSSL, maintained by the AWS Cryptography team. Provides high-performance cryptographic primitives, underlying dependency for s2n-tls and aws-lc-rs.">AWS 通用密码学库。基于 Google BoringSSL 和 OpenSSL，由 AWS 密码学团队维护。提供高性能加密原语，是 s2n-tls 和 aws-lc-rs 的底层依赖。</div>
+      <div class="card-tags">
+        <span class="tag">密码学</span>
+        <span class="tag green">BoringSSL</span>
+        <span class="tag purple">高性能</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-lc" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="security">
+      <div class="card-header">
+        <div class="card-icon">🦀</div>
+        <div>
+          <div class="card-title">aws-lc-rs</div>
+          <div class="card-lang">Rust · ⭐ 601 · 🍴 131</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="基于 AWS-LC 的 Rust 密码学库。API 兼容 Rust 生态流行的 ring 库，可直接替换。提供 TLS、证书验证、哈希签名等密码学操作，兼顾安全性与性能。" data-en="Rust cryptographic library based on AWS-LC. API-compatible with the popular Rust ring library, enabling drop-in replacement. Provides TLS, certificate verification, hashing, signing, etc. with both security and performance.">基于 AWS-LC 的 Rust 密码学库。API 兼容 Rust 生态流行的 ring 库，可直接替换。提供 TLS、证书验证、哈希签名等密码学操作，兼顾安全性与性能。</div>
+      <div class="card-tags">
+        <span class="tag">Rust</span>
+        <span class="tag green">ring兼容</span>
+        <span class="tag purple">TLS</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-lc-rs" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <!-- ===== Serverless ===== -->
+    <div class="skill-card fade-in" data-cat="serverless">
+      <div class="card-header">
+        <div class="card-icon">λ</div>
+        <div>
+          <div class="card-title">AWS Lambda Web Adapter</div>
+          <div class="card-lang">Rust · ⭐ 2,693 · 🍴 153</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="让 Web 应用零改造运行在 Lambda 上。用 Rust 编写的高性能适配器，将 HTTP 请求转发到 Lambda 函数内的 Web 服务。支持 Express、Flask、Spring Boot 等任意框架。" data-en="Run web applications on AWS Lambda with zero code changes. High-performance Rust adapter that forwards HTTP requests to web services inside Lambda functions. Supports Express, Flask, Spring Boot, and any framework.">让 Web 应用零改造运行在 Lambda 上。用 Rust 编写的高性能适配器，将 HTTP 请求转发到 Lambda 函数内的 Web 服务。支持 Express、Flask、Spring Boot 等任意框架。</div>
+      <div class="card-tags">
+        <span class="tag">Lambda</span>
+        <span class="tag green">Rust</span>
+        <span class="tag purple">Web适配</span>
+        <span class="tag blue">零改造</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-lambda-web-adapter" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="serverless">
+      <div class="card-header">
+        <div class="card-icon">🚀</div>
+        <div>
+          <div class="card-title">AWS Copilot CLI</div>
+          <div class="card-lang">Go · ⭐ 3,737 · 🍴 441</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="容器化应用的开发工作流 CLI。一键从 Docker Compose 部署到 ECS/Fargate，自动生成 CI/CD Pipeline、Service Discovery、负载均衡。简化容器应用的全生命周期管理。" data-en="Developer workflow CLI for containerized applications. One-click deploy from Docker Compose to ECS/Fargate, auto-generating CI/CD pipelines, service discovery, and load balancing. Simplifies full lifecycle management.">容器化应用的开发工作流 CLI。一键从 Docker Compose 部署到 ECS/Fargate，自动生成 CI/CD Pipeline、Service Discovery、负载均衡。简化容器应用的全生命周期管理。</div>
+      <div class="card-tags">
+        <span class="tag">ECS</span>
+        <span class="tag green">Fargate</span>
+        <span class="tag purple">CI/CD</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/copilot-cli" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="serverless">
+      <div class="card-header">
+        <div class="card-icon">🧪</div>
+        <div>
+          <div class="card-title">Chalice</div>
+          <div class="card-lang">Python · ⭐ 11,057 · 🍴 1,004</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="Python Serverless 微框架。用 Python 装饰器风格定义 API 端点，自动生成 Lambda + API Gateway + IAM 部署。类似 Flask 的开发体验，但直接部署到 AWS 无服务器架构。" data-en="Python Serverless Microframework. Define API endpoints with Python decorators, auto-generating Lambda + API Gateway + IAM deployment. Flask-like development experience, deployed directly to AWS serverless architecture.">Python Serverless 微框架。用 Python 装饰器风格定义 API 端点，自动生成 Lambda + API Gateway + IAM 部署。类似 Flask 的开发体验，但直接部署到 AWS 无服务器架构。</div>
+      <div class="card-tags">
+        <span class="tag">Python</span>
+        <span class="tag green">微框架</span>
+        <span class="tag purple">装饰器</span>
+        <span class="tag blue">API Gateway</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/chalice" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <!-- ===== Data ===== -->
+    <div class="skill-card fade-in" data-cat="data">
+      <div class="card-header">
+        <div class="card-icon">📊</div>
+        <div>
+          <div class="card-title">AWS SDK for Pandas</div>
+          <div class="card-lang">Python · ⭐ 4,111 · 🍴 729</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="Pandas 的 AWS 集成扩展。一键连接 Athena、Glue、Redshift、Timestream、Neptune、OpenSearch 等服务，直接读写 S3 上的 Parquet/CSV/JSON。数据分析的 AWS 原生入口。" data-en="Pandas integration extension for AWS. One-click connect to Athena, Glue, Redshift, Timestream, Neptune, OpenSearch, etc. Read/write S3 Parquet/CSV/JSON directly. The AWS-native entry point for data analysis.">Pandas 的 AWS 集成扩展。一键连接 Athena、Glue、Redshift、Timestream、Neptune、OpenSearch 等服务，直接读写 S3 上的 Parquet/CSV/JSON。数据分析的 AWS 原生入口。</div>
+      <div class="card-tags">
+        <span class="tag">Pandas</span>
+        <span class="tag green">Athena</span>
+        <span class="tag purple">Redshift</span>
+        <span class="tag blue">ETL</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-sdk-pandas" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+        <span>🏷️ Apache-2.0</span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="data">
+      <div class="card-header">
+        <div class="card-icon">🔗</div>
+        <div>
+          <div class="card-title">Graph Notebook</div>
+          <div class="card-lang">Jupyter Notebook · ⭐ 811 · 🍴 179</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="图数据库 Jupyter 扩展。集成 Apache TinkerPop (Gremlin)、openCypher 和 RDF SPARQL，在 Jupyter 中可视化查询 Neptune 图数据。支持属性图和 RDF 双模式。" data-en="Graph database Jupyter extension. Integrates Apache TinkerPop (Gremlin), openCypher, and RDF SPARQL, visualizing Neptune graph data in Jupyter. Supports both property graph and RDF modes.">图数据库 Jupyter 扩展。集成 Apache TinkerPop (Gremlin)、openCypher 和 RDF SPARQL，在 Jupyter 中可视化查询 Neptune 图数据。支持属性图和 RDF 双模式。</div>
+      <div class="card-tags">
+        <span class="tag">Neptune</span>
+        <span class="tag green">Gremlin</span>
+        <span class="tag purple">SPARQL</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/graph-notebook" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="data">
+      <div class="card-header">
+        <div class="card-icon">🔑</div>
+        <div>
+          <div class="card-title">Secrets Store CSI Driver Provider</div>
+          <div class="card-lang">Go · ⭐ 585 · 🍴 167</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="K8s Secrets Store CSI 驱动的 AWS Provider。从 AWS Secrets Manager 和 SSM Parameter Store 拉取密钥，挂载为 K8s Pod 的文件卷。实现密钥与代码分离的安全最佳实践。" data-en="AWS Provider for K8s Secrets Store CSI Driver. Fetches secrets from AWS Secrets Manager and SSM Parameter Store, mounting them as K8s Pod volumes. Implements security best practice of separating secrets from code.">K8s Secrets Store CSI 驱动的 AWS Provider。从 AWS Secrets Manager 和 SSM Parameter Store 拉取密钥，挂载为 K8s Pod 的文件卷。实现密钥与代码分离的安全最佳实践。</div>
+      <div class="card-tags">
+        <span class="tag">K8s</span>
+        <span class="tag green">Secrets</span>
+        <span class="tag purple">CSI</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/secrets-store-csi-driver-provider-aws" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <!-- ===== AI / GenAI ===== -->
+    <div class="skill-card fade-in" data-cat="ai">
+      <div class="card-header">
+        <div class="card-icon">🎭</div>
+        <div>
+          <div class="card-title">Amazon Nova Act</div>
+          <div class="card-lang">Python · ⭐ 911 · 🍴 147</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="构建可靠 AI Agent 的浏览器自动化服务。让 AI Agent 自动化执行 UI 工作流（填表、点击、导航），面向 RPA 与 Web 自动化场景。提供 Python SDK 和 Playwright 集成。" data-en="Browser automation service for building reliable AI agents. Enables AI agents to automate UI workflows (form filling, clicking, navigation) for RPA and web automation. Provides Python SDK with Playwright integration.">构建可靠 AI Agent 的浏览器自动化服务。让 AI Agent 自动化执行 UI 工作流（填表、点击、导航），面向 RPA 与 Web 自动化场景。提供 Python SDK 和 Playwright 集成。</div>
+      <div class="card-tags">
+        <span class="tag">AI Agent</span>
+        <span class="tag green">浏览器自动化</span>
+        <span class="tag purple">RPA</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/nova-act" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="ai">
+      <div class="card-header">
+        <div class="card-icon">🤖</div>
+        <div>
+          <div class="card-title">Bedrock AgentCore SDK</div>
+          <div class="card-lang">Python · ⭐ 709 · 🍴 112</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="将 AI Agent 转化为生产就绪应用的 Python SDK。框架无关的运行时、内存、认证与工具原语，将任何 Agent 框架（LangChain、CrewAI 等）的应用部署到 AWS 托管基础设施。" data-en="Python SDK for transforming AI agents into production-ready applications. Framework-agnostic primitives for runtime, memory, authentication, and tools — deploy any agent framework (LangChain, CrewAI, etc.) to AWS-managed infrastructure.">将 AI Agent 转化为生产就绪应用的 Python SDK。框架无关的运行时、内存、认证与工具原语，将任何 Agent 框架（LangChain、CrewAI 等）的应用部署到 AWS 托管基础设施。</div>
+      <div class="card-tags">
+        <span class="tag">Bedrock</span>
+        <span class="tag green">Agent</span>
+        <span class="tag purple">框架无关</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/bedrock-agentcore-sdk-python" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="ai">
+      <div class="card-header">
+        <div class="card-icon">💬</div>
+        <div>
+          <div class="card-title">Amazon Q Developer CLI</div>
+          <div class="card-lang">Rust · ⭐ 1,967 · 🍴 430</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="终端中的 AI 编程助手。用自然语言构建应用，支持对话式代码生成、AWS 资源管理、自动补全。Rust 编写，启动速度极快。Amazon Q 在开发者工具链的核心入口。" data-en="AI coding assistant in your terminal. Build applications using natural language, with conversational code generation, AWS resource management, and auto-completion. Written in Rust for extreme speed. The core entry point for Amazon Q in developer toolchains.">终端中的 AI 编程助手。用自然语言构建应用，支持对话式代码生成、AWS 资源管理、自动补全。Rust 编写，启动速度极快。Amazon Q 在开发者工具链的核心入口。</div>
+      <div class="card-tags">
+        <span class="tag">AI助手</span>
+        <span class="tag green">Rust</span>
+        <span class="tag purple">自然语言</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/amazon-q-developer-cli" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <!-- ===== Infrastructure ===== -->
+    <div class="skill-card fade-in" data-cat="infra">
+      <div class="card-header">
+        <div class="card-icon">🖥️</div>
+        <div>
+          <div class="card-title">Amazon SSM Agent</div>
+          <div class="card-lang">Go · ⭐ 1,145 · 🍴 352</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="EC2 实例远程管理代理。支持 Systems Manager 的 Run Command、Session Manager、Patch Manager 等功能，实现无需 SSH 的安全远程运维。数百万 EC2 实例的运维基础。" data-en="Remote management agent for EC2 instances. Supports Systems Manager's Run Command, Session Manager, Patch Manager, etc., enabling SSH-less secure remote operations. The ops foundation for millions of EC2 instances.">EC2 实例远程管理代理。支持 Systems Manager 的 Run Command、Session Manager、Patch Manager 等功能，实现无需 SSH 的安全远程运维。数百万 EC2 实例的运维基础。</div>
+      <div class="card-tags">
+        <span class="tag">运维</span>
+        <span class="tag green">Session Manager</span>
+        <span class="tag purple">无SSH</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/amazon-ssm-agent" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="infra">
+      <div class="card-header">
+        <div class="card-icon">🔭</div>
+        <div>
+          <div class="card-title">CloudWatch Agent</div>
+          <div class="card-lang">Go · ⭐ 532 · 🍴 256</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="CloudWatch 主机级指标与日志采集代理。收集 CPU、内存、磁盘、网络等系统指标和应用日志，推送至 CloudWatch。支持 Linux/Windows，是 AWS 可观测性的基础组件。" data-en="CloudWatch host-level metrics and log collection agent. Collects CPU, memory, disk, network metrics and application logs, pushing to CloudWatch. Supports Linux/Windows. The foundational component for AWS observability.">CloudWatch 主机级指标与日志采集代理。收集 CPU、内存、磁盘、网络等系统指标和应用日志，推送至 CloudWatch。支持 Linux/Windows，是 AWS 可观测性的基础组件。</div>
+      <div class="card-tags">
+        <span class="tag">可观测性</span>
+        <span class="tag green">指标</span>
+        <span class="tag purple">日志</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/amazon-cloudwatch-agent" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="infra">
+      <div class="card-header">
+        <div class="card-icon">🏗️</div>
+        <div>
+          <div class="card-title">EKS Anywhere</div>
+          <div class="card-lang">Go · ⭐ 2,094 · 🍴 323</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="在自有基础设施上运行 EKS。将 Amazon EKS 的托管体验延伸到本地数据中心和边缘环境，统一混合云 K8s 运维。支持 VMware、裸金属、CloudStack 部署。" data-en="Run EKS on your own infrastructure. Extends the managed EKS experience to on-premises data centers and edge, unifying hybrid cloud K8s operations. Supports VMware, bare metal, and CloudStack deployments.">在自有基础设施上运行 EKS。将 Amazon EKS 的托管体验延伸到本地数据中心和边缘环境，统一混合云 K8s 运维。支持 VMware、裸金属、CloudStack 部署。</div>
+      <div class="card-tags">
+        <span class="tag">混合云</span>
+        <span class="tag green">本地部署</span>
+        <span class="tag purple">VMware</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/eks-anywhere" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <!-- ===== IoT ===== -->
+    <div class="skill-card fade-in" data-cat="iot">
+      <div class="card-header">
+        <div class="card-icon">📡</div>
+        <div>
+          <div class="card-title">AWS IoT Device SDK (Embedded C)</div>
+          <div class="card-lang">C · ⭐ 1,052 · 🍴 638</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="嵌入式 C 的 AWS IoT 设备 SDK。在微控制器和嵌入式设备上连接 AWS IoT Core，支持 MQTT、Device Shadow、Jobs、Fleet Provisioning。极小内存占用，适合资源受限设备。" data-en="AWS IoT Device SDK for Embedded C. Connects to AWS IoT Core from microcontrollers and embedded devices, supporting MQTT, Device Shadow, Jobs, Fleet Provisioning. Minimal memory footprint, suitable for resource-constrained devices.">嵌入式 C 的 AWS IoT 设备 SDK。在微控制器和嵌入式设备上连接 AWS IoT Core，支持 MQTT、Device Shadow、Jobs、Fleet Provisioning。极小内存占用，适合资源受限设备。</div>
+      <div class="card-tags">
+        <span class="tag">嵌入式</span>
+        <span class="tag green">MQTT</span>
+        <span class="tag purple">IoT Core</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-iot-device-sdk-embedded-C" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+    <div class="skill-card fade-in" data-cat="iot">
+      <div class="card-header">
+        <div class="card-icon">🏎️</div>
+        <div>
+          <div class="card-title">AWS IoT FleetWise</div>
+          <div class="card-lang">C++ · ⭐ 74 · 🍴 48</div>
+        </div>
+      </div>
+      <div class="card-desc" data-zh="车联网数据采集与管理参考实现。从车辆 CAN 总线、OBD 接口实时采集遥测数据，上传至 AWS 进行分析。面向智能网联汽车的数据管道。" data-en="Connected vehicle data collection and management reference implementation. Collects telemetry from vehicle CAN bus and OBD interfaces in real-time, uploading to AWS for analysis. Data pipeline for smart connected vehicles.">车联网数据采集与管理参考实现。从车辆 CAN 总线、OBD 接口实时采集遥测数据，上传至 AWS 进行分析。面向智能网联汽车的数据管道。</div>
+      <div class="card-tags">
+        <span class="tag">车联网</span>
+        <span class="tag green">CAN总线</span>
+        <span class="tag purple">遥测</span>
+      </div>
+      <div class="card-stats">
+        <span>📖 <a href="https://github.com/aws/aws-iot-fleetwise-edge" style="color:var(--accent-cyan);text-decoration:none;">GitHub</a></span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== Application Directions ===== -->
+<section class="section" id="directions">
+  <h2 class="section-title">
+    <span class="icon">🧭</span>
+    <span data-zh="技术应用方向" data-en="Application Directions">技术应用方向</span>
+  </h2>
+  <p class="section-desc" data-zh="基于 AWS 开源工具链可延伸的八大应用场景" data-en="Eight extended application scenarios based on the AWS open-source toolchain">基于 AWS 开源工具链可延伸的八大应用场景</p>
+
+  <div class="app-grid">
+    <div class="app-card fade-in">
+      <div class="app-icon">🏗️</div>
+      <h3 data-zh="基础设施即代码平台" data-en="Infrastructure as Code Platform">基础设施即代码平台</h3>
+      <p data-zh="CDK 定义基础设施 + Constructs 可复用组件 + jsii 多语言编译 + SAM CLI 无服务器部署。从单服务到完整云架构的声明式管理。" data-en="CDK defines infrastructure + Constructs reusable components + jsii multi-language compilation + SAM CLI serverless deployment. Declarative management from single service to full cloud architecture.">CDK 定义基础设施 + Constructs 可复用组件 + jsii 多语言编译 + SAM CLI 无服务器部署。从单服务到完整云架构的声明式管理。</p>
+      <div class="app-tools"><span class="mini-tag">CDK</span><span class="mini-tag">SAM</span><span class="mini-tag">jsii</span><span class="mini-tag">Constructs</span></div>
+    </div>
+    <div class="app-card fade-in">
+      <div class="app-icon">☸️</div>
+      <h3 data-zh="Kubernetes 生产运维平台" data-en="Kubernetes Production Ops Platform">Kubernetes 生产运维平台</h3>
+      <p data-zh="Karpenter 自动扩缩 + VPC CNI 网络集成 + Node Termination Handler 优雅关停 + EKS Best Practices 规范指导。EKS 生产环境的完整运维方案。" data-en="Karpenter autoscaling + VPC CNI network integration + Node Termination Handler graceful shutdown + EKS Best Practices guidance. Complete ops solution for EKS production.">Karpenter 自动扩缩 + VPC CNI 网络集成 + Node Termination Handler 优雅关停 + EKS Best Practices 规范指导。EKS 生产环境的完整运维方案。</p>
+      <div class="app-tools"><span class="mini-tag">Karpenter</span><span class="mini-tag">VPC CNI</span><span class="mini-tag">NTH</span><span class="mini-tag">EKS-D</span></div>
+    </div>
+    <div class="app-card fade-in">
+      <div class="app-icon">🧠</div>
+      <h3 data-zh="MLOps 端到端平台" data-en="End-to-End MLOps Platform">MLOps 端到端平台</h3>
+      <p data-zh="SageMaker SDK 训练部署 + DLC 容器镜像 + Training/Inference Toolkit + Experiments 实验追踪 + Feature Store 特征管理。从数据到模型的闭环流水线。" data-en="SageMaker SDK training/deployment + DLC container images + Training/Inference Toolkit + Experiments tracking + Feature Store. Closed-loop pipeline from data to model.">SageMaker SDK 训练部署 + DLC 容器镜像 + Training/Inference Toolkit + Experiments 实验追踪 + Feature Store 特征管理。从数据到模型的闭环流水线。</p>
+      <div class="app-tools"><span class="mini-tag">SageMaker</span><span class="mini-tag">DLC</span><span class="mini-tag">Experiments</span><span class="mini-tag">Clarify</span></div>
+    </div>
+    <div class="app-card fade-in">
+      <div class="app-icon">🔐</div>
+      <h3 data-zh="零信任安全基础设施" data-en="Zero Trust Security Infrastructure">零信任安全基础设施</h3>
+      <p data-zh="s2n-tls 加密通信 + AWS-LC 密码学 + Secrets CSI 密钥管理 + Nitro Enclaves 可信执行 + IAM Roles Anywhere 身份验证。" data-en="s2n-tls encrypted communication + AWS-LC cryptography + Secrets CSI secret management + Nitro Enclaves TEE + IAM Roles Anywhere identity verification.">s2n-tls 加密通信 + AWS-LC 密码学 + Secrets CSI 密钥管理 + Nitro Enclaves 可信执行 + IAM Roles Anywhere 身份验证。</p>
+      <div class="app-tools"><span class="mini-tag">s2n</span><span class="mini-tag">AWS-LC</span><span class="mini-tag">Nitro</span><span class="mini-tag">Secrets</span></div>
+    </div>
+    <div class="app-card fade-in">
+      <div class="app-icon">⚡</div>
+      <h3 data-zh="Serverless 全栈开发" data-en="Serverless Full-Stack Development">Serverless 全栈开发</h3>
+      <p data-zh="Chalice 微框架 + SAM CLI 开发调试 + Lambda Web Adapter Web迁移 + Lambda Runtime 多语言运行时。从原型到生产的无服务器全栈方案。" data-en="Chalice microframework + SAM CLI development/debugging + Lambda Web Adapter web migration + Lambda Runtime multi-language runtimes. Full serverless solution from prototype to production.">Chalice 微框架 + SAM CLI 开发调试 + Lambda Web Adapter Web迁移 + Lambda Runtime 多语言运行时。从原型到生产的无服务器全栈方案。</p>
+      <div class="app-tools"><span class="mini-tag">Chalice</span><span class="mini-tag">SAM</span><span class="mini-tag">Lambda</span><span class="mini-tag">Web Adapter</span></div>
+    </div>
+    <div class="app-card fade-in">
+      <div class="app-icon">🤖</div>
+      <h3 data-zh="AI Agent 开发平台" data-en="AI Agent Development Platform">AI Agent 开发平台</h3>
+      <p data-zh="Bedrock AgentCore SDK 生产化 Agent + Nova Act 浏览器自动化 + Agent Toolkit MCP 集成 + FMEval 模型评估。构建企业级 AI Agent 的完整工具链。" data-en="Bedrock AgentCore SDK production agents + Nova Act browser automation + Agent Toolkit MCP integration + FMEval model evaluation. Complete toolchain for building enterprise AI agents.">Bedrock AgentCore SDK 生产化 Agent + Nova Act 浏览器自动化 + Agent Toolkit MCP 集成 + FMEval 模型评估。构建企业级 AI Agent 的完整工具链。</p>
+      <div class="app-tools"><span class="mini-tag">AgentCore</span><span class="mini-tag">Nova Act</span><span class="mini-tag">MCP</span><span class="mini-tag">FMEval</span></div>
+    </div>
+    <div class="app-card fade-in">
+      <div class="app-icon">📡</div>
+      <h3 data-zh="IoT 边缘计算管道" data-en="IoT Edge Computing Pipeline">IoT 边缘计算管道</h3>
+      <p data-zh="IoT Device SDK 嵌入式连接 + FleetWise 车联网数据 + Greengrass 边缘计算 + IoT ExpressLink 快速接入。从设备到云端的数据闭环。" data-en="IoT Device SDK embedded connectivity + FleetWise connected vehicle data + Greengrass edge computing + IoT ExpressLink quick onboarding. Data loop from device to cloud.">IoT Device SDK 嵌入式连接 + FleetWise 车联网数据 + Greengrass 边缘计算 + IoT ExpressLink 快速接入。从设备到云端的数据闭环。</p>
+      <div class="app-tools"><span class="mini-tag">IoT SDK</span><span class="mini-tag">FleetWise</span><span class="mini-tag">Greengrass</span></div>
+    </div>
+    <div class="app-card fade-in">
+      <div class="app-icon">📊</div>
+      <h3 data-zh="云原生数据分析" data-en="Cloud-Native Data Analytics">云原生数据分析</h3>
+      <p data-zh="aws-sdk-pandas 一键集成 + Graph Notebook 图查询 + MWAA Local Runner Airflow 开发 + EMR Best Practices 大数据最佳实践。" data-en="aws-sdk-pandas one-click integration + Graph Notebook graph queries + MWAA Local Runner Airflow dev + EMR Best Practices big data guidance.">aws-sdk-pandas 一键集成 + Graph Notebook 图查询 + MWAA Local Runner Airflow 开发 + EMR Best Practices 大数据最佳实践。</p>
+      <div class="app-tools"><span class="mini-tag">SDK-Pandas</span><span class="mini-tag">Graph</span><span class="mini-tag">MWAA</span><span class="mini-tag">EMR</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== History ===== -->
+<section class="section" id="history">
+  <h2 class="section-title">
+    <span class="icon">📜</span>
+    <span data-zh="发展历程" data-en="Development History">发展历程</span>
+  </h2>
+  <p class="section-desc" data-zh="从 SDK 开源到 AI Agent 平台" data-en="From SDK open source to AI Agent platform">从 SDK 开源到 AI Agent 平台</p>
+  <div class="timeline">
+    <div class="timeline-item fade-in">
+      <div class="year">2012–2014</div>
+      <div class="event" data-zh="发布 AWS SDK for Java/PHP/Ruby/Node.js，奠定多语言 SDK 基础；开源 aws-cli 统一命令行工具" data-en="Released AWS SDK for Java/PHP/Ruby/Node.js, establishing multi-language SDK foundation; open-sourced aws-cli universal CLI tool">发布 AWS SDK for Java/PHP/Ruby/Node.js，奠定多语言 SDK 基础；开源 aws-cli 统一命令行工具</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2015–2016</div>
+      <div class="event" data-zh="开源 s2n-tls 加密库（形式化验证的 TLS 实现）；发布 aws-sdk-go，进入 Go 生态；开源 Amazon Kinesis 客户端库" data-en="Open-sourced s2n-tls crypto library (formally verified TLS); released aws-sdk-go, entering Go ecosystem; open-sourced Amazon Kinesis client libraries">开源 s2n-tls 加密库（形式化验证的 TLS 实现）；发布 aws-sdk-go，进入 Go 生态；开源 Amazon Kinesis 客户端库</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2017–2018</div>
+      <div class="event" data-zh="发布 AWS CDK（TypeScript IaC 框架）；开源 Firecracker 微虚拟机；推出 SageMaker 系列工具（Python SDK、容器、训练/推理工具包）" data-en="Released AWS CDK (TypeScript IaC framework); open-sourced Firecracker microVM; launched SageMaker toolchain (Python SDK, containers, training/inference toolkits)">发布 AWS CDK（TypeScript IaC 框架）；开源 Firecracker 微虚拟机；推出 SageMaker 系列工具（Python SDK、容器、训练/推理工具包）</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2019–2020</div>
+      <div class="event" data-zh="开源 Karpenter K8s 自动扩缩器；发布 aws-sdk-pandas；推出 EKS Anywhere 混合云方案；开源 Deep Learning Containers" data-en="Open-sourced Karpenter K8s autoscaler; released aws-sdk-pandas; launched EKS Anywhere hybrid cloud; open-sourced Deep Learning Containers">开源 Karpenter K8s 自动扩缩器；发布 aws-sdk-pandas；推出 EKS Anywhere 混合云方案；开源 Deep Learning Containers</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2021–2022</div>
+      <div class="event" data-zh="发布 Lambda Web Adapter（Rust 高性能适配）；开源 s2n-quic（QUIC 协议实现）；推出 aws-lc-rs（Rust 密码学库）；SAM CLI 持续演进" data-en="Released Lambda Web Adapter (Rust high-performance adapter); open-sourced s2n-quic (QUIC implementation); launched aws-lc-rs (Rust crypto library); SAM CLI continued evolving">发布 Lambda Web Adapter（Rust 高性能适配）；开源 s2n-quic（QUIC 协议实现）；推出 aws-lc-rs（Rust 密码学库）；SAM CLI 持续演进</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2023–2024</div>
+      <div class="event" data-zh="发布 Amazon Q Developer CLI（AI 终端助手）；推出 Bedrock AgentCore SDK（Agent 生产化）；开源 HyperPod 训练集群管理；发布 FMEval 模型评估库" data-en="Released Amazon Q Developer CLI (AI terminal assistant); launched Bedrock AgentCore SDK (agent productionization); open-sourced HyperPod training cluster management; released FMEval model evaluation library">发布 Amazon Q Developer CLI（AI 终端助手）；推出 Bedrock AgentCore SDK（Agent 生产化）；开源 HyperPod 训练集群管理；发布 FMEval 模型评估库</div>
+    </div>
+    <div class="timeline-item fade-in">
+      <div class="year">2025–至今</div>
+      <div class="event" data-zh="开源 Nova Act（AI 浏览器自动化）；发布 MCP Proxy for AWS（AI 工具链集成）；AgentCore CLI 重构；Lambda Durable Functions SDK 多语言发布" data-en="Open-sourced Nova Act (AI browser automation); released MCP Proxy for AWS (AI toolchain integration); AgentCore CLI refactored; Lambda Durable Functions SDK multi-language release">开源 Nova Act（AI 浏览器自动化）；发布 MCP Proxy for AWS（AI 工具链集成）；AgentCore CLI 重构；Lambda Durable Functions SDK 多语言发布</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Tech Stack ===== -->
+<section class="section" id="stack">
+  <h2 class="section-title">
+    <span class="icon">🗺️</span>
+    <span data-zh="技术栈全景图" data-en="Technology Stack Panorama">技术栈全景图</span>
+  </h2>
+  <p class="section-desc" data-zh="按技术层次展示 AWS 开源项目的定位与关系" data-en="Position and relationships of AWS open-source projects by technology layer">按技术层次展示 AWS 开源项目的定位与关系</p>
+  <div class="network-container">
+    <svg class="network-svg" viewBox="0 0 1100 580" xmlns="http://www.w3.org/2000/svg">
+      <!-- Layer backgrounds -->
+      <rect x="20" y="20" width="1060" height="90" rx="12" fill="#ec489908" stroke="#ec489930" stroke-width="1"/>
+      <text x="40" y="48" fill="#ec4899" font-size="14" font-weight="700" data-zh="🤖 AI / GenAI 层" data-en="🤖 AI / GenAI Layer">🤖 AI / GenAI 层</text>
+      <rect x="20" y="130" width="1060" height="90" rx="12" fill="#8b5cf608" stroke="#8b5cf630" stroke-width="1"/>
+      <text x="40" y="158" fill="#8b5cf6" font-size="14" font-weight="700" data-zh="🧠 ML / 数据科学层" data-en="🧠 ML / Data Science Layer">🧠 ML / 数据科学层</text>
+      <rect x="20" y="240" width="1060" height="90" rx="12" fill="#f90008" stroke="#f9030" stroke-width="1"/>
+      <text x="40" y="268" fill="#f90" font-size="14" font-weight="700" data-zh="⚡ IaC / CLI / SDK 层" data-en="⚡ IaC / CLI / SDK Layer">⚡ IaC / CLI / SDK 层</text>
+      <rect x="20" y="350" width="1060" height="90" rx="12" fill="#3b82f608" stroke="#3b82f630" stroke-width="1"/>
+      <text x="40" y="378" fill="#3b82f6" font-size="14" font-weight="700" data-zh="☸️ 容器 / K8s 层" data-en="☸️ Container / K8s Layer">☸️ 容器 / K8s 层</text>
+      <rect x="20" y="460" width="1060" height="90" rx="12" fill="#10b98108" stroke="#10b98130" stroke-width="1"/>
+      <text x="40" y="488" fill="#10b981" font-size="14" font-weight="700" data-zh="🔐 安全 / 加密 / 运维层" data-en="🔐 Security / Crypto / Ops Layer">🔐 安全 / 加密 / 运维层</text>
+
+      <!-- AI Layer -->
+      <g><rect x="180" y="35" width="155" height="55" rx="8" fill="#1a2235" stroke="#ec4899" stroke-width="1.5"/>
+      <text x="258" y="58" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Nova Act</text>
+      <text x="258" y="75" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 911 · AI Agent</text></g>
+      <g><rect x="370" y="35" width="170" height="55" rx="8" fill="#1a2235" stroke="#ec4899" stroke-width="1.5"/>
+      <text x="455" y="58" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Bedrock AgentCore</text>
+      <text x="455" y="75" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 709 · Agent SDK</text></g>
+      <g><rect x="575" y="35" width="175" height="55" rx="8" fill="#1a2235" stroke="#ec4899" stroke-width="1.5"/>
+      <text x="663" y="58" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Amazon Q Dev CLI</text>
+      <text x="663" y="75" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 1,967 · AI 助手</text></g>
+      <g><rect x="785" y="35" width="165" height="55" rx="8" fill="#1a2235" stroke="#ec4899" stroke-width="1.5"/>
+      <text x="868" y="58" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">MCP Proxy for AWS</text>
+      <text x="868" y="75" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 291 · AI工具链</text></g>
+
+      <!-- ML Layer -->
+      <g><rect x="140" y="145" width="170" height="55" rx="8" fill="#1a2235" stroke="#8b5cf6" stroke-width="1.5"/>
+      <text x="225" y="168" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">SageMaker Python SDK</text>
+      <text x="225" y="185" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 2,248</text></g>
+      <g><rect x="345" y="145" width="170" height="55" rx="8" fill="#1a2235" stroke="#8b5cf6" stroke-width="1.5"/>
+      <text x="430" y="168" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">SageMaker Examples</text>
+      <text x="430" y="185" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 10,939</text></g>
+      <g><rect x="550" y="145" width="170" height="55" rx="8" fill="#1a2235" stroke="#8b5cf6" stroke-width="1.5"/>
+      <text x="635" y="168" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">DL Containers</text>
+      <text x="635" y="185" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 1,163</text></g>
+      <g><rect x="755" y="145" width="145" height="55" rx="8" fill="#1a2235" stroke="#8b5cf6" stroke-width="1.5"/>
+      <text x="828" y="168" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">FMEval</text>
+      <text x="828" y="185" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 286 · 模型评估</text></g>
+
+      <!-- IaC / CLI / SDK Layer -->
+      <g><rect x="100" y="255" width="150" height="55" rx="8" fill="#1a2235" stroke="#f90" stroke-width="2"/>
+      <text x="175" y="278" text-anchor="middle" fill="#e8edf5" font-size="14" font-weight="700">AWS CDK</text>
+      <text x="175" y="296" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 12,784</text></g>
+      <g><rect x="280" y="255" width="150" height="55" rx="8" fill="#1a2235" stroke="#f90" stroke-width="1.5"/>
+      <text x="355" y="278" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">AWS CLI</text>
+      <text x="355" y="296" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 16,990</text></g>
+      <g><rect x="460" y="255" width="150" height="55" rx="8" fill="#1a2235" stroke="#f90" stroke-width="1.5"/>
+      <text x="535" y="278" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">SAM CLI</text>
+      <text x="535" y="296" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 6,717</text></g>
+      <g><rect x="640" y="255" width="150" height="55" rx="8" fill="#1a2235" stroke="#f90" stroke-width="1.5"/>
+      <text x="715" y="278" text-anchor="middle" fill="#e8edf5" font-size="13" font-weight="600">Chalice</text>
+      <text x="715" y="296" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 11,057</text></g>
+      <g><rect x="820" y="255" width="175" height="55" rx="8" fill="#1a2235" stroke="#f90" stroke-width="1.5"/>
+      <text x="908" y="278" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">SDK-Pandas</text>
+      <text x="908" y="296" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 4,111</text></g>
+
+      <!-- Container / K8s Layer -->
+      <g><rect x="100" y="365" width="155" height="55" rx="8" fill="#1a2235" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="178" y="388" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">Karpenter</text>
+      <text x="178" y="405" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 7,636</text></g>
+      <g><rect x="290" y="365" width="155" height="55" rx="8" fill="#1a2235" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="368" y="388" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">VPC CNI</text>
+      <text x="368" y="405" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 2,439</text></g>
+      <g><rect x="480" y="365" width="155" height="55" rx="8" fill="#1a2235" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="558" y="388" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">EKS Anywhere</text>
+      <text x="558" y="405" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 2,094</text></g>
+      <g><rect x="670" y="365" width="165" height="55" rx="8" fill="#1a2235" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="753" y="388" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">Node Termination</text>
+      <text x="753" y="405" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 1,756</text></g>
+      <g><rect x="870" y="365" width="135" height="55" rx="8" fill="#1a2235" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="938" y="388" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">Copilot CLI</text>
+      <text x="938" y="405" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 3,737</text></g>
+
+      <!-- Security Layer -->
+      <g><rect x="100" y="475" width="150" height="55" rx="8" fill="#1a2235" stroke="#10b981" stroke-width="1.5"/>
+      <text x="175" y="498" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">s2n-tls</text>
+      <text x="175" y="515" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 4,726</text></g>
+      <g><rect x="280" y="475" width="150" height="55" rx="8" fill="#1a2235" stroke="#10b981" stroke-width="1.5"/>
+      <text x="355" y="498" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">AWS-LC</text>
+      <text x="355" y="515" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 778</text></g>
+      <g><rect x="460" y="475" width="150" height="55" rx="8" fill="#1a2235" stroke="#10b981" stroke-width="1.5"/>
+      <text x="535" y="498" text-anchor="middle" fill="#e8edf5" font-size="12" font-weight="600">aws-lc-rs</text>
+      <text x="535" y="515" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 601</text></g>
+      <g><rect x="640" y="475" width="155" height="55" rx="8" fill="#1a2235" stroke="#10b981" stroke-width="1.5"/>
+      <text x="718" y="498" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">Secrets CSI</text>
+      <text x="718" y="515" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 585</text></g>
+      <g><rect x="825" y="475" width="160" height="55" rx="8" fill="#1a2235" stroke="#10b981" stroke-width="1.5"/>
+      <text x="905" y="498" text-anchor="middle" fill="#e8edf5" font-size="11" font-weight="600">CloudWatch Agent</text>
+      <text x="905" y="515" text-anchor="middle" fill="#8899b4" font-size="9">⭐ 532</text></g>
+
+      <!-- Vertical dependency arrows -->
+      <g opacity="0.25">
+        <line x1="175" y1="310" x2="175" y2="365" stroke="#f90" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="355" y1="310" x2="355" y2="365" stroke="#f90" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="535" y1="310" x2="558" y2="365" stroke="#f90" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="225" y1="200" x2="175" y2="255" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="430" y1="200" x2="535" y2="255" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="635" y1="200" x2="715" y2="255" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p data-zh="AWS Open Source Ecosystem · 数据来源：GitHub · 构建：WorkBuddy" data-en="AWS Open Source Ecosystem · Data Source: GitHub · Built with WorkBuddy">AWS Open Source Ecosystem · 数据来源：GitHub · 构建：WorkBuddy</p>
+  <p style="margin-top:8px;color:var(--text-muted);" data-zh="⚠️ AWS 及其标志为 Amazon Web Services 的商标，本项目仅用于技术知识整理" data-en="⚠️ AWS and its logos are trademarks of Amazon Web Services; this project is for technical knowledge curation only">⚠️ AWS 及其标志为 Amazon Web Services 的商标，本项目仅用于技术知识整理</p>
+</footer>
+
+<script>
+let currentLang = 'zh';
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.documentElement.lang = lang === 'zh' ? 'zh' : 'en';
+  document.querySelectorAll('[data-zh][data-en]').forEach(el => {
+    const text = el.getAttribute(`data-${lang}`);
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') { el.placeholder = text; }
+    else { el.textContent = text; }
+  });
+  document.querySelectorAll('.nav-link').forEach(link => { link.textContent = link.getAttribute(`data-${lang}`); });
+}
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100;
+    if (pageYOffset >= sectionTop) current = section.getAttribute('id');
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

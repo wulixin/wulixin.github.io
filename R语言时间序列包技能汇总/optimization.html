@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R优化与数学规划包技能汇总 | R Optimization Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#f97316;--glow:rgba(249,115,22,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#f97316,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(249,115,22,.2);border-color:rgba(249,115,22,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#f97316,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#f97316,#22c55e);color:#fff;box-shadow:0 4px 15px rgba(249,115,22,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(249,115,22,.15);color:#fdba74;font-weight:600}
+.pkg-tag.more{background:rgba(34,197,94,.15);color:#86efac}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#fdba74}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.3);color:#fdba74;font-weight:600}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:12px;border-top:1px solid var(--border)}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:768px){
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.stats-bar{gap:16px}
+.stat-num{font-size:22px}
+.logo h1{font-size:16px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">🎯</span>
+<h1 data-zh="R优化与数学规划包技能汇总" data-en="R Optimization & Mathematical Programming Packages">R优化与数学规划包技能汇总</h1>
+</div>
+<button class="lang-btn" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">12</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">135</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">5</div><div class="stat-label" data-zh="核心包" data-en="Core Packages">核心包</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" placeholder="搜索包名或关键词..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡" data-en="Cards">技能卡</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Table">包列表</button>
+</div>
+
+<div class="view-container">
+<div id="network-view" class="view active">
+<svg id="network-svg"></svg>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div id="cards-view" class="view"></div>
+<div id="table-view" class="view"></div>
+</div>
+
+<footer>
+<p>数据来源: <a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/Optimization.html" target="_blank">CRAN Task View: Optimization</a> | 清华大学开源软件镜像站</p>
+<p style="margin-top:4px">Powered by D3.js v7 | R优化与数学规划包技能汇总 © 2026</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div class="modal-header">
+<span class="modal-icon" id="modal-icon"></span>
+<span class="modal-title" id="modal-title"></span>
+</div>
+<div class="modal-desc" id="modal-desc"></div>
+<div class="modal-pkgs" id="modal-pkgs"></div>
+</div>
+</div>
+
+<script>
+let lang='zh';
+const categories=[
+{id:'infrastructure',icon:'🏗️',color:'#f97316',zh:'优化基础设施',en:'Optimization Infrastructure',zhDesc:'统一框架与建模语言，支持多求解器切换与凸优化规范表述',enDesc:'Unified frameworks and modeling languages supporting multi-solver switching and convex optimization specification',
+packages:[
+{name:'optimx',zh:'optim()扩展统一接口',en:'Extended unified interface for optim()',core:true},
+{name:'ROI',zh:'R优化基础设施框架',en:'R Optimization Infrastructure framework',core:true},
+{name:'CVXR',zh:'凸优化建模语言(DCP)',en:'Convex optimization modeling language (DCP)'}
+]},
+
+{id:'continuous',icon:'📐',color:'#22c55e',zh:'通用连续求解器',en:'General Continuous Solvers',zhDesc:'无约束与约束非线性优化的梯度/无导数方法，含拟牛顿/信赖域/单纯形等经典算法',enDesc:'Gradient and derivative-free methods for constrained and unconstrained nonlinear optimization',
+packages:[
+{name:'ucminf',zh:'拟牛顿无约束优化',en:'Quasi-Newton unconstrained optimization',core:true},
+{name:'alabama',zh:'增广拉格朗日约束优化',en:'Augmented Lagrangian constrained optimization',core:true},
+{name:'dfoptim',zh:'无导数优化(Nelder-Mead/Hooke-Jeeves)',en:'Derivative-free optimization (Nelder-Mead/Hooke-Jeeves)',core:true},
+{name:'nloptr',zh:'NLopt库接口(多种算法)',en:'NLopt library interface (multiple algorithms)'},
+{name:'lbfgs',zh:'L-BFGS与OWL-QN算法',en:'L-BFGS and OWL-QN algorithms'},
+{name:'lbfgsb3c',zh:'L-BFGS-B 3.0接口',en:'L-BFGS-B 3.0 interface'},
+{name:'roptim',zh:'optim()的C++统一封装',en:'Unified C++ wrapper for optim()'},
+{name:'optimParallel',zh:'optim()并行版本',en:'Parallel version of optim()'},
+{name:'RcppNumerical',zh:'Rcpp数值计算库(L-BFGS)',en:'Rcpp numerical library (L-BFGS)'},
+{name:'mize',zh:'纯R优化算法(CG/BFGS/L-BFGS)',en:'Pure R optimization (CG/BFGS/L-BFGS)'},
+{name:'n1qn1',zh:'Scilab移植BFGS方法',en:'Scilab-ported BFGS method'},
+{name:'stochQN',zh:'随机有限内存拟牛顿优化器',en:'Stochastic quasi-Newton optimizers'},
+{name:'nonneg.cg',zh:'非负约束共轭梯度法',en:'Non-negative conjugate gradient method'},
+{name:'Rsolnp',zh:'增广拉格朗日乘子法',en:'Augmented Lagrangian multiplier method'},
+{name:'NlcOptim',zh:'序列二次规划(SQP)求解器',en:'Sequential QP solver'},
+{name:'psqn',zh:'部分可分离函数拟牛顿法',en:'Quasi-Newton for partially separable functions'},
+{name:'BB',zh:'谱投影梯度法(大规模优化)',en:'Spectral projected gradient (large-scale)'},
+{name:'ManifoldOptim',zh:'流形优化(Stiefel/Grassmann)',en:'Manifold optimization (Stiefel/Grassmann)'},
+{name:'calibrar',zh:'通用优化与参数估计',en:'Generic optimization and parameter estimation'},
+{name:'neldermead',zh:'Scilab单纯形算法移植',en:'Scilab neldermead module port'},
+{name:'optimsimplex',zh:'单纯形优化基础构建模块',en:'Simplex optimization building blocks'},
+{name:'minqa',zh:'无导数信赖域方法(bobyqa/newuoa)',en:'Derivative-free trust region (bobyqa/newuoa)'},
+{name:'subplex',zh:'子空间搜索单纯形法',en:'Subspace-search simplex method'},
+{name:'trust',zh:'信赖域局部优化',en:'Trust region local optimization'},
+{name:'trustOptim',zh:'稀疏Hessian信赖域优化',en:'Sparse Hessian trust region optimization'},
+{name:'optimflex',zh:'灵活导数优化框架(BFGS/信赖域)',en:'Flexible derivative-based optimization framework'},
+{name:'marqLevAlg',zh:'并行Marquardt-Levenberg算法',en:'Parallelized Marquardt-Levenberg algorithm'},
+{name:'ao',zh:'交替优化迭代过程',en:'Alternating optimization procedure'},
+{name:'optimizeR',zh:'通用求解器封装工具',en:'Generic solver wrapper utilities'}
+]},
+
+{id:'quadratic',icon:'📊',color:'#eab308',zh:'二次与锥规划',en:'Quadratic & Cone Programming',zhDesc:'二次规划、半定规划与锥约束凸优化问题的专用求解器',enDesc:'Specialized solvers for quadratic, semidefinite, and cone-constrained convex optimization',
+packages:[
+{name:'quadprog',zh:'二次规划求解(QP)',en:'Quadratic programming solver (QP)',core:true},
+{name:'osqp',zh:'OSQP稀疏凸二次规划求解器',en:'OSQP sparse convex QP solver'},
+{name:'piqp',zh:'近端内点二次规划求解器',en:'Proximal interior-point QP solver'},
+{name:'kernlab',zh:'内点法二次规划(ipop)',en:'Interior-point QP (ipop)'},
+{name:'Dykstra',zh:'Dykstra循环投影算法',en:'Dykstra cyclic projection algorithm'},
+{name:'coneproj',zh:'锥投影与约束参数回归',en:'Cone projection and constrained regression'},
+{name:'LowRankQP',zh:'低秩二次规划(原始-对偶内点法)',en:'Low-rank QP (primal-dual interior-point)'},
+{name:'limSolve',zh:'线性/二次约束优化',en:'Linear/quadratic constrained optimization'},
+{name:'ECOSolveR',zh:'嵌入式锥求解器(ECOS)',en:'Embedded conic solver (ECOS)'},
+{name:'scs',zh:'算子分裂锥求解器(LP/SOCP/SDP)',en:'Splitting conic solver (LP/SOCP/SDP)'},
+{name:'clarabel',zh:'Clarabel内点求解器(LP/QP/SOCP/SDP)',en:'Clarabel interior-point solver'},
+{name:'cccp',zh:'锥约束凸问题(内点法/CVXOPT移植)',en:'Cone-constrained convex (interior-point/CVXOPT port)'},
+{name:'Rcsdp',zh:'CSDP半定规划求解器',en:'CSDP semidefinite programming solver'},
+{name:'Rdsdp',zh:'DSDP半定规划求解器',en:'DSDP semidefinite programming solver'}
+]},
+
+{id:'leastsquares',icon:'📏',color:'#06b6d4',zh:'最小二乘问题',en:'Least-Squares Problems',zhDesc:'线性/非线性最小二乘、非负/有界约束最小二乘及正交回归',enDesc:'Linear/nonlinear least squares, non-negative/bounded LS, and orthogonal regression',
+packages:[
+{name:'minpack.lm',zh:'Levenberg-Marquardt非线性最小二乘',en:'Levenberg-Marquardt nonlinear LS'},
+{name:'nlsr',zh:'Marquardt变体非线性最小二乘',en:'Marquardt-variant nonlinear LS'},
+{name:'nls2',zh:'增强nls()蛮力/网格搜索',en:'Enhanced nls() with brute-force/grid search'},
+{name:'onls',zh:'正交非线性最小二乘回归',en:'Orthogonal nonlinear least squares'},
+{name:'nnls',zh:'非负最小二乘 Lawson-Hanson',en:'Non-negative LS Lawson-Hanson'},
+{name:'lsei',zh:'约束最小二乘与二次规划',en:'Constrained LS and QP'},
+{name:'gslnls',zh:'GSL非线性最小二乘(信赖域)',en:'GSL nonlinear LS (trust region)'},
+{name:'bvls',zh:'有界变量最小二乘',en:'Bounded-variable least squares'},
+{name:'nlsic',zh:'约束非线性最小二乘(支持秩亏)',en:'Constrained nonlinear LS (rank-deficient)'},
+{name:'CGNM',zh:'聚类Gauss-Newton方法',en:'Cluster Gauss-Newton method'}
+]},
+
+{id:'global',icon:'🌍',color:'#8b5cf6',zh:'全局与随机优化',en:'Global & Stochastic Optimization',zhDesc:'差分进化/遗传算法/粒子群/模拟退火/蜂群等元启发式全局优化方法',enDesc:'Metaheuristic global optimization: DE, GA, PSO, SA, ABC, CMA-ES, etc.',
+packages:[
+{name:'DEoptim',zh:'差分进化全局优化器',en:'Differential evolution global optimizer',core:true},
+{name:'RcppDE',zh:'差分进化C++实现',en:'Differential evolution C++ implementation'},
+{name:'DEoptimR',zh:'jDE差分进化变体',en:'jDE differential evolution variant'},
+{name:'GenSA',zh:'广义模拟退火',en:'Generalized simulated annealing'},
+{name:'GA',zh:'遗传算法优化(连续/离散)',en:'Genetic algorithm (continuous/discrete)'},
+{name:'genalg',zh:'遗传算法(rbga)',en:'Genetic algorithm (rbga)'},
+{name:'rgenoud',zh:'进化算法+拟牛顿混合优化',en:'Evolutionary + quasi-Newton hybrid'},
+{name:'mcga',zh:'机器编码遗传算法',en:'Machine-coded genetic algorithm'},
+{name:'pso',zh:'粒子群优化器(PSO)',en:'Particle swarm optimizer (PSO)'},
+{name:'psoptim',zh:'PSO算法实现',en:'PSO algorithm implementation'},
+{name:'CEoptim',zh:'交叉熵优化技术',en:'Cross-entropy optimization'},
+{name:'ABCoptim',zh:'人工蜂群优化方法',en:'Artificial bee colony optimization'},
+{name:'metaheuristicOpt',zh:'多种元启发式算法集合',en:'Multiple metaheuristic algorithms'},
+{name:'ecr',zh:'进化算法构建框架',en:'Evolutionary algorithm framework'},
+{name:'emoa',zh:'进化多目标优化基础模块',en:'Evolutionary multi-objective building blocks'},
+{name:'MaOEA',zh:'pygmo接口(多目标进化)',en:'pygmo interface (multi-objective evolutionary)'},
+{name:'cmaes',zh:'CMA-ES协方差自适应进化策略',en:'CMA-ES covariance matrix adaptation'},
+{name:'cmaesr',zh:'CMA-ES另一种实现',en:'CMA-ES alternative implementation'},
+{name:'adagio',zh:'纯CMA-ES及组合优化',en:'Pure CMA-ES and combinatorial optimization'},
+{name:'Rmalschains',zh:'模因算法(带局部搜索链)',en:'Memetic algorithm with local search chains'},
+{name:'soma',zh:'自组织迁移算法',en:'Self-organizing migrating algorithm'},
+{name:'NMOF',zh:'差分进化/PSO/阈值接受',en:'DE/PSO/threshold accepting'},
+{name:'neighbours',zh:'局部搜索邻域函数构建工具',en:'Neighborhood function builder for local search'},
+{name:'OOR',zh:'乐观优化方法(确定性/随机)',en:'Optimistic optimization (deterministic/stochastic)'},
+{name:'RCEIM',zh:'随机启发式多维函数优化',en:'Random heuristic multi-dimensional optimization'},
+{name:'graDiEnt',zh:'随机拟梯度差分进化(SQG-DE)',en:'Stochastic quasi-gradient DE (SQG-DE)'}
+]},
+
+{id:'mathprog',icon:'🧮',color:'#ec4899',zh:'数学规划求解器',en:'Mathematical Programming Solvers',zhDesc:'线性规划(LP)、混合整数线性规划(MILP)的开源与商业求解器接口',enDesc:'LP and MILP solvers: open-source and commercial solver interfaces',
+packages:[
+{name:'lpSolve',zh:'lp_solve接口(LP/MILP)',en:'lp_solve interface (LP/MILP)'},
+{name:'lpSolveAPI',zh:'lp_solve低级API接口',en:'lp_solve low-level API interface'},
+{name:'Rglpk',zh:'GNU GLPK接口(MILP)',en:'GNU GLPK interface (MILP)'},
+{name:'Rsymphony',zh:'SYMPHONY求解器接口',en:'SYMPHONY solver interface'},
+{name:'highs',zh:'HiGHS求解器(顶级开源MILP)',en:'HiGHS solver (top open-source MILP)'},
+{name:'ompr',zh:'优化建模包(代数MILP建模)',en:'Optimization modeling package (algebraic MILP)'},
+{name:'linprog',zh:'线性规划求解(solveLP)',en:'Linear programming (solveLP)'},
+{name:'rcdd',zh:'GMP精确算术线性规划',en:'GMP exact arithmetic LP'},
+{name:'Rcplex',zh:'IBM CPLEX接口(商业)',en:'IBM CPLEX interface (commercial)'},
+{name:'Rmosek',zh:'MOSEK优化库接口(商业)',en:'MOSEK optimizer interface (commercial)'},
+{name:'ROI.plugin.neos',zh:'NEOS服务器ROI插件',en:'NEOS server ROI plugin'}
+]},
+
+{id:'combinatorial',icon:'🧩',color:'#14b8a6',zh:'组合优化',en:'Combinatorial Optimization',zhDesc:'背包/分配/匹配/旅行商等经典组合优化问题的求解算法',enDesc:'Algorithms for classic combinatorial problems: knapsack, assignment, matching, TSP, etc.',
+packages:[
+{name:'igraph',zh:'图与网络分析(最短路径/最大流/最小生成树)',en:'Graph/network analysis (shortest path/max flow/MST)'},
+{name:'TSP',zh:'旅行商问题求解(含Concorde接口)',en:'Traveling salesperson problem (with Concorde)'},
+{name:'adagio',zh:'背包/装箱/子集和/集合覆盖',en:'Knapsack/bin packing/subset sum/set cover'},
+{name:'clue',zh:'匈牙利算法线性分配问题(LSAP)',en:'Hungarian algorithm for LSAP'},
+{name:'FLSSS',zh:'多线程子集和/背包/分配问题',en:'Multi-threaded subset sum/knapsack/assignment'},
+{name:'qap',zh:'模拟退火求解二次分配问题(QAP)',en:'Simulated annealing for QAP'},
+{name:'nilde',zh:'整数丢番图方程/背包/分区问题',en:'Integer Diophantine/knapsack/partition'},
+{name:'matchingR',zh:'Gale-Shapley稳定匹配算法',en:'Gale-Shapley stable matching'},
+{name:'matchingMarkets',zh:'匹配市场(稳定婚姻/大学录取)',en:'Matching markets (stable marriage/college admission)'},
+{name:'optmatch',zh:'最优匹配(最小费用流)',en:'Optimal matching (min-cost flow)'},
+{name:'TreeDist',zh:'Joncker-Volgenant快速LSAP',en:'Joncker-Volgenant fast LSAP'}
+]},
+
+{id:'multiobjective',icon:'⚖️',color:'#a855f7',zh:'多目标优化',en:'Multi-Objective Optimization',zhDesc:'Pareto最优前沿求解与多标准决策优化的算法与框架',enDesc:'Algorithms and frameworks for Pareto front solving and multi-criteria optimization',
+packages:[
+{name:'caRamel',zh:'多目标优化(MEAS+NSGA-II)',en:'Multi-objective (MEAS+NSGA-II)'},
+{name:'mco',zh:'遗传算法多标准优化',en:'Genetic algorithm multi-criteria optimization'},
+{name:'GPareto',zh:'昂贵黑箱多目标优化+不确定性量化',en:'Expensive black-box multi-objective + uncertainty'},
+{name:'rmoo',zh:'多/许多目标优化框架',en:'Multi/many-objective optimization framework'},
+{name:'moocore',zh:'多目标优化性能指标(超体积/Pareto)',en:'Multi-objective metrics (hypervolume/Pareto)'}
+]},
+
+{id:'likelihood',icon:'📈',color:'#0ea5e9',zh:'最大似然与参数估计',en:'Maximum Likelihood & Parameter Estimation',zhDesc:'似然最大化、混合模型MLE、贝叶斯优化与参数调优',enDesc:'Likelihood maximization, mixture model MLE, Bayesian optimization, and parameter tuning',
+packages:[
+{name:'maxLik',zh:'多种似然最大化例程(BHHH/NR)',en:'Multiple likelihood maximization (BHHH/NR)'},
+{name:'dclone',zh:'数据克隆全局优化方法',en:'Data cloning global optimization'},
+{name:'mixsqp',zh:'mix-SQP混合模型最大似然',en:'mix-SQP for mixture model MLE'},
+{name:'nspmix',zh:'非参数混合模型最大似然',en:'Nonparametric mixture model MLE'},
+{name:'REBayes',zh:'混合模型非参数最大似然',en:'Nonparametric MLE for mixtures'},
+{name:'irace',zh:'优化算法参数自动配置(离线调参)',en:'Automatic algorithm configuration (offline tuning)'},
+{name:'kofnGA',zh:'遗传算法固定大小子集选择',en:'GA for fixed-size subset selection'},
+{name:'tabuSearch',zh:'禁忌搜索算法(二进制优化)',en:'Tabu search (binary optimization)'},
+{name:'mlrMBO',zh:'基于模型优化(贝叶斯优化)',en:'Model-based optimization (Bayesian)'},
+{name:'rBayesianOptimization',zh:'高斯过程贝叶斯全局优化',en:'Gaussian process Bayesian global optimization'}
+]},
+
+{id:'special',icon:'🔬',color:'#f43f5e',zh:'特殊约束与应用',en:'Special Constraints & Applications',zhDesc:'等渗回归/有序约束/流形约束/期望函数等特殊优化应用',enDesc:'Isotonic regression, order constraints, manifold constraints, desirability functions, etc.',
+packages:[
+{name:'isotone',zh:'等渗回归与有序约束优化',en:'Isotonic regression and order-constrained optimization'},
+{name:'quantreg',zh:'分位数回归(L1/单纯形/内点法)',en:'Quantile regression (L1/simplex/interior-point)'},
+{name:'desirability',zh:'Harrington期望函数多变量优化',en:'Harrington desirability multi-variable optimization'},
+{name:'sna',zh:'网络图统计量启发式优化',en:'Network graph statistics heuristic optimization'},
+{name:'crs',zh:'NOMAD黑箱约束优化',en:'NOMAD black-box constrained optimization'},
+{name:'clue',zh:'序列无约束最小化技术(SUMT)',en:'Sequential unconstrained minimization (SUMT)'}
+]},
+
+{id:'benchmark',icon:'🏆',color:'#64748b',zh:'测试函数与基准',en:'Test Functions & Benchmarking',zhDesc:'优化算法性能评估的标准测试函数集与景观分析工具',enDesc:'Standard test function sets and landscape analysis tools for optimization benchmarking',
+packages:[
+{name:'smoof',zh:'单/多目标测试函数生成器',en:'Single/multi-objective test function generator'},
+{name:'globalOptTests',zh:'全局优化基准测试函数',en:'Global optimization benchmark functions'},
+{name:'flacco',zh:'连续优化景观分析(ELA)',en:'Continuous optimization landscape analysis (ELA)'},
+{name:'funconstrain',zh:'35个无约束优化测试函数',en:'35 unconstrained optimization test functions'}
+]},
+
+{id:'interfaces',icon:'🔌',color:'#6366f1',zh:'求解器插件与接口',en:'Solver Plugins & Interfaces',zhDesc:'ROI/ROI插件系统、NEOS远程求解与MPS文件格式支持',enDesc:'ROI plugin system, NEOS remote solving, and MPS format support',
+packages:[
+{name:'ROI.plugin.qpoases',zh:'qpOASES二次规划ROI插件',en:'qpOASES QP ROI plugin'},
+{name:'rneos',zh:'NEOS优化服务器远程接口',en:'NEOS optimization server remote interface'},
+{name:'lpsymphony',zh:'SYMPHONY接口(Bioconductor版)',en:'SYMPHONY interface (Bioconductor version)'},
+{name:'rcbc',zh:'COIN-OR Clp/Cbc求解器接口',en:'COIN-OR Clp/Cbc solver interface'},
+{name:'Rdonlp2',zh:'DONLP2求解器封装(R-Forge)',en:'DONLP2 solver wrapper (R-Forge)'}
+]}
+];
+
+let currentTab='network';
+function t(k){return lang==='zh'?k.zh:k.en}
+function toggleLang(){
+  lang=lang==='zh'?'en':'zh';
+  document.querySelector('.lang-btn').textContent=lang==='zh'?'EN':'中';
+  document.querySelectorAll('[data-zh]').forEach(el=>{
+    const v=el.getAttribute('data-'+lang);
+    if(v)el.textContent=v;
+  });
+  document.querySelector('.search-input, #search-input').placeholder=lang==='zh'?'搜索包名或关键词...':'Search packages or keywords...';
+  renderCurrentView();
+}
+
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['network','cards','table'][i]===tab);
+  });
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(tab+'-view').classList.add('active');
+  renderCurrentView();
+}
+
+function renderCurrentView(){
+  if(currentTab==='network')renderNetwork();
+  else if(currentTab==='cards')renderCards();
+  else renderTable();
+}
+
+let searchQuery='';
+function handleSearch(q){searchQuery=q.toLowerCase();renderCurrentView()}
+
+function getFilteredCategories(){
+  if(!searchQuery)return categories;
+  return categories.map(c=>{
+    const pkgs=c.packages.filter(p=>
+      p.name.toLowerCase().includes(searchQuery)||
+      p.zh.toLowerCase().includes(searchQuery)||
+      p.en.toLowerCase().includes(searchQuery)
+    );
+    if(pkgs.length===0)return null;
+    return{...c,packages:pkgs};
+  }).filter(Boolean);
+}
+
+function renderNetwork(){
+  const svg=d3.select('#network-svg');
+  svg.selectAll('*').remove();
+  const container=document.getElementById('network-view');
+  const w=container.clientWidth,h=container.clientHeight;
+  svg.attr('viewBox',`0 0 ${w} ${h}`);
+
+  const filtered=getFilteredCategories();
+  const nodes=[];
+  const links=[];
+
+  const centerNode={id:'optimization',name:lang==='zh'?'优化与数学规划':'Optimization',color:'#f97316',r:35,isCenter:true};
+  nodes.push(centerNode);
+
+  filtered.forEach(cat=>{
+    const catNode={id:cat.id,name:t(cat),color:cat.color,r:22,isCat:true,catData:cat};
+    nodes.push(catNode);
+    links.push({source:centerNode.id,target:catNode.id,value:cat.packages.length});
+
+    cat.packages.forEach(pkg=>{
+      const pkgNode={id:cat.id+'-'+pkg.name,name:pkg.name,color:cat.color,r:pkg.core?9:5,isPkg:true,pkgData:pkg,catColor:cat.color};
+      nodes.push(pkgNode);
+      links.push({source:catNode.id,target:pkgNode.id,value:1});
+    });
+  });
+
+  const simulation=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(d=>d.id).distance(d=>d.value>1?100:35))
+    .force('charge',d3.forceManyBody().strength(d=>d.isCenter?-300:d.isCat?-80:-15))
+    .force('center',d3.forceCenter(w/2,h/2))
+    .force('collision',d3.forceCollide().radius(d=>d.r+3));
+
+  const link=svg.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke',d=>d.source.isCenter?'rgba(249,115,22,.15)':'rgba(255,255,255,.06)')
+    .attr('stroke-width',d=>d.value>1?2:1);
+
+  const node=svg.append('g').selectAll('g').data(nodes).join('g')
+    .call(d3.drag()
+      .on('start',(e,d)=>{if(!e.active)simulation.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y})
+      .on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y})
+      .on('end',(e,d)=>{if(!e.active)simulation.alphaTarget(0);d.fx=null;d.fy=null}));
+
+  node.append('circle')
+    .attr('r',d=>d.r)
+    .attr('fill',d=>d.isCenter?'rgba(249,115,22,.2)':d.isCat?d.color+'33':d.catColor+'22')
+    .attr('stroke',d=>d.isCenter?'#f97316':d.isCat?d.color:d.catColor)
+    .attr('stroke-width',d=>d.isCenter?3:d.isCat?2:(d.pkgData&&d.pkgData.core?2:1))
+    .attr('stroke-dasharray',d=>d.pkgData&&d.pkgData.core?'none':'none');
+
+  node.filter(d=>d.isCat||d.isCenter).append('text')
+    .attr('dy',d=>d.r+14)
+    .attr('text-anchor','middle')
+    .attr('fill',d=>d.isCenter?'#f97316':d.color)
+    .attr('font-size',d=>d.isCenter?13:10)
+    .attr('font-weight',d=>d.isCenter?700:600)
+    .text(d=>d.name.length>8?d.name.slice(0,8)+'…':d.name);
+
+  const tooltip=document.getElementById('tooltip');
+  node.on('mouseover',(e,d)=>{
+    if(d.isPkg){
+      tooltip.innerHTML=`<div class="tooltip-name" style="color:${d.catColor}">${d.name}${d.pkgData.core?' ★':''}</div><div class="tooltip-desc">${t(d.pkgData)}</div>`;
+      tooltip.classList.add('show');
+    }else if(d.isCat){
+      tooltip.innerHTML=`<div class="tooltip-name" style="color:${d.color}">${d.name}</div><div class="tooltip-desc">${d.catData.packages.length} packages</div>`;
+      tooltip.classList.add('show');
+    }
+    tooltip.style.left=(e.offsetX+15)+'px';
+    tooltip.style.top=(e.offsetY-10)+'px';
+  }).on('mouseout',()=>tooltip.classList.remove('show'));
+
+  node.on('click',(e,d)=>{
+    if(d.isCat)openModal(d.catData);
+  });
+
+  simulation.on('tick',()=>{
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    node.attr('transform',d=>`translate(${d.x},${d.y})`);
+  });
+
+  const zoom=d3.zoom().scaleExtent([.3,4]).on('zoom',e=>{svg.select('g').attr('transform',e.transform)});
+  svg.call(zoom);
+}
+
+function renderCards(){
+  const container=document.getElementById('cards-view');
+  const filtered=getFilteredCategories();
+  container.innerHTML='<div class="cards-grid">'+filtered.map(cat=>`
+    <div class="category-card" style="border-left-color:${cat.color}" onclick="openModal(categories.find(c=>c.id==='${cat.id}'))">
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${t(cat)}</span>
+      </div>
+      <div class="card-desc">${t({zh:cat.zhDesc,en:cat.enDesc})}</div>
+      <div class="card-tags">
+        ${cat.packages.slice(0,8).map(p=>`<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${cat.packages.length>8?`<span class="pkg-tag more">+${cat.packages.length-8}</span>`:''}
+      </div>
+    </div>`).join('')+'</div>';
+}
+
+function renderTable(){
+  const container=document.getElementById('table-view');
+  const filtered=getFilteredCategories();
+  container.innerHTML=filtered.map(cat=>`
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick="openModal(categories.find(c=>c.id==='${cat.id}'))">
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${t(cat)}</span>
+        <span class="table-cat-count">${cat.packages.length}</span>
+      </div>
+      <table class="pkg-table">
+        <tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th></tr>
+        ${cat.packages.map(p=>`
+          <tr>
+            <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span>${p.core?' <span class="core-star">★</span>':''}</td>
+            <td>${t(p)}</td>
+          </tr>`).join('')}
+      </table>
+    </div>`).join('');
+}
+
+function openModal(cat){
+  if(!cat)return;
+  document.getElementById('modal-icon').textContent=cat.icon;
+  document.getElementById('modal-title').textContent=t(cat);
+  document.getElementById('modal-title').style.color=cat.color;
+  document.getElementById('modal-desc').textContent=t({zh:cat.zhDesc,en:cat.enDesc});
+  document.getElementById('modal-pkgs').innerHTML=cat.packages.map(p=>
+    `<span class="modal-pkg${p.core?' core':''}" style="${p.core?'border-color:'+cat.color+'55;':''}">${p.name}${p.core?' ★':''} <span style="color:var(--text2);font-size:11px">— ${t(p)}</span></span>`
+  ).join('');
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-overlay'))return;
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+// Particles
+const canvas=document.getElementById('particles-canvas');
+const ctx=canvas.getContext('2d');
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+
+for(let i=0;i<60;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    vx:(Math.random()-.5)*.3,
+    vy:(Math.random()-.5)*.3,
+    r:Math.random()*2+.5,
+    color:['rgba(249,115,22,','rgba(34,197,94,','rgba(234,179,8,'][Math.floor(Math.random()*3)]
+  });
+}
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+    if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.color+(.3+Math.random()*.2)+')';ctx.fill();
+  });
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle=`rgba(249,115,22,${.06*(1-dist/120)})`;ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+renderCurrentView();
+</script>
+</body>
+</html>

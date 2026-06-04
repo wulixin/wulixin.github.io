@@ -1,106 +1,561 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LiXinWu</title>
-  <style>
-    body {
-      font-family: 'Inter', 'Helvetica Neue', sans-serif;
-      background-color: #1a2a3a;
-      color: #f0f0f0;
-      line-height: 1.8;
-      margin: 0;
-      padding: 40px;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-    }
-    h1, h2, h3 {
-      color: #ffffff;
-      font-weight: 600;
-    }
-    a {
-      color: #5ab1ff;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    a:hover {
-      color: #7fc1ff;
-    }
-    .section {
-      margin-bottom: 40px;
-    }
-    .experience, .training {
-      margin-bottom: 25px;
-      padding-bottom: 25px;
-      border-bottom: 1px solid #3a3a3a;
-    }
-    .experience:last-child, .training:last-child {
-      border-bottom: none;
-    }
-    .skills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .skill {
-      background-color: #3a3a3a;
-      color: #ffffff;
-      padding: 10px 20px;
-      border-radius: 8px;
-      transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .skill:hover {
-      background-color: #4a4a4a;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>武利鑫 LiXin WU | Data Science & Quantitative Finance</title>
+<style>
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg-primary:#0a0e1a;
+  --bg-secondary:#111827;
+  --bg-card:#1a2235;
+  --bg-card-hover:#1f2a40;
+  --text-primary:#f0f4ff;
+  --text-secondary:#94a3b8;
+  --text-muted:#64748b;
+  --accent-r:#3b82f6;
+  --accent-python:#f59e0b;
+  --accent-sas:#10b981;
+  --border:rgba(255,255,255,0.06);
+  --radius:16px;
+  --transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif;
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  overflow-x:hidden;
+  min-height:100vh;
+  line-height:1.6;
+}
+
+/* ============================================================
+   PARTICLE BACKGROUND
+   ============================================================ */
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* ============================================================
+   MAIN CONTAINER
+   ============================================================ */
+.main{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,14,26,0.82);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);padding:14px 0;
+}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+.nav-brand{font-size:18px;font-weight:700;background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:24px;list-style:none}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:14px;font-weight:500;transition:color .3s}
+.nav-links a:hover{color:var(--text-primary)}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{text-align:center;padding:80px 0 60px;position:relative}
+.hero-avatar{
+  width:100px;height:100px;border-radius:50%;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 28px;font-size:42px;font-weight:900;color:#fff;
+  box-shadow:0 0 60px rgba(59,130,246,0.25);
+  animation:avatarPulse 3s ease-in-out infinite;
+}
+@keyframes avatarPulse{
+  0%,100%{box-shadow:0 0 60px rgba(59,130,246,0.25)}
+  50%{box-shadow:0 0 90px rgba(139,92,246,0.4)}
+}
+.hero h1{font-size:48px;font-weight:900;margin-bottom:12px;letter-spacing:-0.5px}
+.hero h1 .gradient{
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero .subtitle{font-size:18px;color:var(--text-secondary);font-weight:400;margin-bottom:8px}
+.hero .tagline{font-size:14px;color:var(--text-muted);max-width:600px;margin:0 auto;line-height:1.8}
+
+/* ============================================================
+   STATS ROW
+   ============================================================ */
+.stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;padding:20px 0 60px}
+.stat-item{text-align:center;min-width:120px}
+.stat-num{font-size:36px;font-weight:900;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+
+/* ============================================================
+   SECTION HEADERS
+   ============================================================ */
+.section{margin-bottom:80px}
+.section-header{text-align:center;margin-bottom:48px}
+.section-header h2{font-size:32px;font-weight:800;margin-bottom:8px}
+.section-header p{color:var(--text-secondary);font-size:15px}
+.section-divider{width:60px;height:3px;border-radius:3px;margin:16px auto 0}
+.section-divider.r{background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
+.section-divider.python{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.section-divider.sas{background:linear-gradient(90deg,#10b981,#06b6d4)}
+
+/* ============================================================
+   SKILL CARDS GRID
+   ============================================================ */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+
+/* Card */
+.skill-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:28px;cursor:pointer;
+  transition:var(--transition);position:relative;overflow:hidden;
+  text-decoration:none;display:block;color:inherit;
+}
+.skill-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:3px 3px 0 0;transition:height .35s;
+}
+.skill-card.r-card::before{background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
+.skill-card.python-card::before{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.skill-card.sas-card::before{background:linear-gradient(90deg,#10b981,#06b6d4)}
+.skill-card:hover{background:var(--bg-card-hover);border-color:rgba(255,255,255,0.12);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.4)}
+.skill-card:hover::before{height:4px}
+.skill-card .card-icon{font-size:32px;margin-bottom:16px}
+.skill-card .card-title{font-size:18px;font-weight:700;margin-bottom:6px;color:var(--text-primary)}
+.skill-card .card-sub{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.skill-card .card-badge{
+  display:inline-block;margin-top:12px;padding:3px 12px;border-radius:20px;
+  font-size:11px;font-weight:600;letter-spacing:0.5px;
+}
+.badge-r{background:rgba(59,130,246,0.15);color:#60a5fa}
+.badge-python{background:rgba(245,158,11,0.15);color:#fbbf24}
+.badge-sas{background:rgba(16,185,129,0.15);color:#34d399}
+
+/* ============================================================
+   ABOUT SECTION
+   ============================================================ */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.about-card{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:32px;
+}
+.about-card h3{font-size:18px;font-weight:700;margin-bottom:16px;color:var(--text-primary)}
+.about-card p,.about-card li{color:var(--text-secondary);font-size:14px;line-height:1.8}
+.about-card ul{list-style:none;padding:0}
+.about-card li{padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.about-card li:last-child{border-bottom:none}
+.about-card li .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-r{background:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,0.5)}
+.dot-python{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,0.5)}
+.dot-sas{background:#10b981;box-shadow:0 0 8px rgba(16,185,129,0.5)}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer{
+  text-align:center;padding:40px 0;border-top:1px solid var(--border);
+  color:var(--text-muted);font-size:13px;margin-top:40px
+}
+.footer a{color:var(--text-secondary);text-decoration:none;transition:color .3s}
+.footer a:hover{color:var(--text-primary)}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+.fade-in{opacity:0;transform:translateY(30px);animation:fadeInUp .8s forwards}
+.fade-in:nth-child(1){animation-delay:0s}
+.fade-in:nth-child(2){animation-delay:.1s}
+.fade-in:nth-child(3){animation-delay:.2s}
+.fade-in:nth-child(4){animation-delay:.3s}
+.fade-in:nth-child(5){animation-delay:.4s}
+.fade-in:nth-child(6){animation-delay:.5s}
+.fade-in:nth-child(7){animation-delay:.6s}
+.fade-in:nth-child(8){animation-delay:.7s}
+@keyframes fadeInUp{to{opacity:1;transform:translateY(0)}}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(max-width:768px){
+  .hero h1{font-size:32px}
+  .hero{padding:60px 0 40px}
+  .skills-grid{grid-template-columns:1fr}
+  .about-grid{grid-template-columns:1fr}
+  .stats{gap:20px}
+  .nav-links{display:none}
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>武利鑫 LiXin WU</h1>
-    
-    <div class="section">
-      <h2>About Me</h2>
-      <p>I am a young data scientist, I have experience building predictive probabilistic models in R and predictive maintenance models in IBM Cloud. I am interested in solving a variety of problems with data, particularly those involving new modelling techniques and algorithms. I am currently working with neuroimaging data and neural networks, expanding my skill set toward machine learning algorithms.</p>
+
+<!-- Particle Canvas -->
+<canvas id="particles"></canvas>
+
+<!-- Navigation -->
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="nav-brand">LW · Data Science</span>
+    <ul class="nav-links">
+      <li><a href="#r-skills">R 生态</a></li>
+      <li><a href="#python-skills">Python 生态</a></li>
+      <li><a href="#about">关于我</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-avatar">W</div>
+    <h1><span class="gradient">武利鑫</span> LiXin WU</h1>
+    <p class="subtitle">Data Scientist · Quantitative Finance Researcher</p>
+    <p class="tagline">
+      专注数据科学与量化金融研究，以 R / Python / SAS 为核心工具链，
+      构建从数据挖掘、统计分析到机器学习与金融建模的完整技术栈。
+    </p>
+  </section>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-item"><div class="stat-num">15+</div><div class="stat-label">R 领域专题</div></div>
+    <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Python 生态分析</div></div>
+    <div class="stat-item"><div class="stat-num">300+</div><div class="stat-label">开源包技能卡</div></div>
+    <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">技术语言</div></div>
+  </div>
+
+  <!-- ================================================================
+       R 技能生态
+       ================================================================ -->
+  <section class="section" id="r-skills">
+    <div class="section-header">
+      <h2>🔬 R 语言包技能汇总</h2>
+      <p>CRAN Task View 风格 · D3.js 力导向图可视化 · 中英双语</p>
+      <div class="section-divider r"></div>
     </div>
-    
-    <div class="section">
-      <h2>Skills</h2>
-      <div class="skills">
-        <span class="skill">R</span>
-        <span class="skill">Python</span>
-        <span class="skill">Machine Learning</span>
-        <span class="skill">Data Analysis</span>
+
+    <div class="skills-grid">
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/timeseries.html" target="_blank">
+        <div class="card-icon">📈</div>
+        <div class="card-title">Time Series 时间序列</div>
+        <div class="card-sub">ARIMA、GARCH、状态空间模型等时序分析核心包</div>
+        <span class="card-badge badge-r">R · CRAN Task View</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/finance.html" target="_blank">
+        <div class="card-icon">💰</div>
+        <div class="card-title">Empirical Finance 实证金融</div>
+        <div class="card-sub">资产定价、风险建模、投资组合优化的R包生态</div>
+        <span class="card-badge badge-r">R · Finance</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/ml.html" target="_blank">
+        <div class="card-icon">🤖</div>
+        <div class="card-title">Machine Learning 机器学习</div>
+        <div class="card-sub">分类、回归、聚类、深度学习等ML全栈R包</div>
+        <span class="card-badge badge-r">R · 9领域29包</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/econometrics.html" target="_blank">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Econometrics 计量经济学</div>
+        <div class="card-sub">面板数据、工具变量、微观计量等实证研究工具包</div>
+        <span class="card-badge badge-r">R · Econometrics</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/optimization.html" target="_blank">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Optimization 优化与数学规划</div>
+        <div class="card-sub">线性规划、非线性优化、凸优化等12领域135包</div>
+        <span class="card-badge badge-r">R · 12领域135包</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/anomaly.html" target="_blank">
+        <div class="card-icon">🔍</div>
+        <div class="card-title">Anomaly Detection 异常检测</div>
+        <div class="card-sub">异常值识别、变点检测、离群分析R包汇总</div>
+        <span class="card-badge badge-r">R · Anomaly</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/cluster.html" target="_blank">
+        <div class="card-icon">🧩</div>
+        <div class="card-title">Cluster Analysis 聚类分析</div>
+        <div class="card-sub">K-means、层次聚类、密度聚类等方法R包集合</div>
+        <span class="card-badge badge-r">R · Cluster</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/network.html" target="_blank">
+        <div class="card-icon">🕸️</div>
+        <div class="card-title">Network Analysis 网络分析</div>
+        <div class="card-sub">社交网络、图论分析、网络可视化的R包生态</div>
+        <span class="card-badge badge-r">R · Network</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/nlp.html" target="_blank">
+        <div class="card-icon">📝</div>
+        <div class="card-title">NLP 自然语言处理</div>
+        <div class="card-sub">文本挖掘、情感分析、主题建模等NLP工具包</div>
+        <span class="card-badge badge-r">R · NLP</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/hpc.html" target="_blank">
+        <div class="card-icon">🚀</div>
+        <div class="card-title">HPC 高性能计算</div>
+        <div class="card-sub">并行计算、GPU加速、分布式处理的R包方案</div>
+        <span class="card-badge badge-r">R · HPC</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/mixed.html" target="_blank">
+        <div class="card-icon">🔀</div>
+        <div class="card-title">Mixed Models 混合模型</div>
+        <div class="card-sub">线性混合、广义混合、多层次模型的R包汇总</div>
+        <span class="card-badge badge-r">R · Mixed Models</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/official.html" target="_blank">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Official & Survey Statistics 官方统计</div>
+        <div class="card-sub">调查统计、抽样设计、官方统计标准R包</div>
+        <span class="card-badge badge-r">R · Official Stats</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/deploy.html" target="_blank">
+        <div class="card-icon">🚢</div>
+        <div class="card-title">Model Deployment 模型部署</div>
+        <div class="card-sub">模型序列化、API服务、容器化部署R包方案</div>
+        <span class="card-badge badge-r">R · Deployment</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/dynamic.html" target="_blank">
+        <div class="card-icon">🎨</div>
+        <div class="card-title">Dynamic Visualization 动态可视化</div>
+        <div class="card-sub">交互图表、动画、Web图形等动态可视化包</div>
+        <span class="card-badge badge-r">R · Viz</span>
+      </a>
+
+      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/teaching.html" target="_blank">
+        <div class="card-icon">🎓</div>
+        <div class="card-title">Teaching Statistics 统计教学</div>
+        <div class="card-sub">统计教学辅助、可视化教学、互动学习R包</div>
+        <span class="card-badge badge-r">R · Teaching</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ================================================================
+       Python 技能生态
+       ================================================================ -->
+  <section class="section" id="python-skills">
+    <div class="section-header">
+      <h2>🐍 Python 开源生态分析</h2>
+      <p>深度拆解主流开源项目的技术架构与工具链</p>
+      <div class="section-divider python"></div>
+    </div>
+
+    <div class="skills-grid">
+
+      <a class="skill-card python-card fade-in" href="https://wulixin.github.io/Python开源技术分享/quantopian-ecosystem.html" target="_blank">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">Quantopian 开源生态</div>
+        <div class="card-sub">量化投资平台技术架构 · Zipline/Pyfolio/Alphalens 全解析</div>
+        <span class="card-badge badge-python">Python · Quant</span>
+      </a>
+
+      <a class="skill-card python-card fade-in" href="https://wulixin.github.io/Python开源技术分享/aws-ecosystem.html" target="_blank">
+        <div class="card-icon">☁️</div>
+        <div class="card-title">AWS 开源生态</div>
+        <div class="card-sub">云计算与数据工程工具链 · SageMaker/Glue/Lambda 深度分析</div>
+        <span class="card-badge badge-python">Python · Cloud</span>
+      </a>
+
+      <a class="skill-card python-card fade-in" href="https://wulixin.github.io/Python开源技术分享/h2oai-ecosystem.html" target="_blank">
+        <div class="card-icon">🧠</div>
+        <div class="card-title">H2O.ai 开源生态</div>
+        <div class="card-sub">AutoML 与分布式机器学习平台技术架构</div>
+        <span class="card-badge badge-python">Python · AutoML</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ================================================================
+       SAS 技能（占位）
+       ================================================================ -->
+  <section class="section" id="sas-skills">
+    <div class="section-header">
+      <h2>📐 SAS 技能积累</h2>
+      <p>统计分析系统在金融与医药领域的深度应用</p>
+      <div class="section-divider sas"></div>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-card sas-card fade-in">
+        <div class="card-icon">💊</div>
+        <div class="card-title">SAS 金融分析</div>
+        <div class="card-sub">风险建模、信用评分、监管报表等金融行业SAS应用</div>
+        <span class="card-badge badge-sas">SAS · Finance</span>
+      </div>
+
+      <div class="skill-card sas-card fade-in">
+        <div class="card-icon">📉</div>
+        <div class="card-title">SAS 统计建模</div>
+        <div class="card-sub">PROC REG / LOGISTIC / MIXED / GENMOD 等核心过程步</div>
+        <span class="card-badge badge-sas">SAS · Stats</span>
+      </div>
+
+      <div class="skill-card sas-card fade-in">
+        <div class="card-icon">📊</div>
+        <div class="card-title">SAS 宏编程</div>
+        <div class="card-sub">宏变量、宏函数、自动化报表生成与批处理</div>
+        <span class="card-badge badge-sas">SAS · Macro</span>
       </div>
     </div>
-    
-    <div class="section">
-      <h2>Education</h2>
-      <p><strong>本科阶段</strong> - 湖北经济学院 (2013.9 - 2017.7) 市场营销专业</p>
-      <p><strong>研究生阶段</strong> - 青海民族大学 (2024.9 - 2027.7) 金融专业</p>
+  </section>
+
+  <!-- ================================================================
+       ABOUT
+       ================================================================ -->
+  <section class="section" id="about">
+    <div class="section-header">
+      <h2>👤 关于我</h2>
+      <p>Education · Experience · Training</p>
     </div>
-    
-    <div class="section">
-      <h3>工作经历</h3>
-      <p><strong>民生银行深圳分行</strong> - 财富顾问 (2017.3 - 2019.1)</p>
-      <p><strong>大同证券孝义营业部</strong> - 理财经理，证券投资顾问 (2019.6 - 2024.8)</p>
+
+    <div class="about-grid">
+
+      <div class="about-card fade-in">
+        <h3>📚 教育背景</h3>
+        <ul>
+          <li><span class="dot dot-r"></span> 湖北经济学院 · 市场营销 (2013.9 – 2017.7)</li>
+          <li><span class="dot dot-python"></span> 青海民族大学 · 金融硕士 (2024.9 – 2027.7)</li>
+        </ul>
+      </div>
+
+      <div class="about-card fade-in">
+        <h3>💼 工作经历</h3>
+        <ul>
+          <li><span class="dot dot-sas"></span> 民生银行深圳分行 · 财富顾问 (2017.3 – 2019.1)</li>
+          <li><span class="dot dot-r"></span> 大同证券孝义营业部 · 理财经理 / 投资顾问 (2019.6 – 2024.8)</li>
+        </ul>
+      </div>
+
+      <div class="about-card fade-in">
+        <h3>🎓 职业培训</h3>
+        <ul>
+          <li><span class="dot dot-r"></span> CDA 数据挖掘工程师 (2016.5 – 2017.1)</li>
+          <li><span class="dot dot-python"></span> 深圳证券交易所 · ETF 策略师 (2023.3 – 2023.7)</li>
+          <li><span class="dot dot-sas"></span> 期货协会 · FDA 衍生品分析师 (2023.6 – 2023.12)</li>
+        </ul>
+      </div>
+
+      <div class="about-card fade-in">
+        <h3>🔧 技术栈</h3>
+        <ul>
+          <li><span class="dot dot-r"></span> R · 时间序列 / 计量经济学 / 机器学习 / 可视化</li>
+          <li><span class="dot dot-python"></span> Python · 量化金融 / 数据分析 / Web 开发</li>
+          <li><span class="dot dot-sas"></span> SAS · 统计分析 / 宏编程 / 金融建模</li>
+          <li><span class="dot dot-r"></span> D3.js · 力导向图 / 交互式数据可视化</li>
+          <li><span class="dot dot-python"></span> Git / GitHub · 开源协作与版本管理</li>
+        </ul>
+      </div>
+
     </div>
-    
-    <div class="section">
-      <h4>职业培训</h4>
-      <p><strong>数据挖掘工程师</strong> -CDA(2016.5 - 2017.1)</p>
-      <p><strong>ETF策略师</strong> - 深圳证券交易所 (2023.3 - 2023.7)</p>
-      <p><strong>FDA衍生品分析师</strong> - 期货协会 (2023.6 - 2023.12)</p>
-    </div>
-  </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2026 LiXin WU · Built with ❤️ using D3.js & vanilla HTML/CSS</p>
+    <p style="margin-top:8px">
+      <a href="https://github.com/wulixin" target="_blank">GitHub</a> · 
+      <a href="mailto:wulixin@example.com">Email</a>
+    </p>
+  </footer>
+
+</div>
+
+<!-- ================================================================
+     PARTICLE ANIMATION (Vanilla JS + Canvas)
+     ================================================================ -->
+<script>
+(function(){
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const PARTICLE_COUNT = 80;
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle{
+    constructor(){
+      this.reset();
+      this.y = Math.random() * canvas.height;
+    }
+    reset(){
+      this.x = Math.random() * canvas.width;
+      this.y = -10;
+      this.size = Math.random() * 2 + 1;
+      this.speed = Math.random() * 0.6 + 0.2;
+      this.opacity = Math.random() * 0.5 + 0.1;
+      // Color palette
+      const colors = [
+        'rgba(59,130,246,OP)','rgba(139,92,246,OP)','rgba(236,72,153,OP)',
+        'rgba(245,158,11,OP)','rgba(16,185,129,OP)','rgba(6,182,212,OP)'
+      ];
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update(){
+      this.y += this.speed;
+      this.x += Math.sin(this.y * 0.01) * 0.3;
+      if(this.y > canvas.height + 10) this.reset();
+    }
+    draw(){
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = this.color.replace('OP', String(this.opacity));
+      ctx.fill();
+    }
+  }
+
+  for(let i = 0; i < PARTICLE_COUNT; i++){
+    particles.push(new Particle());
+  }
+
+  function animate(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+
+    // Draw connection lines between nearby particles
+    for(let i = 0; i < particles.length; i++){
+      for(let j = i + 1; j < particles.length; j++){
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if(dist < 120){
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(255,255,255,' + (0.04 * (1 - dist / 120)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+</script>
+
 </body>
 </html>

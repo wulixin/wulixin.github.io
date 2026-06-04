@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R聚类分析包技能汇总 | R Cluster Analysis Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#14b8a6;--glow:rgba(20,184,166,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#14b8a6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(20,184,166,.2);border-color:rgba(20,184,166,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#14b8a6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#14b8a6,#8b5cf6);color:#fff;box-shadow:0 4px 15px rgba(20,184,166,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(20,184,166,.15);color:#5eead4;font-weight:600}
+.pkg-tag.more{background:rgba(139,92,246,.15);color:#c4b5fd}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#5eead4}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(20,184,166,.12);border-color:rgba(20,184,166,.25);color:#5eead4;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#2dd4bf;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">🔮</span>
+<h1 data-zh="R聚类分析包技能汇总" data-en="R Cluster Analysis Package Skills">R聚类分析包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">98</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">10</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">5</div><div class="stat-label" data-zh="核心" data-en="Core">核心</div></div>
+<div class="stat-item"><div class="stat-num">2025</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/Cluster.html" target="_blank">CRAN Task View: Cluster Analysis & Finite Mixture Models</a></p>
+<p style="margin-top:6px" data-zh="2025 · R聚类分析与有限混合模型生态系统全景" data-en="2025 · R Cluster Analysis & Finite Mixture Models Ecosystem Overview">2025 · R聚类分析与有限混合模型生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"hierarchical",icon:"🌳",color:"#14b8a6",zh:"层次聚类",en:"Hierarchical Clustering",zhDesc:"聚合/分裂层次聚类、树状图操作与不确定性评估",enDesc:"Agglomerative & divisive hierarchical clustering, dendrogram manipulation & uncertainty assessment",
+packages:[
+{name:"cluster",zh:"agnes()聚合/diana()分裂层次聚类，PAM/CLARA/Silhouette",en:"agnes() agglomerative, diana() divisive, PAM/CLARA/Silhouette",core:true},
+{name:"fastcluster",zh:"hclust()快速替代，大规模数据优化",en:"Faster alternative to hclust() for large datasets"},
+{name:"flashClust",zh:"hclust()快速替代实现",en:"Faster alternative to hclust()"},
+{name:"dendextend",zh:"树状图可视化/操作/比较(着色/旋转/修剪/Tanglegram)",en:"Dendrogram visualization, manipulation & comparison (coloring, rotating, tanglegram)"},
+{name:"dynamicTreeCut",zh:"层次聚类树动态切枝检测簇",en:"Dynamic tree cut for cluster detection in dendrograms"},
+{name:"genieclust",zh:"Genie链接准则(单链接+基尼不等式)，稳健高效",en:"Fast hierarchical with Gini-based linkage, robust & efficient"},
+{name:"hclust1d",zh:"一维聚合层次聚类，C++ O(n log n)实现",en:"Univariate agglomerative HC, C++ O(n log n) algorithm"},
+{name:"idendr0",zh:"交互式层次聚类树探索(含热力图/GGobi)",en:"Interactive dendrogram exploration with heat maps & GGobi"},
+{name:"mdendro",zh:"替代聚合层次聚类/相似矩阵/非唯一性解决/5种树描述量",en:"Alternative HC: similarity matrices, ties resolution, 5 dendrogram descriptors"},
+{name:"protoclust",zh:"原型标记层次聚类，每个内节点关联原型元素",en:"Hierarchical clustering with prototypical elements at interior nodes"},
+{name:"pvclust",zh:"层次聚类不确定性评估，近似无偏p值/自助法p值",en:"Uncertainty via approximately unbiased & bootstrap p-values"}
+]},
+
+{id:"partitioning",icon:"🎯",color:"#8b5cf6",zh:"划分聚类",en:"Partitioning Clustering",zhDesc:"K-means/K-medoids/谱聚类/密度聚类/模糊聚类等方法",enDesc:"K-means, K-medoids, spectral, density-based & fuzzy clustering methods",
+packages:[
+{name:"apcluster",zh:"近邻传播聚类(Affinity Propagation)",en:"Affinity propagation clustering (Frey & Dueck)"},
+{name:"ClusterR",zh:"K-means/Mini-batch K-means/K-medoids/GMM(RcppArmadillo加速)",en:"K-means, mini-batch kmeans, k-medoids, GMM with RcppArmadillo"},
+{name:"clusterSim",zh:"搜索给定数据集的最优聚类程序",en:"Search for optimal clustering procedure for a given dataset"},
+{name:"clustMixType",zh:"K-prototypes混合类型数据K-means扩展(Huang)",en:"K-prototypes extension of k-means for mixed-type data"},
+{name:"FPDclustering",zh:"概率距离聚类(PD-clustering)模糊方法",en:"Probabilistic distance clustering, fuzzy method"},
+{name:"flexclust",zh:"K-质心任意距离/硬竞争学习/神经气/QT聚类/邻域图",en:"K-centroid, hard competitive learning, neural gas, QT clustering",core:true},
+{name:"cclust",zh:"flexclust部分功能的替代实现",en:"Alternative implementation of some flexclust functionality"},
+{name:"kernlab",zh:"核K-means(kkmeans)/谱聚类(specc)",en:"Kernel k-means (kkmeans) & spectral clustering (specc)"},
+{name:"QuClu",zh:"高维偏斜分布分位数表示聚类",en:"High-dimensional clustering with skew distributions via quantiles"},
+{name:"skmeans",zh:"球面K-means(余弦相似度)，含遗传/固定点算法",en:"Spherical k-means with cosine similarity"},
+{name:"SpectralClMixed",zh:"混合类型数据谱聚类",en:"Spectral clustering on mixed-typed data"},
+{name:"Spectrum",zh:"自调谐谱聚类(单/多视图)，自动选择K",en:"Self-tuning spectral clustering, auto K selection"},
+{name:"tclust",zh:"修剪K-means，允许指定其他协方差结构",en:"Trimmed k-means with alternative covariance structures"}
+]},
+
+{id:"model_ml",icon:"🧬",color:"#06b6d4",zh:"模型聚类: 极大似然",en:"Model-Based: ML Estimation",zhDesc:"EM算法估计高斯/偏态/混合类型有限混合模型",enDesc:"EM-estimated finite mixture models: Gaussian, skew, mixed-type & more",
+packages:[
+{name:"mclust",zh:"高斯混合EM/BIC/14种协方差结构/聚类/密度/判别",en:"Gaussian mixture EM, BIC, 14 covariance structures, clustering & discriminant",core:true},
+{name:"Rmixmod",zh:"多变量高斯/多项混合模型，14种协方差结构",en:"Multivariate Gaussian/multinomial mixtures, 14 covariance structures",core:true},
+{name:"mixture",zh:"14种协方差结构混合模型",en:"Mixture models with 14 covariance structures"},
+{name:"EMCluster",zh:"EM算法高斯混合聚类(无结构分散)，多种初始化",en:"EM for Gaussian mixture with unstructured dispersion, various inits"},
+{name:"clustMD",zh:"混合数据潜在高斯变量模型聚类",en:"Model-based clustering of mixed data via latent Gaussian models"},
+{name:"funFEM",zh:"函数数据判别混合模型聚类(时间序列/函数数据)",en:"Functional data clustering via discriminative functional mixture model"},
+{name:"MixGHD",zh:"广义双曲分布5种模型聚类/分类/判别",en:"5 models based on generalized hyperbolic distribution"},
+{name:"mixR",zh:"正态/Weibull/Gamma/对数正态有限混合(Rcpp加速)",en:"Finite mixtures for Normal, Weibull, Gamma, Lognormal (Rcpp)"},
+{name:"mixsmsn",zh:"偏正态尺度混合EM估计(单/多变量)",en:"Scale mixtures of skew-normal distributions via EM"},
+{name:"mixtools",zh:"参数/非参数混合EM(多项/正态/泊松/Gaussian回归)",en:"Parametric & nonparametric mixtures via EM"},
+{name:"MixtureMissing",zh:"含缺失值的稳健灵活模型聚类",en:"Robust model-based clustering with missing values"},
+{name:"MoEClust",zh:"混合专家高斯模型(协变量影响比例/密度)",en:"Mixture of experts: covariates influence proportions & densities"},
+{name:"movMF",zh:"von Mises-Fisher方向数据混合模型EM",en:"Finite mixtures of von Mises-Fisher distributions via EM"},
+{name:"MSclust",zh:"多尺度分布混合(t/污染正态)",en:"Mixtures of multiple scaled distributions (t, contaminated normal)"},
+{name:"otrimle",zh:"稳健聚类(含噪声/离群值，不当均匀分布)",en:"Robust clustering with outliers via improper uniform noise"},
+{name:"HDclassif",zh:"高维数据高斯混合(hddc，低维假设)",en:"Gaussian mixture for high-dim data assuming lower-dim subspace"},
+{name:"GMCM",zh:"高斯混合Copula模型(无监督聚类/元分析)",en:"Gaussian mixture copula models for unsupervised clustering"},
+{name:"MetabolAnalyze",zh:"概率主成分分析混合模型EM",en:"Mixtures of probabilistic PCA via EM"},
+{name:"rebmix",zh:"REBMIX条件独立混合(正态/对数正态/Weibull/Gamma/二项/Poisson等)",en:"REBMIX for conditionally independent mixtures of various distributions"},
+{name:"RMixtComp",zh:"异质数据混合模型(SEM算法)，8种模型类型",en:"Heterogeneous data mixture models via SEM, 8 model types"},
+{name:"stepmixr",zh:"StepMix接口: 广义混合建模/潜类分析/逐步EM",en:"StepMix interface: generalized mixture modeling & stepwise EM"},
+{name:"teigen",zh:"多元t分布混合模型(特征分解协方差)",en:"Multivariate t-mixture with eigen-decomposed covariance"},
+{name:"prabclus",zh:"存在-缺席矩阵MDS+高斯混合聚类",en:"Presence-absence MDS + Gaussian mixture clustering"},
+{name:"psychomix",zh:"Rasch/Bradley-Terry模型混合(条件ML)",en:"Mixtures of Rasch & Bradley-Terry models"},
+{name:"GLDEX",zh:"广义Lambda分布混合拟合",en:"Fits mixtures of generalized lambda distributions"},
+{name:"mixdist",zh:"分组条件数据混合",en:"Mixture for grouped conditional data"}
+]},
+
+{id:"model_bayes",icon:"🎲",color:"#a855f7",zh:"模型聚类: 贝叶斯估计",en:"Model-Based: Bayesian Estimation",zhDesc:"MCMC/Gibbs采样/Dirichlet过程/变分贝叶斯估计混合模型",enDesc:"MCMC, Gibbs, Dirichlet process & variational Bayes for mixture models",
+packages:[
+{name:"bayesm",zh:"贝叶斯多元高斯混合Gibbs采样/矩平均/边际密度/聚类",en:"Bayesian multivariate Gaussian mixtures via Gibbs sampling"},
+{name:"bayesmix",zh:"贝叶斯混合JAGS估计",en:"Bayesian estimation using JAGS"},
+{name:"bmixture",zh:"贝叶斯Gamma/正态单变量混合估计",en:"Bayesian estimation of univariate Gamma & normal mixtures"},
+{name:"GSM",zh:"Gamma分布混合拟合",en:"Fits mixtures of gamma distributions"},
+{name:"IMIFA",zh:"无穷因子分析器无穷混合(非参数推断K和因子数)",en:"Infinite Mixtures of Infinite Factor Analyzers, nonparametric K & factors"},
+{name:"mcclust",zh:"MCMC聚类后处理(后验相似矩阵/重标签)",en:"Processing MCMC clusterings via posterior similarity matrix"},
+{name:"mixAK",zh:"正态混合MCMC(含审查数据)",en:"MCMC for normal mixtures with possibly censored data"},
+{name:"NPflow",zh:"Dirichlet过程混合(正态/偏正态/偏t)，流式细胞术",en:"Dirichlet process mixtures (normal, skew-normal, skew-t)"},
+{name:"PReMiuM",zh:"Profile回归: Dirichlet过程贝叶斯聚类(响应与协变量关联)",en:"Profile regression: Dirichlet process Bayesian clustering"},
+{name:"rjags",zh:"JAGS MCMC库接口(含混合建模模块)",en:"Interface to JAGS MCMC library with mixture modelling module"},
+{name:"AdMit",zh:"自适应Student-t混合逼近目标密度核",en:"Adaptive mixture of Student-t to approximate target density"}
+]},
+
+{id:"other_algo",icon:"🧩",color:"#f59e0b",zh:"其他聚类与综合套件",en:"Other Algorithms & Suites",zhDesc:"DBSCAN/SOM/潜类分析/模糊聚类/网络聚类/自组织聚类等",enDesc:"DBSCAN, SOM, LCA, fuzzy clustering, network clustering & self-organized methods",
+packages:[
+{name:"dbscan",zh:"DBSCAN密度聚类快速实现(kd-tree加速)",en:"Fast DBSCAN density-based clustering with kd-tree"},
+{name:"som",zh:"自组织映射(SOM)聚类",en:"Self-organizing maps clustering"},
+{name:"e1071",zh:"模糊聚类(cmeans)和Bagging聚类",en:"Fuzzy clustering (cmeans) & bagged clustering"},
+{name:"fclust",zh:"扩展模糊聚类工具集",en:"Extensive tools for fuzzy clustering"},
+{name:"FCPS",zh:"50+经典聚类算法+统计方法估计K+MD-plot+聚类挑战数据",en:"50+ algorithms, K estimation, MD-plot & clustering challenges"},
+{name:"clue",zh:"层次/划分聚类集成方法",en:"Ensemble methods for hierarchical & partitioning clustering"},
+{name:"poLCA",zh:"多分类变量潜类分析与回归",en:"Polytomous variable latent class analysis & regression"},
+{name:"BayesLCA",zh:"贝叶斯LCA(EM/Gibbs/变分贝叶斯)",en:"Bayesian LCA via EM, Gibbs sampling or variational Bayes"},
+{name:"randomLCA",zh:"潜类模型(含随机效应)",en:"Latent class models with optional random effects"},
+{name:"latentnet",zh:"图和网络模型聚类",en:"Model-based clustering for graphs & networks"},
+{name:"pdfCluster",zh:"核密度估计聚类(密度阈值连通分量)",en:"Clustering via kernel density estimation"},
+{name:"DatabionicSwarm",zh:"数据仿生蜂群(DBS)自组织聚类(距离+密度)",en:"Databionic swarm for self-organized clustering"},
+{name:"ProjectionBasedClustering",zh:"投影聚类(PBC)高维数据(距离+密度结构)",en:"Projection-based clustering for high-dim data"},
+{name:"adproclus",zh:"加性剖面聚类(ADPROCLUS)重叠聚类+降维",en:"Additive Profile Clustering with dimension reduction"},
+{name:"amap",zh:"K-means/层次聚类替代实现",en:"Alternative implementations of k-means & hierarchical clustering"},
+{name:"cba",zh:"商业分析聚类: ROCK/Proximus",en:"Clustering for business analytics: ROCK & Proximus"},
+{name:"CoClust",zh:"Copula函数聚类(多变量依赖结构)",en:"Copula-based clustering by multivariate dependence structure"},
+{name:"mlr3cluster",zh:"mlr3扩展: 24种聚类学习器/4种度量/2个内置任务",en:"mlr3 extension: 24 clustering learners, 4 measures, 2 tasks"},
+{name:"RPMM",zh:"递归划分混合模型(Beta/高斯层次类)",en:"Recursively partitioned mixture models (Beta/Gaussian)"},
+{name:"Rmfrac",zh:"Hurst函数估计的随机过程/时间序列层次与K-means聚类",en:"Hierarchical & k-means clustering of stochastic processes via Hurst functions"},
+{name:"prcr",zh:"两步聚类: 层次→K-means",en:"2-step: hierarchical then k-means clustering"},
+{name:"hopach",zh:"层次与PAM混合方法(递归分割)",en:"Hybrid hierarchical/PAM by recursive partitioning"}
+]},
+
+{id:"cluster_reg",icon:"📈",color:"#ef4444",zh:"聚类回归",en:"Cluster-wise Regression",zhDesc:"混合回归模型/潜在类别混合模型/潜在Markov模型",enDesc:"Mixture regression, latent class mixed models & latent Markov models",
+packages:[
+{name:"flexmix",zh:"可扩展EM混合回归框架(含广义线性模型)",en:"User-extensible EM framework for mixtures of regression models",core:true},
+{name:"fpc",zh:"定点法模型聚类和线性回归/投影绘图",en:"Fixed-point clustering & linear regression, projection plots"},
+{name:"lcmm",zh:"潜在类别线性混合模型(增长混合模型ML估计)",en:"Latent class linear mixed model (growth mixture model) via ML"},
+{name:"depmixS4",zh:"多组潜在Markov模型(分类+连续数据/时间序列)",en:"Multigroup latent Markov models on mixed data & time series"},
+{name:"crimCV",zh:"零膨胀Poisson纵向数据混合模型",en:"Finite mixtures of zero-inflated Poisson for longitudinal data"},
+{name:"mixPHM",zh:"比例风险混合模型EM估计",en:"Mixtures of proportional hazard models via EM"}
+]},
+
+{id:"validation",icon:"✅",color:"#10b981",zh:"聚类验证与评估",en:"Cluster Validation & Assessment",zhDesc:"聚类质量指标/最优K确定/显著性检验/稳定性评估",enDesc:"Quality criteria, optimal K, significance tests & stability assessment",
+packages:[
+{name:"NbClust",zh:"30种指标评估聚类结构/确定最优K",en:"30 indices for evaluating cluster structure & determining K"},
+{name:"clusterCrit",zh:"多种聚类验证/质量指标和划分比较指数",en:"Clustering validation criteria & partition comparison indices"},
+{name:"sigclust",zh:"聚类结果显著性统计检验",en:"Statistical significance testing for clustering results"},
+{name:"Silhouette",zh:"高级轮廓宽度聚类质量诊断(多样化结构)",en:"Advanced silhouette width for diverse clustering structures"},
+{name:"clusterRepro",zh:"聚类可重现性检验",en:"Tests the reproducibility of a cluster"},
+{name:"DBCVindex",zh:"密度聚类验证(DBCV)指标",en:"Density-based clustering validation (DBCV) index"},
+{name:"MOCCA",zh:"多目标优化聚类验证指标分析",en:"Multi-objective optimization of cluster validation indices"},
+{name:"clusterMI",zh:"缺失值多重插补聚类(6种方法+矩阵分解池化)",en:"Clustering incomplete data via multiple imputation"},
+{name:"flexclust",zh:"bootFlexclust()自助法验证K-质心稳定性",en:"bootFlexclust() validates stability via bootstrap",core:true}
+]},
+
+{id:"varsel",icon:"🔬",color:"#f97316",zh:"变量选择与缺失值",en:"Variable Selection & Missing Values",zhDesc:"聚类变量选择/混合类型数据建模/缺失值处理",enDesc:"Variable selection for clustering, mixed-type modeling & missing data handling",
+packages:[
+{name:"clustvarsel",zh:"高斯模型聚类变量选择",en:"Variable selection for Gaussian model-based clustering"},
+{name:"VarSelLCM",zh:"连续/计数/分类/混合类型数据模型聚类变量选择",en:"Variable selection for model-based clustering of mixed-type data"},
+{name:"MixtureMissing",zh:"含缺失值数据的稳健灵活模型聚类",en:"Robust model-based clustering for data with missing values"},
+{name:"clusterMI",zh:"多重插补处理缺失值聚类",en:"Clustering with missing values via multiple imputation"},
+{name:"stepmixr",zh:"FIML处理缺失值的混合建模",en:"Mixture modeling handling missing values via FIML"},
+{name:"RMixtComp",zh:"部分缺失数据混合模型(SEM算法)",en:"Mixture models with partially missing data via SEM"}
+]},
+
+{id:"viz_sim",icon:"🎨",color:"#ec4899",zh:"可视化与模拟工具",en:"Visualization & Simulation Tools",zhDesc:"聚类可视化/距离矩阵/混合模型模拟/聚类数据生成",enDesc:"Cluster visualization, distance matrices, mixture simulation & cluster data generation",
+packages:[
+{name:"factoextra",zh:"ggplot2聚类可视化/提取多变量分析输出",en:"ggplot2-based cluster visualization & multivariate analysis extraction"},
+{name:"seriation",zh:"dissplot()距离矩阵可视化/序列化/聚类质量检查",en:"dissplot() dissimilarity matrix visualization & seriation"},
+{name:"clusterGeneration",zh:"随机簇/协方差矩阵生成+分离指数+投影图",en:"Random cluster generation, separation index & projection plots"},
+{name:"MixSim",zh:"生成指定重叠度的高斯混合模型(模拟聚类算法)",en:"Simulate Gaussian mixtures with prespecified overlap levels"},
+{name:"nor1mix",zh:"单变量正态混合打印与绘图",en:"Print & plot univariate normal mixtures"},
+{name:"dissimilarities",zh:"高效创建/操作/子集化dist对象",en:"Efficiently create, manipulate & subset dist objects"},
+{name:"treeClust",zh:"基于回归/分类树叶成员的相异度聚类",en:"Dissimilarities from tree leaf memberships for clustering"},
+{name:"dendextend",zh:"树状图高级可视化(着色/比较/Tanglegram)",en:"Advanced dendrogram visualization, comparison & tanglegrams"}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(20,184,166,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(20,184,166,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>

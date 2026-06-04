@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R实证金融包技能汇总 | R Empirical Finance Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#10b981;--glow:rgba(16,185,129,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#10b981,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(16,185,129,.2);border-color:rgba(16,185,129,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#10b981,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#10b981,#f59e0b);color:#fff;box-shadow:0 4px 15px rgba(16,185,129,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(16,185,129,.15);color:#6ee7b7;font-weight:600}
+.pkg-tag.more{background:rgba(245,158,11,.15);color:#fcd34d}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#6ee7b7}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.25);color:#6ee7b7;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#34d399;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">💰</span>
+<h1 data-zh="R实证金融包技能汇总" data-en="R Empirical Finance Package Skills">R实证金融包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">133</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">6</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">20</div><div class="stat-label" data-zh="核心包" data-en="Core Packages">核心包</div></div>
+<div class="stat-item"><div class="stat-num">2026</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/Finance.html" target="_blank">CRAN Task View: Empirical Finance</a></p>
+<p style="margin-top:6px" data-zh="2026 · R实证金融生态系统全景" data-en="2026 · R Empirical Finance Ecosystem Overview">2026 · R实证金融生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"regression",icon:"📈",color:"#3b82f6",zh:"标准回归模型",en:"Standard Regression Models",zhDesc:"线性/非线性回归模型、ML估计、回归诊断检验与用户界面",enDesc:"Linear/nonlinear regression, ML estimation, regression diagnostics and user interfaces",packages:[
+{name:"nlme",zh:"非线性最小二乘估计nlme()",en:"Non-linear least squares via nlme()",core:false},
+{name:"car",zh:"回归诊断检验",en:"Regression diagnostic tests",core:false},
+{name:"lmtest",zh:"回归诊断检验",en:"Regression diagnostic tests",core:false},
+{name:"strucchange",zh:"回归诊断检验",en:"Regression diagnostic tests",core:false},
+{name:"urca",zh:"回归诊断检验",en:"Regression diagnostic tests",core:true},
+{name:"sandwich",zh:"回归诊断检验",en:"Regression diagnostic tests",core:false},
+{name:"Rcmdr",zh:"R图形用户界面",en:"R GUI",core:false}
+]},
+{id:"timeseries",icon:"〰️",color:"#06b6d4",zh:"时间序列",en:"Time Series",zhDesc:"GARCH/VAR/状态空间/随机波动率/小波分析/混沌理论/预测等金融时间序列方法",enDesc:"GARCH, VAR, state space, stochastic volatility, wavelets, chaos, forecasting and more for financial time series",packages:[
+{name:"timsac",zh:"高级估计方法",en:"Advanced estimation methods",core:false},
+{name:"fracdiff",zh:"分数积分序列估计",en:"Fractionally integrated series estimation",core:false},
+{name:"longmemo",zh:"长记忆过程相关",en:"Long memory processes",core:false},
+{name:"tseries",zh:"标准GARCH(1,1)、单位根与协整检验",en:"Standard GARCH(1,1), unit root & cointegration tests",core:true},
+{name:"fGarch",zh:"Rmetrics附加GARCH模型",en:"Additional GARCH models (Rmetrics)",core:true},
+{name:"rugarch",zh:"丰富单变量GARCH变体：ARFIMA/外部回归/拟合预测模拟推断",en:"Rich univariate GARCH: ARFIMA, external regressors, fit/forecast/simulate",core:true},
+{name:"rmgarch",zh:"多变量GARCH模型（基于rugarch）",en:"Multivariate GARCH models (built on rugarch)",core:false},
+{name:"betategarch",zh:"Beta-t-EGARCH模型估计与模拟",en:"Beta-t-EGARCH estimation & simulation",core:false},
+{name:"bayesGARCH",zh:"贝叶斯GARCH(1,1)学生t新息",en:"Bayesian GARCH(1,1) with Student-t innovations",core:false},
+{name:"gogarch",zh:"广义正交GARCH模型（多变量）",en:"Generalized orthogonal GARCH (multivariate)",core:false},
+{name:"gets",zh:"自动一般到特定模型选择（log-ARCH-X）",en:"Automated general-to-specific model selection for log-ARCH-X",core:false},
+{name:"lgarch",zh:"log-GARCH模型估计与拟合",en:"Log-GARCH model estimation & fitting",core:false},
+{name:"garchx",zh:"含杠杆和外部协变量的GARCH估计",en:"GARCH with leverage & external covariates",core:false},
+{name:"bmgarch",zh:"贝叶斯多变量GARCH模型",en:"Bayesian multivariate GARCH models",core:false},
+{name:"fEGarch",zh:"多种EGARCH模型拟合",en:"Various EGARCH model fitting",core:false},
+{name:"timeSeries",zh:"Rmetrics时间序列：ARMA/GARCH/长记忆/单位根等",en:"Rmetrics TS: ARMA, GARCH, long memory, unit roots",core:true},
+{name:"fMultivar",zh:"Rmetrics多变量：ARMA/GARCH/长记忆/单位根等",en:"Rmetrics multivariate: ARMA, GARCH, long memory, unit roots",core:true},
+{name:"CADFtest",zh:"Hansen协变量增广单位根检验",en:"Hansen covariate-augmented unit root test",core:false},
+{name:"vars",zh:"经典框架下VAR/SVAR估计诊断预测与误差分解",en:"VAR/SVAR estimation, diagnostics, forecasting & error decomposition",core:false},
+{name:"dyn",zh:"动态线性回归模型",en:"Dynamic linear regression models",core:false},
+{name:"dynlm",zh:"动态线性回归模型",en:"Dynamic linear regression models",core:false},
+{name:"wavelets",zh:"小波分析",en:"Wavelet analysis",core:false},
+{name:"waveslim",zh:"小波分析",en:"Wavelet analysis",core:false},
+{name:"wavethresh",zh:"小波分析",en:"Wavelet analysis",core:false},
+{name:"tseriesChaos",zh:"混沌理论方法",en:"Chaos theory methods",core:false},
+{name:"tsDyn",zh:"基于动力系统理论的时间序列分析",en:"TS analysis based on dynamical systems theory",core:false},
+{name:"forecast",zh:"时间序列预测函数",en:"Time series forecasting functions",core:false},
+{name:"stochvol",zh:"MCMC贝叶斯随机波动率估计",en:"Bayesian stochastic volatility via MCMC",core:false},
+{name:"factorstochvol",zh:"多变量随机波动率（潜在因子）",en:"Multivariate stochastic volatility (latent factors)",core:false},
+{name:"MSGARCH",zh:"马尔可夫切换GARCH：ML/贝叶斯/模拟/预测",en:"Markov-Switching GARCH: ML/Bayesian/simulate/forecast",core:false},
+{name:"lmForc",zh:"线性模型预测检验：样本内/外/伪外/基准",en:"Linear model forecast tests: in/out/pseudo-out-of-sample",core:false},
+{name:"Rmfrac",zh:"分数与多分数过程模拟",en:"Fractional & multifractional process simulation",core:false},
+{name:"GARCHSK",zh:"GARCHSK/GJRSK模型：时变波动率偏度峰度",en:"GARCHSK/GJRSK: time-varying volatility, skewness, kurtosis",core:false}
+]},
+{id:"finance",icon:"💰",color:"#f59e0b",zh:"金融核心",en:"Finance Core",zhDesc:"Rmetrics套件、期权定价、投资组合分析、交易策略、金融数学与衍生品",enDesc:"Rmetrics suite, option pricing, portfolio analysis, trading strategies, financial math & derivatives",packages:[
+{name:"fAssets",zh:"Rmetrics资产建模",en:"Rmetrics asset modelling",core:true},
+{name:"fBasics",zh:"Rmetrics基础金融函数",en:"Rmetrics basic finance functions",core:true},
+{name:"fBonds",zh:"Rmetrics债券定价",en:"Rmetrics bond pricing",core:true},
+{name:"timeDate",zh:"Rmetrics日历/节假日/高频数据",en:"Rmetrics calendar, holidays, high-freq data",core:true},
+{name:"fCopulae",zh:"Rmetrics Copula建模",en:"Rmetrics copula modelling",core:true},
+{name:"fExtremes",zh:"Rmetrics极值理论",en:"Rmetrics extreme value theory",core:true},
+{name:"fGarch",zh:"Rmetrics GARCH模型",en:"Rmetrics GARCH models",core:true},
+{name:"fImport",zh:"Rmetrics数据导入",en:"Rmetrics data import",core:true},
+{name:"fNonlinear",zh:"Rmetrics非线性模型",en:"Rmetrics nonlinear models",core:true},
+{name:"fPortfolio",zh:"Rmetrics投资组合优化",en:"Rmetrics portfolio optimization",core:true},
+{name:"fRegression",zh:"Rmetrics回归建模",en:"Rmetrics regression modelling",core:true},
+{name:"timeSeries",zh:"Rmetrics时间序列对象",en:"Rmetrics time series objects",core:true},
+{name:"fTrading",zh:"Rmetrics交易建模",en:"Rmetrics trading models",core:true},
+{name:"RQuantLib",zh:"QuantLib期权定价与固定收益",en:"QuantLib option pricing & fixed income",core:false},
+{name:"RcppQuantuccia",zh:"QuantLib日历功能子集",en:"QuantLib calendar subset",core:false},
+{name:"quantmod",zh:"量化金融建模、数据获取与绘图",en:"Quantitative modelling, data acquisition & plotting",core:false},
+{name:"backtest",zh:"组合假设回测工具",en:"Portfolio-based hypothesis backtesting",core:false},
+{name:"pa",zh:"权益组合业绩归因",en:"Equity portfolio performance attribution",core:false},
+{name:"PerformanceAnalytics",zh:"组合业绩计算与风险管理大量函数",en:"Comprehensive portfolio performance & risk management",core:true},
+{name:"TTR",zh:"技术交易规则构建",en:"Technical trading rules construction",core:false},
+{name:"sde",zh:"随机微分方程模拟与推断",en:"SDE simulation & inference",core:false},
+{name:"vrtest",zh:"弱式有效市场假设方差比检验",en:"Variance ratio tests for weak-form EMH",core:false},
+{name:"gmm",zh:"广义矩估计GMM（资产定价模型）",en:"GMM estimation for asset pricing models",core:false},
+{name:"BurStFin",zh:"金融协方差矩阵估计",en:"Finance covariance matrix estimation",core:false},
+{name:"BurStMisc",zh:"金融工具函数",en:"Finance utility functions",core:false},
+{name:"parma",zh:"组合配置与风险管理",en:"Portfolio allocation & risk management",core:false},
+{name:"SharpeR",zh:"Sharpe比率与过拟合显著性分析",en:"Sharpe ratio & overfit significance analysis",core:false},
+{name:"RND",zh:"期权价格提取风险中性密度",en:"Risk-neutral density from option prices",core:false},
+{name:"LSMonteCarlo",zh:"最小二乘蒙特卡罗美式期权定价",en:"Least Squares MC American option pricing",core:false},
+{name:"BenfordTests",zh:"Benford定律七种统计检验",en:"Seven Benford's law statistical tests",core:false},
+{name:"OptHedging",zh:"期权组合最优对冲策略",en:"Optimal hedging for option portfolios",core:false},
+{name:"markovchain",zh:"离散马尔可夫链处理与分析",en:"Discrete Markov chain handling & analysis",core:false},
+{name:"tvm",zh:"货币时间价值：现金流/收益率曲线",en:"Time value of money: cashflows & yield curves",core:false},
+{name:"MarkowitzR",zh:"Markowitz组合统计显著性检验",en:"Statistical significance of Markowitz portfolios",core:false},
+{name:"pbo",zh:"回测过拟合概率/业绩退化/损失概率建模",en:"Probability of backtest overfitting & performance degradation",core:false},
+{name:"OptionPricing",zh:"亚式/欧式期权高效蒙特卡罗定价与敏感性",en:"Efficient MC pricing & sensitivities for Asian/European options",core:false},
+{name:"restimizeapi",zh:"Estimize众包盈利预测API",en:"Estimize crowd-sourced earnings API",core:false},
+{name:"credule",zh:"信用违约互换定价",en:"Credit default swap pricing",core:false},
+{name:"obAnalytics",zh:"限价订单簿数据分析与可视化",en:"Limit order book analysis & visualization",core:false},
+{name:"derivmkts",zh:"衍生品市场教学定价函数",en:"Derivatives pricing for teaching",core:false},
+{name:"FinancialMath",zh:"精算师考试金融数学与衍生品定价",en:"Financial math & derivatives for actuarial exams",core:false},
+{name:"tidyquant",zh:"Tidyverse风格金融数据与工具",en:"Tidyverse-style financial data & tools",core:false},
+{name:"BCC1997",zh:"Bakshi-Cao-Chen随机波动随机利率跳跃模型",en:"Bakshi-Cao-Chen stochastic vol/rates/jumps model",core:false},
+{name:"Sim.DiffProc",zh:"多维Itô/Stratonovitch随机微积分模拟",en:"Multi-dim Itô/Stratonovitch stochastic calculus simulation",core:false},
+{name:"BLModel",zh:"Black-Litterman后验分布模型",en:"Black-Litterman posterior distribution model",core:false},
+{name:"PortfolioOptim",zh:"大小样本组合优化",en:"Small & large sample portfolio optimization",core:false},
+{name:"PeerPerformance",zh:"基金相对同业表现分析（多重比较鲁棒）",en:"Fund peer performance (robust to false discoveries)",core:false},
+{name:"crseEventStudy",zh:"长窗口事件研究异常收益分析",en:"Long-horizon event study abnormal returns",core:false},
+{name:"simfinapi",zh:"SimFin基本面财务报表数据API",en:"SimFin fundamental financial statement API",core:false},
+{name:"NFCP",zh:"商品n因子期限结构估计",en:"Commodity n-factor term structure estimation",core:false},
+{name:"LSMRealOptions",zh:"最小二乘蒙特卡罗实物期权定价",en:"Least Squares MC real options valuation",core:false},
+{name:"greeks",zh:"欧式/亚式/美式期权敏感性计算",en:"Option sensitivities (Greeks) for European/Asian/American",core:false},
+{name:"RTL",zh:"风险工具库：金融/商品期货到期表等",en:"Risk Tool Library: finance/commodities futures expiry",core:false},
+{name:"cryptoQuotes",zh:"加密货币OHLC-V行情与情绪指标",en:"Crypto OHLC-V market data & sentiment",core:false},
+{name:"yieldcurves",zh:"收益率曲线拟合/分析/分解",en:"Yield curve fitting, analysis & decomposition",core:false},
+{name:"finlabR",zh:"组合构建与风险分析完整套件",en:"Complete portfolio construction & risk analytics suite",core:false},
+{name:"talib",zh:"TA-LIB技术分析库接口",en:"TA-LIB technical analysis library interface",core:false},
+{name:"vasicekfit",zh:"Vasicek信用损失模型（含宏观因子扩展）",en:"Vasicek credit loss model with macro factors",core:false}
+]},
+{id:"risk",icon:"🛡️",color:"#ef4444",zh:"风险管理",en:"Risk Management",zhDesc:"量化风险管理、极值分析、Copula建模、精算科学、组合风险与各种风险度量",enDesc:"Quantitative risk management, extreme value analysis, copula modelling, actuarial science, portfolio risk & risk measures",packages:[
+{name:"qrmtools",zh:"量化风险管理标准工具（McNeil等2005/2015配套）",en:"QRM standard tools (accompanies McNeil et al 2005/2015)",core:false},
+{name:"qrmdata",zh:"量化风险管理配套数据集",en:"QRM companion datasets",core:false},
+{name:"mvtnorm",zh:"多元正态/t分布",en:"Multivariate Normal & t distributions",core:false},
+{name:"nvmix",zh:"多元正态方差混合分布（含非整数自由度t）",en:"Multivariate normal variance mixtures (incl. non-integer t)",core:false},
+{name:"copula",zh:"Copula建模全流程",en:"Full copula modelling workflow",core:false},
+{name:"copulaData",zh:"Copula建模数据集",en:"Copula modelling datasets",core:false},
+{name:"actuar",zh:"精算风险管理",en:"Actuarial risk management",core:false},
+{name:"ghyp",zh:"广义双曲分布/VaR/CVaR/目标收益组合优化",en:"Generalized hyperbolic dist, VaR, CVaR, target-return portfolio",core:false},
+{name:"ChainLadder",zh:"保险索赔准备金建模",en:"Insurance claim reserve modelling",core:false},
+{name:"lifecontingencies",zh:"生命 contingencies金融精算评估",en:"Life contingencies financial & actuarial evaluation",core:false},
+{name:"ESG",zh:"情景模拟资产投影模型",en:"Scenario-based asset projection simulation",core:false},
+{name:"riskSimul",zh:"股票组合尾部损失概率高效模拟",en:"Efficient tail loss probability simulation for stock portfolios",core:false},
+{name:"GCPM",zh:"信用组合违约风险分析/模拟方法",en:"Credit portfolio default risk: analytical & simulation",core:false},
+{name:"FatTailsR",zh:"对称/非对称肥尾分布族",en:"Symmetric & asymmetric fat-tail distribution family",core:false},
+{name:"Dowd",zh:"Kevin Dowd《市场风险度量》函数移植",en:"Functions from Dowd's 'Measuring Market Risk'",core:false},
+{name:"NetworkRiskMeasures",zh:"金融网络风险度量：DebtRank/影响扩散/流动性",en:"Financial network risk: DebtRank, Impact Susceptibility/Diffusion/Fluidity",core:false},
+{name:"Risk",zh:"连续分布26种金融风险度量",en:"26 financial risk measures for continuous distributions",core:false},
+{name:"RiskPortfolios",zh:"基于风险的投资组合构建",en:"Risk-based portfolio construction",core:false},
+{name:"RM2006",zh:"RiskMetrics 2006条件协方差矩阵估计",en:"RiskMetrics 2006 conditional covariance estimation",core:false},
+{name:"cvar",zh:"连续分布期望 shortfall 与 VaR",en:"Expected shortfall & VaR for continuous distributions",core:false},
+{name:"riskParityPortfolio",zh:"风险平价组合快速构建",en:"Fast risk-parity portfolio construction",core:false},
+{name:"monobin",zh:"信用评级模型中风险因子单调分箱（PD/LGD/EAD）",en:"Monotonic binning for credit rating (PD, LGD, EAD)",core:false},
+{name:"etrm",zh:"能源交易与风险管理核心任务",en:"Energy trading & risk management core tasks",core:false},
+{name:"ufRisk",zh:"参数/半参数模型多种VaR和ES度量",en:"Multiple VaR & ES measures from parametric/semiparametric models",core:false},
+{name:"bondAnalyst",zh:"债券定价与固定收益估值（行业标准）",en:"Bond pricing & fixed-income valuation (industry standard)",core:false},
+{name:"stockAnalyst",zh:"权益基本面估值（行业标准）",en:"Fundamental equity valuation (industry standard)",core:false},
+{name:"bearishTrader",zh:"看跌方向交易策略与分析",en:"Bearish directional trading strategies & analysis",core:false},
+{name:"bullishTrader",zh:"看涨方向交易策略与分析",en:"Bullish directional trading strategies & analysis",core:false},
+{name:"volatilityTrader",zh:"波动率体制交易策略与分析",en:"Volatility regime trading strategies & analysis",core:false},
+{name:"VaRES",zh:"多种参数分布VaR和期望 shortfall",en:"VaR & ES for many parametric distributions",core:false}
+]},
+{id:"books",icon:"📚",color:"#8b5cf6",zh:"教科书配套",en:"Book Companion Packages",zhDesc:"金融教科书配套函数、示例与数据",enDesc:"Functions, examples and data accompanying finance textbooks",packages:[
+{name:"NMOF",zh:"《金融数值方法与优化》函数/示例/数据（差分进化/遗传算法/粒子群/阈值接受）",en:"Numerical Methods & Optimization in Finance (DE, GA, PSO, TA)",core:false},
+{name:"FRAPO",zh:"《金融风险建模与R组合优化》数据与代码",en:"Financial Risk Modelling & Portfolio Optimization with R",core:false}
+]},
+{id:"data",icon:"💾",color:"#14b8a6",zh:"数据与日期管理",en:"Data & Date Management",zhDesc:"时间序列数据处理、金融日历、数据API接口与高频数据",enDesc:"Time series data handling, financial calendars, data APIs & high-frequency data",packages:[
+{name:"zoo",zh:"不规则间距时间序列支持",en:"Irregularly-spaced time series support",core:true},
+{name:"timeDate",zh:"金融中心日历/节假日/高频数据（Rmetrics）",en:"Financial center calendars, holidays, high-freq data (Rmetrics)",core:true},
+{name:"xts",zh:"zoo金融时间序列扩展",en:"zoo extension for financial time series",core:true},
+{name:"tis",zh:"Fame频率兼容时间索引与序列",en:"Fame-compatible time indices & series",core:false},
+{name:"IBrokers",zh:"盈透证券API接口（需账户）",en:"Interactive Brokers API (requires account)",core:false},
+{name:"rib",zh:"盈透证券API接口（需账户）",en:"Interactive Brokers API (requires account)",core:false},
+{name:"data.table",zh:"资产价格等内存数据集高效访问",en:"Efficient in-memory data access for asset prices",core:false},
+{name:"highfrequency",zh:"高频交易报价数据管理/清洗/匹配/流动性/波动率估计",en:"High-freq trade/quote data: clean, match, liquidity, volatility",core:false},
+{name:"bizdays",zh:"给定假日列表计算营业日",en:"Compute business days from holiday list",core:false},
+{name:"TAQMNGR",zh:"逐笔交易数据清洗/聚合/导入（Brownlees & Gallo 2006）",en:"Tick-by-tick data: clean, aggregate, import",core:false},
+{name:"Rblpapi",zh:"Bloomberg API高效访问：bdp/bdh/bds查询",en:"Efficient Bloomberg API: bdp/bdh/bds queries",core:false},
+{name:"GetTDData",zh:"巴西国债数据导入（Tesouro Direto）",en:"Brazilian government bonds from Tesouro Direto",core:false},
+{name:"qlcal",zh:"QuantLib 60+国家/交易所日历",en:"QuantLib calendars for 60+ countries/exchanges",core:false},
+{name:"tind",zh:"多种时间索引：年/季/月/周/日/时/任意",en:"Time indices: year/quarter/month/week/day/time/arbitrary",core:false},
+{name:"frenchdata",zh:"Kenneth French网站数据下载",en:"Download data from Kenneth French's website",core:false},
+{name:"freecurrencyapi",zh:"汇率数据API（免费订阅）",en:"Exchange rate data API (free subscription)",core:false}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(16,185,129,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(16,185,129,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>

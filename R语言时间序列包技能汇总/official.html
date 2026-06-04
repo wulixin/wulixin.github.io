@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R官方统计与调查统计包技能汇总 | R Official & Survey Statistics Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#f59e0b;--glow:rgba(245,158,11,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#f59e0b,#14b8a6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(245,158,11,.2);border-color:rgba(245,158,11,.4)}
+.hero-title{text-align:center;padding:36px 0 10px;position:relative}
+.hero-title h2{font-size:38px;font-weight:900;background:linear-gradient(135deg,#f59e0b,#14b8a6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;line-height:1.3}
+.hero-title .subtitle{font-size:16px;color:var(--text2);margin-top:8px;font-weight:400;letter-spacing:1px}
+.stats-bar{display:flex;gap:24px;padding:20px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#f59e0b,#14b8a6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#f59e0b,#14b8a6);color:#fff;box-shadow:0 4px 15px rgba(245,158,11,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(245,158,11,.15);color:#fcd34d;font-weight:600}
+.pkg-tag.more{background:rgba(20,184,166,.15);color:#5eead4}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#fcd34d}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3);color:#fcd34d;font-weight:600}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:12px;border-top:1px solid var(--border)}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:768px){
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.stats-bar{gap:16px}
+.stat-num{font-size:22px}
+.logo h1{font-size:16px}
+.hero-title h2{font-size:26px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">🏛️</span>
+<h1 data-zh="R官方统计与调查统计包技能汇总" data-en="R Official & Survey Statistics Package Skills">R官方统计与调查统计包技能汇总</h1>
+</div>
+<button class="lang-btn" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="hero-title">
+<h2 data-zh="官方统计与调查统计" data-en="Official Statistics & Survey Statistics">官方统计与调查统计</h2>
+<div class="subtitle" data-zh="覆盖抽样设计·数据编辑·估计推断·披露控制·小区域估计·国际数据访问全流程" data-en="Full Pipeline: Sampling Design · Data Editing · Estimation · Disclosure Control · Small Area · International Data Access">覆盖抽样设计·数据编辑·估计推断·披露控制·小区域估计·国际数据访问全流程</div>
+</div>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">9</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">131</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">12</div><div class="stat-label" data-zh="核心包" data-en="Core Packages">核心包</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" placeholder="搜索包名或关键词..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡" data-en="Cards">技能卡</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Table">包列表</button>
+</div>
+
+<div class="view-container">
+<div id="network-view" class="view active">
+<svg id="network-svg"></svg>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div id="cards-view" class="view"></div>
+<div id="table-view" class="view"></div>
+</div>
+
+<footer>
+<p>数据来源: <a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/OfficialStatistics.html" target="_blank">CRAN Task View: Official Statistics</a> | 清华大学开源软件镜像站</p>
+<p style="margin-top:4px">Powered by D3.js v7 | R官方统计与调查统计包技能汇总 © 2026</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div class="modal-header">
+<span class="modal-icon" id="modal-icon"></span>
+<span class="modal-title" id="modal-title"></span>
+</div>
+<div class="modal-desc" id="modal-desc"></div>
+<div class="modal-pkgs" id="modal-pkgs"></div>
+</div>
+</div>
+
+<script>
+let lang='zh';
+const categories=[
+{id:'sampling',icon:'🎯',color:'#f59e0b',zh:'抽样设计与规划',en:'Sampling Design & Planning',zhDesc:'概率抽样算法、样本量计算、分层设计和问卷管理',enDesc:'Probability sampling algorithms, sample size calculation, stratification design and questionnaire management',
+packages:[
+{name:'sampling',zh:'多种抽样算法(Brewer/立方体平衡/pps/校准权重)',en:'Multi-algorithm sampling (Brewer/cube/pps/calibration)',core:true},
+{name:'SamplingStrata',zh:'多变量多领域最优分层选择',en:'Multivariate multi-domain optimal stratification',core:true},
+{name:'pps',zh:'按规模概率抽样(Sampford联合包含概率)',en:'Probability proportional to size sampling (Sampford joint inclusion)'},
+{name:'BalancedSampling',zh:'平衡/空间平衡概率样本(局部枢纽/立方体法)',en:'Balanced/spatially balanced sampling (local pivot/cube)'},
+{name:'PracTools',zh:'多阶段设计样本量与方差分量计算',en:'Multi-stage design sample size & variance components'},
+{name:'surveyplanning',zh:'调查规划(样本量/精度/最优分配)',en:'Survey planning (sample size/precision/optimal allocation)'},
+{name:'stratification',zh:'Lavallee-Hidiroglou单变量分层方法',en:'Lavallee-Hidiroglou univariate stratification'},
+{name:'R2BEAT',zh:'多变量多领域最优样本量分配(Neyman/Tschuprow)',en:'Multivariate multi-domain optimal allocation (Neyman/Tschuprow)'},
+{name:'sps',zh:'序贯Poisson pps抽样(永久随机数协调)',en:'Sequential Poisson pps sampling (PRN coordination)'},
+{name:'prnsamplr',zh:'永久随机数抽样(分层/简单/pps)',en:'Permanent random number sampling (stratified/SRS/pps)'},
+{name:'questionr',zh:'调查处理与分析Shiny插件(重编码/列联表)',en:'Survey processing & analysis Shiny addin (recode/crosstab)'},
+{name:'surveydata',zh:'跟踪调查元数据管理',en:'Tracking survey metadata management'},
+{name:'blaise',zh:'读写Blaise格式文件(荷兰统计局)',en:'Read/write Blaise format files (Statistics Netherlands)'}
+]},
+
+{id:'collection',icon:'🔗',color:'#06b6d4',zh:'数据整合与记录链接',en:'Data Integration & Record Linkage',zhDesc:'统计匹配、概率记录链接、隐私保护链接和实体解析',enDesc:'Statistical matching, probabilistic record linkage, privacy-preserving linking and entity resolution',
+packages:[
+{name:'StatMatch',zh:'统计匹配(似然/热板法合成数据集)',en:'Statistical matching (likelihood/hot-deck synthetic dataset)'},
+{name:'MatchIt',zh:'最近邻/精确/最优/完全匹配',en:'Nearest/exact/optimal/full matching'},
+{name:'MatchThem',zh:'多重插补数据集匹配与加权',en:'Matching and weighting for multiply imputed datasets'},
+{name:'stringdist',zh:'多种字符串距离(DL/Hamming/Levenshtein/Jaro)',en:'String distances (DL/Hamming/Levenshtein/Jaro)'},
+{name:'RecordLinkage',zh:'Fellegi-Sunter记录链接方法',en:'Fellegi-Sunter record linkage'},
+{name:'fastLink',zh:'概率记录链接(缺失数据+辅助信息)',en:'Probabilistic record linkage (missing data+auxiliary)'},
+{name:'fuzzyjoin',zh:'模糊匹配表连接(不精确键)',en:'Fuzzy matching table join (inexact keys)'},
+{name:'PPRL',zh:'隐私保护记录链接(无个人ID)',en:'Privacy-preserving record linkage (no personal ID)'},
+{name:'reclin2',zh:'概率记录链接与去重辅助',en:'Probabilistic record linkage and deduplication'},
+{name:'klsh',zh:'k-means局部敏感哈希阻塞(记录链接)',en:'k-means LSH blocking for record linkage'},
+{name:'representr',zh:'实体解析后创建代表性记录',en:'Create representative records after entity resolution'},
+{name:'clevr',zh:'链接预测与聚类算法评估',en:'Link prediction and clustering evaluation'}
+]},
+
+{id:'editing',icon:'✏️',color:'#10b981',zh:'数据编辑与插补',en:'Data Editing & Imputation',zhDesc:'数据验证规则、误差定位、演绎修正、异常值检测和缺失值插补',enDesc:'Data validation rules, error localization, deductive correction, outlier detection and missing value imputation',
+packages:[
+{name:'validate',zh:'规则管理与数据验证框架',en:'Rule management and data validation framework',core:true},
+{name:'validatetools',zh:'验证规则集检查与简化',en:'Validation rule set checking and simplification',core:true},
+{name:'errorlocate',zh:'Fellegi-Holt误差定位(MIP后端)',en:'Fellegi-Holt error localization (MIP backend)',core:true},
+{name:'VIM',zh:'缺失值可视化+kNN/EM多重插补',en:'Missing value visualization+kNN/EM multiple imputation',core:true},
+{name:'editrules',zh:'线性(不)等式转矩阵形式',en:'Linear (in)equality to matrix form'},
+{name:'deducorrect',zh:'基于平衡编辑的演绎修正',en:'Deductive correction based on balance edits'},
+{name:'deductive',zh:'演绎方法数据修正与插补',en:'Deductive data correction and imputation'},
+{name:'rspa',zh:'最小调整数值记录满足(不)等式',en:'Minimum adjustment numeric records for (in)equalities'},
+{name:'univOutl',zh:'多方法单变量异常值检测(Hidiroglou-Berthelot)',en:'Multi-method univariate outlier detection (Hidiroglou-Berthelot)'},
+{name:'extremevalues',zh:'基于主体分布建模的异常值检测',en:'Outlier detection based on modeling bulk distribution'},
+{name:'simputation',zh:'快速kNN/鲁棒EM多重插补',en:'Fast kNN/robust EM multiple imputation'}
+]},
+
+{id:'weighting',icon:'⚖️',color:'#8b5cf6',zh:'加权校准与估计',en:'Weighting, Calibration & Estimation',zhDesc:'复杂调查设计下的权重校准、Horvitz-Thompson估计、方差估计和鲁棒推断',enDesc:'Weight calibration under complex survey design, Horvitz-Thompson estimation, variance estimation and robust inference',
+packages:[
+{name:'survey',zh:'复杂调查设计(分层/聚类/pps)+HT估计+方差',en:'Complex survey design (stratified/cluster/pps)+HT+variance',core:true},
+{name:'surveysd',zh:'校准自助法+旋转设计误差估计',en:'Calibration bootstrap+rotating design error estimation',core:true},
+{name:'svrep',zh:'复制权重创建/更新/分析(扩展survey)',en:'Replicate weights create/update/analyze (extends survey)'},
+{name:'laeken',zh:'校准权重+Pareto尾部建模+贫困指标',en:'Calibration weights+Pareto tail modeling+poverty indicators'},
+{name:'robsurvey',zh:'有限总体鲁棒估计(M估计/权重修剪/缩尾)',en:'Finite population robust estimation (M-est/weight trim/winsorize)'},
+{name:'srvyr',zh:'dplyr风格survey封装(group_by/summarize)',en:'dplyr-style survey wrapper (group_by/summarize)'},
+{name:'gustave',zh:'调查抽样方差估计工具包',en:'Survey sampling variance estimation toolkit'},
+{name:'vardpoor',zh:'非线性统计量线性化+终极聚类方差',en:'Nonlinear statistic linearization+ultimate cluster variance'},
+{name:'collapse',zh:'高速分组加权统计+多类型聚合',en:'High-speed grouped weighted stats+multi-type aggregation'},
+{name:'icarus',zh:'校准重新加权(Calmar SAS宏兼容)',en:'Calibration reweighting (Calmar SAS macro compatible)'},
+{name:'CalibrateSSB',zh:'面板数据无响应权重与估计',en:'Panel data non-response weights and estimates'},
+{name:'Frames2',zh:'双框架调查点/区间估计',en:'Dual-frame survey point/interval estimation'},
+{name:'GECal',zh:'广义熵校准(设计一致性+优化权重)',en:'Generalized entropy calibration (design consistent+optimal)'},
+{name:'inca',zh:'整数权重校准加权',en:'Integer weight calibration'},
+{name:'jointCalib',zh:'总量与分位数联合校准',en:'Joint calibration for totals and quantiles'},
+{name:'weights',zh:'简单加权统计(相关/卡方/t检验)',en:'Simple weighted statistics (correlation/chisq/t-test)'},
+{name:'rpms',zh:'递归分区节点线性模型(分层/聚类)',en:'Recursive partition linear model (stratified/clustered)'},
+{name:'NonProbEst',zh:'非随机选择偏差纠正推断',en:'Non-random selection bias correction inference'},
+{name:'nonprobsvy',zh:'非概率样本推断(辅助信息)',en:'Non-probability sample inference (auxiliary info)'}
+]},
+
+{id:'disclosure',icon:'🔒',color:'#ef4444',zh:'统计披露控制',en:'Statistical Disclosure Control',zhDesc:'微数据匿名化、合成数据生成、表格保密和隐私保护分析',enDesc:'Microdata anonymization, synthetic data generation, table protection and privacy-preserving analysis',
+packages:[
+{name:'sdcMicro',zh:'数据匿名化(分类+连续关键变量)含GUI',en:'Data anonymization (categorical+continuous key variables) with GUI',core:true},
+{name:'simPop',zh:'从复杂数据模拟合成人口(回归/RF)',en:'Simulate synthetic population from complex data (regression/RF)',core:true},
+{name:'sdcTable',zh:'保密(层级)表格(HITAS/HYPERCUBE/LP)',en:'Protect (hierarchical) tables (HITAS/HYPERCUBE/LP)',core:true},
+{name:'synthpop',zh:'回归树方法模拟合成数据',en:'Synthetic data simulation via regression trees'},
+{name:'sdcSpatial',zh:'地图栅格单元平滑/抑制',en:'Map raster cell smoothing/suppression'},
+{name:'sdcHierarchies',zh:'生成/修改/转换嵌套层级结构',en:'Generate/modify/convert nested hierarchies'},
+{name:'SmallCountRounding',zh:'舍入保护频率表',en:'Frequency table protection via rounding'},
+{name:'GaussSuppression',zh:'高斯消元二次抑制算法保护表格',en:'Gaussian elimination secondary suppression for tables'},
+{name:'DSI',zh:'DataShield远程非披露性分析接口',en:'DataShield remote non-disclosive analysis interface'},
+{name:'diffpriv',zh:'差分隐私统计量扰动',en:'Differential privacy statistic perturbation'},
+{name:'easySdcTable',zh:'sdcTable部分功能的图形界面',en:'GUI for sdcTable partial functionality'}
+]},
+
+{id:'sae',icon:'🔬',color:'#3b82f6',zh:'小区域估计',en:'Small Area Estimation',zhDesc:'基本区域/单元级模型、Fay-Herriot模型、时空平滑和区域分解指标估计',enDesc:'Basic area/unit-level models, Fay-Herriot model, spatial-temporal smoothing and regional decomposition indicators',
+packages:[
+{name:'sae',zh:'小区域估计(Fay-Herriot/时空相关)',en:'Small area estimation (Fay-Herriot/spatial-temporal)',core:true},
+{name:'emdi',zh:'区域分解指标估计/评估/映射(EBP/区域模型)',en:'Regional decomposition estimation/assessment/mapping (EBP/area)'},
+{name:'rsae',zh:'鲁棒M估计单元级SAE模型',en:'Robust M-estimation unit-level SAE model'},
+{name:'hbsae',zh:'层次贝叶斯SAE(REML/HB)',en:'Hierarchical Bayes SAE (REML/HB)'},
+{name:'SUMMER',zh:'人口健康指标空间/时空平滑SAE',en:'Population health indicator spatial/temporal smoothing SAE'},
+{name:'SAEval',zh:'SAE估计器诊断与图形工具',en:'SAE estimator diagnostics and graphics'},
+{name:'mind',zh:'混合线性模型多变量预测(MSE推断)',en:'Mixed linear model multivariate prediction (MSE inference)'},
+{name:'JoSAE',zh:'GREG+单元级EBLUP点/方差估计',en:'GREG+unit-level EBLUP point/variance estimation'}
+]},
+
+{id:'international',icon:'🌍',color:'#06b6d4',zh:'国际组织数据访问',en:'International Organization Data Access',zhDesc:'OECD、欧盟统计局、世界银行、FAO、ILO、UNHCR等国际组织数据接口',enDesc:'Data interfaces for OECD, Eurostat, World Bank, FAO, ILO, UNHCR and other international organizations',
+packages:[
+{name:'eurostat',zh:'欧盟统计局数据搜索与访问',en:'Eurostat data search and access'},
+{name:'OECD',zh:'OECD数据搜索与提取',en:'OECD data search and extraction'},
+{name:'WDI',zh:'世界银行世界发展指标API',en:'World Bank World Development Indicators API'},
+{name:'wbstats',zh:'世界银行API数据搜索与访问',en:'World Bank API data search and access'},
+{name:'FAOSTAT',zh:'FAOSTAT数据库数据下载',en:'FAOSTAT database data download'},
+{name:'fishstat',zh:'FAO FishStat全球渔业生产数据',en:'FAO FishStat global fisheries production data'},
+{name:'Rilostat',zh:'国际劳工组织(ILO)数据库',en:'International Labour Organization (ILO) database'},
+{name:'ipumsr',zh:'IPUMS人口普查/调查/地理数据导入',en:'IPUMS census/survey/geographic data import'},
+{name:'rdhs',zh:'人口与健康调查(DHS)项目数据',en:'Demographic and Health Surveys (DHS) data'},
+{name:'prevR',zh:'DHS人口健康调查数据导入',en:'DHS population health survey data import'},
+{name:'rsdmx',zh:'SDMX Web服务统计组织数据访问',en:'SDMX web service statistical organization data access'},
+{name:'readsdmx',zh:'SDMX读取为数据框(OECD开发)',en:'SDMX read as data frame (OECD developed)'},
+{name:'pxweb',zh:'PX-Web/PC-Axis API通用接口(多国)',en:'PX-Web/PC-Axis API generic interface (multi-country)'},
+{name:'PxWebApiData',zh:'北欧统计局API轻松访问',en:'Nordic statistical office API easy access'},
+{name:'rdbnomics',zh:'DB.nomics宏观经济数据库(38提供商)',en:'DB.nomics macroeconomic database (38 providers)'},
+{name:'regions',zh:'区域统计工具(聚焦欧洲)',en:'Regional statistics tools (Europe focused)'},
+{name:'statcodelists',zh:'SDMX代码列表R可用化',en:'SDMX code lists made available in R'},
+{name:'refugees',zh:'UNHCR难民人口统计数据',en:'UNHCR refugee population statistics data'},
+{name:'iotables',zh:'投入产出表整理(经济/环境影响)',en:'Input-output tables (economic/environmental impact)'},
+{name:'npi',zh:'美国国家提供商标识符注册表API',en:'US National Provider Identifier registry API'}
+]},
+
+{id:'national',icon:'🏛️',color:'#14b8a6',zh:'国家统计机构数据',en:'National Statistical Office Data',zhDesc:'各国官方统计局API接口：美国普查、法国INSEE、德国GENESIS、加拿大等',enDesc:'National statistics office API interfaces: US Census, France INSEE, Germany GENESIS, Canada, etc.',
+packages:[
+{name:'tidycensus',zh:'美国十年普查+ACS API集成接口',en:'US decennial census+ACS API integrated interface'},
+{name:'censusapi',zh:'美国人口普查局API封装',en:'US Census Bureau API wrapper'},
+{name:'idbr',zh:'美国人口普查局国际数据库API',en:'US Census Bureau International Database API'},
+{name:'insee',zh:'法国INSEE BDM数据库搜索提取',en:'France INSEE BDM database search and extract'},
+{name:'restatis',zh:'德国GENESIS联邦统计数据访问',en:'Germany GENESIS federal statistics data access'},
+{name:'cancensus',zh:'加拿大统计局普查数据(空间)',en:'Statistics Canada census data (spatial)'},
+{name:'cbsodataR',zh:'荷兰统计局(CBS)开放数据API',en:'Statistics Netherlands (CBS) open data API'},
+{name:'tidyBdE',zh:'西班牙银行官方统计数据',en:'Bank of Spain official statistics data'},
+{name:'inegiR',zh:'墨西哥INEGI官方统计局数据',en:'Mexico INEGI official statistics data'},
+{name:'czso',zh:'捷克统计局目录与开放数据',en:'Czech Statistical Office catalog and open data'},
+{name:'sorvi',zh:'芬兰开放政府数据访问',en:'Finland open government data access'},
+{name:'csodata',zh:'爱尔兰中央统计局(CSO)数据',en:'Ireland Central Statistics Office (CSO) data'},
+{name:'readabs',zh:'澳大利亚统计局时间序列数据',en:'Australian Bureau of Statistics time series data'},
+{name:'EdSurvey',zh:'NCES教育调查评估数据分析',en:'NCES education survey and assessment analysis'},
+{name:'BIFIEsurvey',zh:'教育评估调查统计(复制权重)',en:'Education assessment survey statistics (replicate weights)'},
+{name:'cdlTools',zh:'USDA NASS Cropland数据下载',en:'USDA NASS Cropland data download'}
+]},
+
+{id:'indicators',icon:'📊',color:'#a855f7',zh:'指标体系与微模拟',en:'Indicator Systems & Microsimulation',zhDesc:'贫困/不平等指标、价格指数、微模拟、随机化回答和专项调查工具',enDesc:'Poverty/inequality indicators, price indices, microsimulation, randomized response and specialized survey tools',
+packages:[
+{name:'laeken',zh:'贫困风险率/基尼/Pareto尾部建模',en:'At-risk-of-poverty rate/Gini/Pareto tail modeling'},
+{name:'convey',zh:'survey包设计估计收入集中/贫困方差(10+指标)',en:'Survey-design income concentration/poverty variance (10+ indicators)'},
+{name:'ineq',zh:'不平等度量(Gini/Theil/熵)+洛伦兹曲线',en:'Inequality measures (Gini/Theil/entropy)+Lorenz curve'},
+{name:'wINEQ',zh:'ineq补充(支持抽样权重)',en:'ineq supplement (with sampling weight support)'},
+{name:'piar',zh:'层级价格指数聚合+链接+贡献分解',en:'Hierarchical price index aggregation+chaining+contribution'},
+{name:'micEconIndex',zh:'价格/数量指数(Paasche/Fisher/Laspeyres)',en:'Price/quantity indices (Paasche/Fisher/Laspeyres)'},
+{name:'sms',zh:'区域宏观数据→微数据模拟(退火法+并行)',en:'Regional macro→microdata simulation (annealing+parallel)'},
+{name:'saeSim',zh:'小区域估计背景数据模拟工具',en:'SAE context data simulation tools'},
+{name:'SimSurvey',zh:'年龄结构化时空种群模拟抽样',en:'Age-structured spatiotemporal population survey simulation'},
+{name:'MicSim',zh:'微模拟(过渡矩阵+并行)',en:'Microsimulation (transition matrix+parallel)'},
+{name:'DHS.rates',zh:'DHS数据关键指标(生育率)方差估计',en:'DHS data key indicators (fertility) variance estimation'},
+{name:'treemap',zh:'层级结构树图可视化',en:'Hierarchical treemap visualization'},
+{name:'tmap',zh:'图层式专题地图(分级统计/气泡图)',en:'Layer-based thematic maps (choropleth/bubble)'},
+{name:'rworldmap',zh:'国家引用数据映射可视化',en:'Country-referenced data mapping visualization'},
+{name:'samplingbook',zh:'抽样程序(书籍Stichproben)',en:'Sampling procedures (book Stichproben)'},
+{name:'RALSA',zh:'大规模评估(TIMSS/PISA)分析含GUI',en:'Large-scale assessment (TIMSS/PISA) analysis with GUI'},
+{name:'SDaA',zh:'再现Lohr抽样设计教材结果',en:'Reproduce Lohr sampling design textbook results'},
+{name:'samplingVarEst',zh:'不等概率设计刀切法方差估计',en:'Unequal probability design jackknife variance estimation'},
+{name:'memisc',zh:'调查数据管理/图形/模拟工具',en:'Survey data management/graphics/simulation tools'},
+{name:'anesrake',zh:'美国全国选举研究变量选择+加权',en:'ANES variable selection and raking weights'},
+{name:'spsurvey',zh:'空间调查设计分析(等/不等概率)',en:'Spatial survey design and analysis (equal/unequal prob)'},
+{name:'FFD',zh:'动物群体调查最优样本量(无疫病证明)',en:'Animal population survey optimal sample size (disease freedom)'},
+{name:'mipfp',zh:'多维迭代比例拟合校准',en:'Multi-dimensional iterative proportional fitting'},
+{name:'MBHdesign',zh:'空间平衡设计生成(潜在采样位置)',en:'Spatially balanced design generation (candidate sites)'},
+{name:'quantification',zh:'定性调查数据量化(Carlson-Parkin/回归)',en:'Qualitative survey quantification (Carlson-Parkin/regression)'},
+{name:'surveybootstrap',zh:'复杂调查不同自助法抽样变异',en:'Complex survey alternative bootstrap sampling variation'},
+{name:'RRreg',zh:'随机化回答技术分析(消除社会期望偏差)',en:'Randomized response technique analysis (social desirability bias)'},
+{name:'SSBtools',zh:'层级结构表格聚合计算',en:'Hierarchical structure table aggregation'},
+{name:'RRTCS',zh:'复杂调查随机化回答技术',en:'Complex survey randomized response techniques'},
+{name:'rtrim',zh:'监测数据趋势与指数(动植物种群)',en:'Monitoring data trends and indices (animal/plant populations)'},
+{name:'rjstat',zh:'读写JSON-stat格式数据集',en:'Read/write JSON-stat format datasets'},
+{name:'singleRcapture',zh:'单源捕获-再捕获估计难触达人口',en:'Single-source capture-recapture for hard-to-reach populations'}
+]}
+];
+
+let currentTab='network';
+function t(k){return lang==='zh'?k.zh:k.en}
+function toggleLang(){
+  lang=lang==='zh'?'en':'zh';
+  document.querySelector('.lang-btn').textContent=lang==='zh'?'EN':'中';
+  document.querySelectorAll('[data-zh]').forEach(el=>{
+    const v=el.getAttribute('data-'+lang);
+    if(v)el.textContent=v;
+  });
+  document.getElementById('search-input').placeholder=lang==='zh'?'搜索包名或关键词...':'Search packages or keywords...';
+  renderCurrentView();
+}
+
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['network','cards','table'][i]===tab);
+  });
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(tab+'-view').classList.add('active');
+  renderCurrentView();
+}
+
+function renderCurrentView(){
+  if(currentTab==='network')renderNetwork();
+  else if(currentTab==='cards')renderCards();
+  else renderTable();
+}
+
+let searchQuery='';
+function handleSearch(q){searchQuery=q.toLowerCase();renderCurrentView()}
+
+function getFilteredCategories(){
+  if(!searchQuery)return categories;
+  return categories.map(c=>{
+    const pkgs=c.packages.filter(p=>
+      p.name.toLowerCase().includes(searchQuery)||
+      p.zh.toLowerCase().includes(searchQuery)||
+      p.en.toLowerCase().includes(searchQuery)
+    );
+    if(pkgs.length===0)return null;
+    return{...c,packages:pkgs};
+  }).filter(Boolean);
+}
+
+function renderNetwork(){
+  const svg=d3.select('#network-svg');
+  svg.selectAll('*').remove();
+  const container=document.getElementById('network-view');
+  const w=container.clientWidth,h=container.clientHeight;
+  svg.attr('viewBox',`0 0 ${w} ${h}`);
+
+  const filtered=getFilteredCategories();
+  const nodes=[];
+  const links=[];
+
+  const centerNode={id:'official',name:lang==='zh'?'官方统计':'Official Stats',color:'#f59e0b',r:35,isCenter:true};
+  nodes.push(centerNode);
+
+  filtered.forEach(cat=>{
+    const catNode={id:cat.id,name:t(cat),color:cat.color,r:22,isCat:true,catData:cat};
+    nodes.push(catNode);
+    links.push({source:centerNode.id,target:catNode.id,value:cat.packages.length});
+
+    cat.packages.forEach(pkg=>{
+      const pkgNode={id:cat.id+'-'+pkg.name,name:pkg.name,color:cat.color,r:(pkg.core?9:5),isPkg:true,pkgData:pkg,catColor:cat.color};
+      nodes.push(pkgNode);
+      links.push({source:catNode.id,target:pkgNode.id,value:1});
+    });
+  });
+
+  const simulation=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(d=>d.id).distance(d=>(d.value>1?100:35)))
+    .force('charge',d3.forceManyBody().strength(d=>(d.isCenter?-300:d.isCat?-80:-15)))
+    .force('center',d3.forceCenter(w/2,h/2))
+    .force('collision',d3.forceCollide().radius(d=>(d.r+3)));
+
+  const link=svg.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke',d=>(d.source.isCenter?'rgba(245,158,11,.15)':'rgba(255,255,255,.06)'))
+    .attr('stroke-width',d=>(d.value>1?2:1));
+
+  const node=svg.append('g').selectAll('g').data(nodes).join('g')
+    .call(d3.drag()
+      .on('start',(e,d)=>{if(!e.active)simulation.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y})
+      .on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y})
+      .on('end',(e,d)=>{if(!e.active)simulation.alphaTarget(0);d.fx=null;d.fy=null}));
+
+  node.append('circle')
+    .attr('r',d=>d.r)
+    .attr('fill',d=>(d.isCenter?'rgba(245,158,11,.2)':d.isCat?d.color+'33':d.catColor+'22'))
+    .attr('stroke',d=>(d.isCenter?'#f59e0b':d.isCat?d.color:d.catColor))
+    .attr('stroke-width',d=>(d.isCenter?3:d.isCat?2:(d.pkgData&&d.pkgData.core?2:1)));
+
+  node.filter(d=>(d.isCat||d.isCenter)).append('text')
+    .attr('dy',d=>(d.r+14))
+    .attr('text-anchor','middle')
+    .attr('fill',d=>(d.isCenter?'#f59e0b':d.color))
+    .attr('font-size',d=>(d.isCenter?13:10))
+    .attr('font-weight',d=>(d.isCenter?700:600))
+    .text(d=>(d.name.length>8?d.name.slice(0,8)+'…':d.name));
+
+  const tooltip=document.getElementById('tooltip');
+  node.on('mouseover',(e,d)=>{
+    if(d.isPkg){
+      tooltip.innerHTML='<div class="tooltip-name" style="color:'+d.catColor+'">'+d.name+(d.pkgData.core?' ★':'')+'</div><div class="tooltip-desc">'+t(d.pkgData)+'</div>';
+      tooltip.classList.add('show');
+    }else if(d.isCat){
+      tooltip.innerHTML='<div class="tooltip-name" style="color:'+d.color+'">'+d.name+'</div><div class="tooltip-desc">'+d.catData.packages.length+' packages</div>';
+      tooltip.classList.add('show');
+    }
+    tooltip.style.left=(e.offsetX+15)+'px';
+    tooltip.style.top=(e.offsetY-10)+'px';
+  }).on('mouseout',()=>tooltip.classList.remove('show'));
+
+  node.on('click',(e,d)=>{
+    if(d.isCat)openModal(d.catData);
+  });
+
+  simulation.on('tick',()=>{
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    node.attr('transform',d=>'translate('+d.x+','+d.y+')');
+  });
+
+  const zoom=d3.zoom().scaleExtent([.3,4]).on('zoom',e=>{svg.select('g').attr('transform',e.transform)});
+  svg.call(zoom);
+}
+
+function renderCards(){
+  const container=document.getElementById('cards-view');
+  const filtered=getFilteredCategories();
+  container.innerHTML='<div class="cards-grid">'+filtered.map(cat=>`
+    <div class="category-card" style="border-left-color:${cat.color}" onclick="openModal(categories.find(c=>c.id==='${cat.id}'))">
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${t(cat)}</span>
+      </div>
+      <div class="card-desc">${t({zh:cat.zhDesc,en:cat.enDesc})}</div>
+      <div class="card-tags">
+        ${cat.packages.slice(0,8).map(p=>'<span class="pkg-tag'+(p.core?' core':'')+'">'+p.name+'</span>').join('')}
+        ${cat.packages.length>8?'<span class="pkg-tag more">+'+(cat.packages.length-8)+'</span>':''}
+      </div>
+    </div>`).join('')+'</div>';
+}
+
+function renderTable(){
+  const container=document.getElementById('table-view');
+  const filtered=getFilteredCategories();
+  container.innerHTML=filtered.map(cat=>`
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick="openModal(categories.find(c=>c.id==='${cat.id}'))">
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${t(cat)}</span>
+        <span class="table-cat-count">${cat.packages.length}</span>
+      </div>
+      <table class="pkg-table">
+        <tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th></tr>
+        ${cat.packages.map(p=>`
+          <tr>
+            <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span>${p.core?' <span class="core-star">★</span>':''}</td>
+            <td>${t(p)}</td>
+          </tr>`).join('')}
+      </table>
+    </div>`).join('');
+}
+
+function openModal(cat){
+  if(!cat)return;
+  document.getElementById('modal-icon').textContent=cat.icon;
+  document.getElementById('modal-title').textContent=t(cat);
+  document.getElementById('modal-title').style.color=cat.color;
+  document.getElementById('modal-desc').textContent=t({zh:cat.zhDesc,en:cat.enDesc});
+  document.getElementById('modal-pkgs').innerHTML=cat.packages.map(p=>
+    '<span class="modal-pkg'+(p.core?' core':'')+'" style="'+(p.core?'border-color:'+cat.color+'55;':'')+'">'+p.name+(p.core?' ★':'')+' <span style="color:var(--text2);font-size:11px">— '+t(p)+'</span></span>'
+  ).join('');
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal-overlay'))return;
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+// Particles
+const canvas=document.getElementById('particles-canvas');
+const ctx=canvas.getContext('2d');
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+
+for(let i=0;i<60;i++){
+  particles.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    vx:(Math.random()-.5)*.3,
+    vy:(Math.random()-.5)*.3,
+    r:Math.random()*2+.5,
+    color:['rgba(245,158,11,','rgba(20,184,166,','rgba(6,182,212,'][Math.floor(Math.random()*3)]
+  });
+}
+
+function animateParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+    if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.color+(.3+Math.random()*.2)+')';ctx.fill();
+  });
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle='rgba(245,158,11,'+(.06*(1-dist/120))+')';ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+renderCurrentView();
+</script>
+</body>
+</html>

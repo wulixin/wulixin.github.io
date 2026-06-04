@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R计量经济学包技能汇总 | R Econometrics Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#0ea5e9;--glow:rgba(14,165,233,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#0ea5e9,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(14,165,233,.2);border-color:rgba(14,165,233,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#0ea5e9,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#0ea5e9,#6366f1);color:#fff;box-shadow:0 4px 15px rgba(14,165,233,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(14,165,233,.15);color:#7dd3fc;font-weight:600}
+.pkg-tag.more{background:rgba(99,102,241,.15);color:#a5b4fc}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#7dd3fc}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.25);color:#7dd3fc;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#38bdf8;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">📐</span>
+<h1 data-zh="R计量经济学包技能汇总" data-en="R Econometrics Package Skills">R计量经济学包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">149</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">12</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">12</div><div class="stat-label" data-zh="核心" data-en="Core">核心</div></div>
+<div class="stat-item"><div class="stat-num">2025</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/Econometrics.html" target="_blank">CRAN Task View: Econometrics</a></p>
+<p style="margin-top:6px" data-zh="2025 · R计量经济学生态系统全景" data-en="2025 · R Econometrics Ecosystem Overview">2025 · R计量经济学生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"basic_lm",icon:"📐",color:"#0ea5e9",zh:"基础线性回归",en:"Basic Linear Regression",zhDesc:"OLS估计、假设检验、稳健标准误、非嵌套模型比较与回归诊断",enDesc:"OLS estimation, hypothesis testing, robust standard errors, nonnested comparisons & diagnostics",
+packages:[
+{name:"lmtest",zh:"coeftest/waldtest渐近检验、非嵌套模型比较、回归诊断",en:"coeftest/waldtest asymptotic tests, nonnested comparisons, regression diagnostics",core:true},
+{name:"marginaleffects",zh:"(非)线性假设检验与deltaMethod，覆盖多种R包模型",en:"(Non)linear hypothesis testing via delta method across many model types",core:true},
+{name:"car",zh:"linearHypothesis/deltaMethod/回归诊断测试集合",en:"linearHypothesis, deltaMethod & comprehensive regression diagnostics",core:true},
+{name:"sandwich",zh:"HC/HAC/聚类/自助协方差矩阵，可插入推断函数",en:"HC, HAC, clustered & bootstrap covariance matrices for inference",core:true},
+{name:"nonnest2",zh:"Vuong非嵌套模型比较检验",en:"Vuong test for comparing non-nested models"},
+{name:"pscl",zh:"计数数据Vuong检验",en:"Vuong test specifically for count data regression"},
+{name:"fixest",zh:"集成稳健标准误/多模型估计/自定义假设检验",en:"Bundled robust SEs, multi-model estimation & custom hypothesis tests",core:true}
+]},
+
+{id:"glm_effects",icon:"📊",color:"#6366f1",zh:"微观计量: GLM与效应",en:"Microeconometrics: GLMs & Effects",zhDesc:"广义线性模型、边际效应计算与可视化",enDesc:"Generalized linear models, marginal effects computation & visualization",
+packages:[
+{name:"effects",zh:"GLM等概率回归模型效应计算与可视化",en:"Effects for typical regressor values in GLMs & other probabilistic models"},
+{name:"marginaleffects",zh:"边际效应表与可视化，覆盖广泛模型类型",en:"Marginal effect tables & visualizations for a wide range of models",core:true},
+{name:"margins",zh:"特定模型边际效应计算",en:"Marginal effects for certain models"},
+{name:"mfx",zh:"特定模型边际效应计算",en:"Marginal effects for certain models"},
+{name:"LinRegInteractive",zh:"效应与边际效应交互可视化",en:"Interactive visualizations of effects & marginal effects"},
+{name:"brglm",zh:"偏差缩减GLM，完全/准完全分离稳健",en:"Bias-reduced GLMs robust to complete & quasi-complete separation"},
+{name:"Rchoice",zh:"模拟最大似然离散选择模型估计",en:"Discrete choice models estimated by simulated maximum likelihood"}
+]},
+
+{id:"discrete",icon:"🎯",color:"#8b5cf6",zh:"微观计量: 离散选择",en:"Microeconometrics: Discrete Choice",zhDesc:"二元/多项/有序响应模型与计数回归模型",enDesc:"Binary, multinomial & ordered response models, and count regression",
+packages:[
+{name:"bife",zh:"二元选择模型固定效应估计",en:"Binary choice models with fixed effects"},
+{name:"glmx",zh:"异方差Probit/参数链接函数/链接检验",en:"Heteroscedastic probit, parametric links & goodness-of-link tests"},
+{name:"nnet",zh:"多项Logit(仅个体协变量)",en:"Multinomial logit with individual-specific covariates"},
+{name:"mlogit",zh:"多项Logit(个体+选择协变量)",en:"Multinomial logit with individual & choice-specific variables"},
+{name:"gmnl",zh:"广义多项Logit(含随机效应)",en:"Generalized multinomial logit with random effects"},
+{name:"apollo",zh:"灵活可定制选择模型框架(含嵌套Logit等)",en:"Flexible customizable choice model framework incl. nested logit"},
+{name:"logitr",zh:"多项/混合Logit快速估计，性能优化",en:"Fast multinomial & mixed logit estimation with performance gains"},
+{name:"mixl",zh:"大数据集混合Logit模拟最大似然估计",en:"Simulated MLE for mixed logit, especially for large datasets"},
+{name:"VGAM",zh:"多项响应广义加性模型(GAM)",en:"GAMs for multinomial responses"},
+{name:"MNP",zh:"贝叶斯多项Probit模型",en:"Bayesian approach to multinomial probit models"},
+{name:"bayesm",zh:"各种贝叶斯多项模型(含Logit/Probit)",en:"Various Bayesian multinomial models incl. logit & probit"},
+{name:"RSGHB",zh:"层级贝叶斯直接似然函数规范",en:"Hierarchical Bayesian via direct likelihood specification"},
+{name:"RprobitB",zh:"潜类别混合多项Probit模型",en:"Latent class mixed multinomial probit models"},
+{name:"ordinal",zh:"累积链接模型/有序数据(含比例优势模型)",en:"Cumulative link models for ordered data incl. proportional odds"},
+{name:"MASS",zh:"polr()比例优势回归/glm.nb()负二项",en:"Proportional-odds regression & negative binomial GLM"},
+{name:"aod",zh:"负二项模型与过度分散数据处理",en:"Negative binomial models & overdispersed data"},
+{name:"pscl",zh:"零膨胀和hurdle计数模型",en:"Zero-inflated and hurdle count models"}
+]},
+
+{id:"censored",icon:"✂️",color:"#ec4899",zh:"微观计量: 审查/截断/比例",en:"Microeconometrics: Censored/Truncated/Proportion",zhDesc:"审查回归、截断响应、比例响应、样本选择与持续时间模型",enDesc:"Censored & truncated regression, proportion responses, sample selection & duration models",
+packages:[
+{name:"survival",zh:"Cox比例风险/参数持续时间/审查回归模型",en:"Cox PH, parametric duration & censored regression models"},
+{name:"AER",zh:"tobit()便捷接口与教科书数据集",en:"Convenience tobit() interface & textbook datasets",core:true},
+{name:"censReg",zh:"审查回归模型(含面板数据)",en:"Censored regression models including panel data"},
+{name:"crch",zh:"异方差审查/截断回归(高斯/逻辑/t分布)",en:"Censored/truncated regression with conditional heteroscedasticity"},
+{name:"mhurdle",zh:"零左审查hurdle模型",en:"Hurdle models for left-censored data at zero"},
+{name:"sampleSelection",zh:"样本选择模型(经典推断)",en:"Sample selection models (classical inference)"},
+{name:"ssmrob",zh:"样本选择模型(稳健推断)",en:"Sample selection models (robust inference)"},
+{name:"matchingMarkets",zh:"稳定匹配选择偏差校正(如大学录取)",en:"Selection bias correction for stable matching (e.g. college admissions)"},
+{name:"truncreg",zh:"同方差高斯截断响应回归",en:"Homoscedastic Gaussian truncated responses"},
+{name:"betareg",zh:"(0,1)区间Beta回归",en:"Beta regression for responses in (0, 1)"},
+{name:"gamlss",zh:"Beta回归/GAMLSS广义加性位置尺度形状框架",en:"Beta regression within GAMLSS framework"}
+]},
+
+{id:"highdim",icon:"🧱",color:"#f59e0b",zh:"微观计量: 高维FE与生产函数",en:"Microeconometrics: High-Dim FE & Production",zhDesc:"高维固定效应估计、生产函数分析与随机前沿分析",enDesc:"High-dimensional fixed effects, production function analysis & stochastic frontier analysis",
+packages:[
+{name:"fixest",zh:"高维多组固定效应线性/GLM(并行C++优化)",en:"High-dim multi-group FE for linear & GLM (parallel C++)",core:true},
+{name:"lfe",zh:"线性模型高维固定效应",en:"High-dimensional fixed effects for linear models"},
+{name:"alpaca",zh:"GLM高维固定效应(处理伴随参数问题)",en:"GLM fixed effects handling incidental parameter problems"},
+{name:"micEcon",zh:"Cobb-Douglas/translog/二次生产函数分析",en:"Cobb-Douglas, translog & quadratic function analysis"},
+{name:"micEconCES",zh:"常替代弹性(CES)生产函数",en:"Constant elasticity of substitution (CES) function"},
+{name:"micEconSNQP",zh:"对称标准化二次利润(SNQP)函数",en:"Symmetric normalized quadratic profit (SNQP) function"},
+{name:"micEconAids",zh:"几乎理想需求系统(AIDS)",en:"Almost ideal demand system (AIDS)"},
+{name:"frontier",zh:"随机前沿分析(SFA)",en:"Stochastic frontier analysis (SFA)"},
+{name:"semsfa",zh:"半参数随机前沿分析",en:"Semiparametric stochastic frontier analysis"},
+{name:"ssfa",zh:"空间随机前沿分析",en:"Spatial stochastic frontier analysis"},
+{name:"reldist",zh:"相对分布推断方法",en:"Inference for relative distributions"}
+]},
+
+{id:"causal_did",icon:"⚖️",color:"#10b981",zh:"因果推断: DiD与合成控制",en:"Causal Inference: DiD & Synthetic Control",zhDesc:"双重差分(含交错处理修正)、事件研究与合成控制方法",enDesc:"Difference-in-differences (incl. staggered corrections), event studies & synthetic control",
+packages:[
+{name:"fixest",zh:"TWFE i()算子与sunab()高级DiD",en:"TWFE i() operator & sunab() for advanced DiD",core:true},
+{name:"plm",zh:"面板双向固定效应(TWFE)估计",en:"Two-way fixed effects for panel data",core:true},
+{name:"bacondecomp",zh:"TWFE分解/交错处理偏误诊断",en:"TWFE decomposition diagnosing staggered treatment bias"},
+{name:"did",zh:"交错DiD替代估计量(Callaway-Sant'Anna)",en:"Alternative estimators for staggered DiD (Callaway-Sant'Anna)"},
+{name:"did2s",zh:"两阶段DiD估计量",en:"Two-stage difference-in-differences estimators"},
+{name:"DRDID",zh:"双重稳健DiD估计量",en:"Doubly robust DiD estimators"},
+{name:"etwfe",zh:"事件研究TWFE估计量",en:"Event-study TWFE estimators"},
+{name:"gsynth",zh:"广义合成控制/矩阵补全(EM算法)",en:"Generalized synthetic control & matrix completion via EM"},
+{name:"Synth",zh:"经典合成控制实现(Abadie等)",en:"Original synthetic control implementation (Abadie et al.)"},
+{name:"tidysynth",zh:"增强版合成控制(速度/检查优化)",en:"Enhanced synthetic control (speed, inspection & more)"}
+]},
+
+{id:"causal_iv",icon:"🔑",color:"#ef4444",zh:"因果推断: IV与断点回归",en:"Causal Inference: IV & RDD",zhDesc:"工具变量估计(2SLS/半参数)与断点回归设计(含稳健推断/操纵检验)",enDesc:"Instrumental variables (2SLS, semi-parametric) & regression discontinuity (robust, manipulation tests)",
+packages:[
+{name:"ivreg",zh:"两阶段最小二乘(2SLS)专用包",en:"Two-stage least squares (2SLS)",core:true},
+{name:"sem",zh:"tsls()两阶段最小二乘",en:"2SLS via tsls()"},
+{name:"fixest",zh:"IV+高维固定效应高效估计",en:"IV with high-dim FE efficient estimation",core:true},
+{name:"lfe",zh:"固定效应工具变量估计",en:"IV routines with fixed effects"},
+{name:"plm",zh:"面板IV(一阶差分/组间/随机效应)",en:"Panel IV: first-difference, between & random effects",core:true},
+{name:"REndo",zh:"内生回归元潜在工具变量法",en:"Endogenous regressors via latent instrumental variable approaches"},
+{name:"SteinIV",zh:"半参数IV估计(JIVE/SPS)",en:"Semi-parametric IV estimators incl. JIVE & SPS"},
+{name:"rdrobust",zh:"断点回归稳健置信区间与带宽选择",en:"Robust CI construction & bandwidth selection for RDD"},
+{name:"rddensity",zh:"密度不连续检验(操纵检验)",en:"Density discontinuity testing (manipulation testing)"},
+{name:"rdlocrand",zh:"局部随机化推断",en:"Inference under local randomization"},
+{name:"rdmulti",zh:"多断点/多评分RDD分析",en:"RDD with multiple cutoffs or scores"},
+{name:"rdpower",zh:"RDD功效/样本量/最小可检测效应",en:"RDD power, sample size & minimum detectable effects"},
+{name:"RATest",zh:"随机化排列检验(基线协变量连续性)",en:"Permutation test for covariate continuity assumption"}
+]},
+
+{id:"panel",icon:"📋",color:"#14b8a6",zh:"面板数据模型",en:"Panel Data Models",zhDesc:"面板标准误/线性面板/GLM面板/混合效应/动态面板/面板VAR",enDesc:"Panel SEs, linear & GLM panel, mixed effects, dynamic panel & panel VAR",
+packages:[
+{name:"plm",zh:"面板内/组间/随机效应/动态面板/面板校正SE",en:"Within, between, RE, dynamic panel & panel-corrected SEs",core:true},
+{name:"sandwich",zh:"聚类/面板/面板校正标准误(含multiwayvcov)",en:"Clustered, panel & panel-corrected SEs (incorporating multiwayvcov)",core:true},
+{name:"multiwayvcov",zh:"多维聚类标准误(已并入sandwich)",en:"Multiway clustered SEs (incorporated into sandwich)"},
+{name:"clusterSEs",zh:"聚类标准误估计",en:"Clustered standard errors"},
+{name:"pcse",zh:"面板校正标准误(PCSE)",en:"Panel-corrected standard errors"},
+{name:"clubSandwich",zh:"小样本调整聚类稳健标准误",en:"Clustered robust SEs with small-sample corrections"},
+{name:"fixest",zh:"高维多组固定效应高效面板估计",en:"Efficient multi-group high-dim FE for panel data",core:true},
+{name:"alpaca",zh:"GLM面板固定效应(处理伴随参数问题)",en:"GLM panel FE handling incidental parameter problems"},
+{name:"pglm",zh:"GLM面板模型(随机效应等)",en:"GLM-like panel models (random effects etc.)"},
+{name:"penppml",zh:"惩罚PPML(lasso/ridge高维结构引力模型)",en:"Penalized PPML with lasso/ridge for high-dimensional gravity"},
+{name:"geepack",zh:"GEE面板(纵向)广义估计方程",en:"GEE for panel/longitudinal data"},
+{name:"pdynmc",zh:"矩条件动态面板模型估计",en:"Dynamic panel model estimation based on moment conditions"},
+{name:"OrthoPanels",zh:"固定效应正交化动态面板",en:"Dynamic panel models with fixed effects"},
+{name:"feisr",zh:"固定效应个体斜率(FEIS)模型",en:"Fixed effects individual slope (FEIS) models"},
+{name:"panelvar",zh:"同质斜率面板向量自回归",en:"Panel VAR with homogeneous slope parameters"},
+{name:"pvars",zh:"异质参数面板向量自回归",en:"Panel VAR with heterogeneous parameters"},
+{name:"lme4",zh:"线性/非线性混合效应模型",en:"Linear & nonlinear mixed effects models"},
+{name:"nlme",zh:"线性/非线性混合效应模型",en:"Linear & nonlinear mixed effects models"},
+{name:"pdR",zh:"阈值回归与面板单位根检验",en:"Threshold regression & panel unit root tests"},
+{name:"collapse",zh:"面板数据快速预处理/汇总/变换",en:"Fast data preprocessing, aggregation & transformation for panels"}
+]},
+
+{id:"further",icon:"🧬",color:"#f97316",zh:"扩展回归模型",en:"Further Regression Models",zhDesc:"分位数回归/GMM/空间回归/SEM/因果森林/双ML/BMA/非参数/GAM",enDesc:"Quantile reg, GMM, spatial, SEM, causal forests, double ML, BMA, nonparametric & GAM",
+packages:[
+{name:"quantreg",zh:"分位数回归(线性/非线性/审查/局部多项式/加性)",en:"Quantile regression: linear, nonlinear, censored, locally polynomial & additive"},
+{name:"gmm",zh:"广义矩方法(GMM)/广义经验似然(GEL)",en:"Generalized method of moments (GMM) & generalized empirical likelihood"},
+{name:"spatialreg",zh:"空间回归模型(空间滞后/空间误差)",en:"Spatial regression models (spatial lag & error)"},
+{name:"sphet",zh:"空间回归GMM估计",en:"Spatial regression models via GMM approach"},
+{name:"splm",zh:"空间面板模型",en:"Spatial panel models"},
+{name:"spatialprobit",zh:"空间Probit模型",en:"Spatial probit models"},
+{name:"spsur",zh:"空间似乎不相关回归(SUR)模型",en:"Spatial seemingly unrelated regression (SUR) models"},
+{name:"BMS",zh:"贝叶斯模型平均(BMA)全面工具箱",en:"Comprehensive BMA toolbox with flexible prior selection"},
+{name:"BMA",zh:"BMA线性/GLM/生存模型",en:"BMA for linear, GLM & survival models"},
+{name:"lavaan",zh:"线性结构方程模型(潜变量/路径分析)",en:"Linear structural equation models (latent variables & path analysis)"},
+{name:"sem",zh:"线性结构方程模型",en:"Linear structural equation models"},
+{name:"grf",zh:"因果随机森林/异质处理效应估计",en:"Causal forests & heterogeneous treatment effects estimation"},
+{name:"DoubleML",zh:"双重机器学习(mlr3生态)/因果推断",en:"Double machine learning with mlr3 for causal inference"},
+{name:"hdm",zh:"高维计量模型选择(双重选择Lasso等)",en:"High-dimensional econometric models (double selection Lasso etc.)"},
+{name:"systemfit",zh:"联立方程系统估计",en:"Simultaneous equation system estimation"},
+{name:"np",zh:"非参数核平滑方法",en:"Nonparametric methods using kernel smoothing"},
+{name:"NNS",zh:"非参数偏矩方法",en:"Nonparametric methods using partial moments"},
+{name:"mgcv",zh:"广义加性模型(GAM)框架",en:"Generalized additive models (GAMs)"},
+{name:"gam",zh:"广义加性模型(GAM)",en:"Generalized additive models (GAMs)"},
+{name:"estimatr",zh:"设计推断/稳健SE快速估计(OLS/IV/DiM)",en:"Design-based inference with robust SEs (OLS, IV, diff-in-means)"},
+{name:"ExtremeBounds",zh:"极值边界分析(Leamer/Sala-i-Martin)",en:"Extreme bounds analysis (Leamer & Sala-i-Martin)"},
+{name:"rms",zh:"扩展(广义)线性回归模型处理",en:"Extended handling of (generalized) linear regression models"},
+{name:"Hmisc",zh:"扩展(广义)线性回归模型处理",en:"Extended handling of (generalized) linear regression models"}
+]},
+
+{id:"timeseries",icon:"📈",color:"#06b6d4",zh:"时间序列计量",en:"Time Series Econometrics",zhDesc:"TS基础设施/ARIMA/VAR/单位根/协整/MIDAS/阈值模型/结构变化",enDesc:"TS infrastructure, ARIMA, VAR, unit roots, cointegration, MIDAS, threshold & structural models",
+packages:[
+{name:"zoo",zh:"规则/不规则时间序列基础设施(zooreg/zoo类)",en:"Regular & irregular TS infrastructure (zooreg/zoo classes)",core:true},
+{name:"xts",zh:"zoo扩展时间序列索引(eXtensible TS)",en:"zoo extension geared towards different time indices"},
+{name:"dynlm",zh:"时间序列OLS/2SLS便捷接口(dynlm)",en:"Convenience OLS/2SLS interface for time series data"},
+{name:"forecast",zh:"增强版ARIMA/预测/模型选择方法",en:"Enhanced ARIMA, forecasting & model selection methods",core:true},
+{name:"vars",zh:"向量自回归(VAR)及诊断/脉冲响应/方差分解",en:"VAR models with diagnostics, IRF & forecast error decomposition"},
+{name:"sstvars",zh:"结构平滑转换向量自回归模型",en:"Structural smooth transition vector autoregressive models"},
+{name:"urca",zh:"单位根和协整检验(ADF/PP/Johansen等)",en:"Unit root & cointegration tests (ADF, PP, Johansen etc.)",core:true},
+{name:"tseries",zh:"单位根/协整/时间序列自助法",en:"Unit root, cointegration & time series bootstrap",core:true},
+{name:"CADFtest",zh:"条件ADF单位根检验",en:"Conditional augmented Dickey-Fuller unit root tests"},
+{name:"tsDyn",zh:"阈值/平滑转换自回归模型",en:"Threshold & smooth transition autoregressive models"},
+{name:"midasr",zh:"混频数据抽样(MIDAS)回归",en:"MIDAS regression for mixed frequency time series data"},
+{name:"gets",zh:"一般到具体(GETS)模型选择(ARX/ARCH-X)",en:"General-to-specific (GETS) model selection for ARX/ARCH-X"},
+{name:"bimets",zh:"联立方程时间序列经济建模",en:"Econometric modeling of TS via flexible simultaneous equations"},
+{name:"dlsem",zh:"分布滞后线性结构方程模型",en:"Distributed-lag linear structural equation models"},
+{name:"lpirfs",zh:"局部投影脉冲响应函数",en:"Local projections impulse response functions"},
+{name:"apt",zh:"非对称价格传递模型",en:"Asymmetric price transmission models"}
+]},
+
+{id:"datasets",icon:"💾",color:"#84cc16",zh:"数据集",en:"Data Sets",zhDesc:"计量经济学教科书数据、Penn World Table、M竞赛与世界银行数据",enDesc:"Econometric textbook datasets, Penn World Table, M-competitions & World Bank data",
+packages:[
+{name:"AER",zh:"计量教科书数据集(Greene/Wooldridge/Baltagi等)+示例复现",en:"Textbook datasets (Greene, Wooldridge, Baltagi etc.) + example replications",core:true},
+{name:"Ecdat",zh:"计量经济学综合数据集合集",en:"Comprehensive collections of econometric datasets"},
+{name:"wooldridge",zh:"Wooldridge教科书数据与示例复现",en:"Wooldridge textbook data & extensive example replications"},
+{name:"pder",zh:"面板数据计量R书数据(Croissant & Millo 2018)",en:"Panel data econometrics datasets (Croissant & Millo 2018)"},
+{name:"PoEdata",zh:"计量经济学原理数据(Hill等4th ed)",en:"Principles of Econometrics data (Hill et al., 4th ed)"},
+{name:"pwt",zh:"Penn World Table 5.6/6.x/7.x版本",en:"Penn World Table versions 5.6, 6.x, 7.x"},
+{name:"pwt8",zh:"Penn World Table 8.x版本",en:"Penn World Table version 8.x data"},
+{name:"pwt9",zh:"Penn World Table 9.x版本",en:"Penn World Table version 9.x data"},
+{name:"expsmooth",zh:"指数平滑预测书数据(Hyndman等2008)",en:"Data from Forecasting with Exponential Smoothing (Hyndman 2008)"},
+{name:"fma",zh:"预测方法与应用书数据(Makridakis 3rd ed)",en:"Data from Forecasting: Methods & Applications (Makridakis 3rd ed)"},
+{name:"Mcomp",zh:"M竞赛时间序列数据",en:"Time series data from the M-competitions"},
+{name:"erer",zh:"实证经济学研究R书数据与函数(Sun 2015)",en:"Functions & datasets for Empirical Research in Economics (Sun 2015)"},
+{name:"psidR",zh:"PSID收入动态面板研究数据构建",en:"Build panel datasets from Panel Study of Income Dynamics"},
+{name:"wbstats",zh:"世界银行API程序化数据访问",en:"Programmatic access to World Bank API"}
+]},
+
+{id:"misc",icon:"🧪",color:"#94a3b8",zh:"杂项工具",en:"Miscellaneous",zhDesc:"模型汇总表/自助法/不平等测量/结构变化/全球价值链/引力模型",enDesc:"Model summary tables, bootstrapping, inequality, structural change, GVC & gravity models",
+packages:[
+{name:"modelsummary",zh:"灵活模型汇总表/可视化/数据摘要",en:"Flexible model summary tables, visualizations & data summaries"},
+{name:"Matrix",zh:"矩阵操作补充(稀疏/密集)",en:"Matrix manipulations complementing base R"},
+{name:"SparseM",zh:"稀疏矩阵操作",en:"Sparse matrix manipulations"},
+{name:"boot",zh:"推荐自助法包(Bootstrap)",en:"Recommended bootstrap package"},
+{name:"bootstrap",zh:"通用自助法技术",en:"General bootstrapping techniques"},
+{name:"simpleboot",zh:"通用自助法",en:"General bootstrapping"},
+{name:"meboot",zh:"时间序列最大熵自助法",en:"Maximum entropy bootstrap for time-series data"},
+{name:"fwildclusterboot",zh:"快速野聚类自助法(低聚类数场景)",en:"Fast wild cluster bootstrap for linear models with few clusters"},
+{name:"ineq",zh:"不平等/集中/贫困测量(Lorenz/Gini/HHI等)",en:"Inequality, concentration & poverty: Lorenz, Gini, HHI etc."},
+{name:"wINEQ",zh:"加权数据不平等测量与自助法",en:"Inequality measures for weighted data with bootstrapping"},
+{name:"strucchange",zh:"参数模型结构变化与变点检测",en:"Structural changes & changepoints in parametric models"},
+{name:"segmented",zh:"分段回归/结构变化估计",en:"Segmented regression & structural change estimation"},
+{name:"fxregime",zh:"汇率制度推断(结构变化框架)",en:"Inference about exchange rate regimes in structural change setting"},
+{name:"gvc",zh:"全球价值链工具与分解方法",en:"Tools & decompositions for global value chains"},
+{name:"decompr",zh:"全球价值链分解方法",en:"Tools & decompositions for global value chains"},
+{name:"gravity",zh:"对数/乘法引力模型估计",en:"Estimation of log-log & multiplicative gravity models"},
+{name:"zTree",zh:"z-Tree经济实验软件数据导入",en:"Import data from z-Tree experiment software"},
+{name:"nse",zh:"时间序列数值标准误差(模拟实验)",en:"Numerical standard errors for time series in simulation experiments"}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(14,165,233,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(14,165,233,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>

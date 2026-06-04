@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>H2O.ai Open Source Ecosystem</title>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111827;
+  --bg-card: #1a2235;
+  --bg-card-hover: #1f2a40;
+  --text-primary: #f0f4ff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-purple: #8b5cf6;
+  --accent-orange: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-pink: #ec4899;
+  --accent-teal: #14b8a6;
+  --accent-cyan: #06b6d4;
+  --border-color: rgba(255,255,255,0.08);
+  --glow-blue: rgba(59,130,246,0.3);
+  --glow-green: rgba(16,185,129,0.3);
+  --glow-purple: rgba(139,92,246,0.3);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ========== Scrollbar ========== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 3px; }
+
+/* ========== Nav ========== */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10,14,26,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 2rem;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 1.25rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-logo svg { width: 32px; height: 32px; }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;
+  transition: var(--transition); position: relative;
+}
+.nav-links a:hover { color: var(--text-primary); }
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 2px; background: var(--accent-teal);
+  transition: var(--transition);
+}
+.nav-links a:hover::after { width: 100%; }
+.lang-btn {
+  background: rgba(20,184,166,0.15); color: var(--accent-teal);
+  border: 1px solid rgba(20,184,166,0.3);
+  padding: 6px 16px; border-radius: 20px; cursor: pointer;
+  font-size: 0.85rem; font-weight: 600; transition: var(--transition);
+}
+.lang-btn:hover { background: rgba(20,184,166,0.25); }
+
+/* ========== Hero ========== */
+.hero {
+  padding: 120px 2rem 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(16,185,129,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 70% 30%, rgba(6,182,212,0.06) 0%, transparent 50%);
+  animation: heroGlow 8s ease-in-out infinite alternate;
+}
+@keyframes heroGlow {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-2%, 2%) scale(1.05); }
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
+  padding: 8px 20px; border-radius: 24px; font-size: 0.85rem;
+  color: var(--accent-green); margin-bottom: 1.5rem;
+}
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800;
+  line-height: 1.1; margin-bottom: 1rem;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-teal) 50%, var(--accent-green) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero p {
+  font-size: 1.15rem; color: var(--text-secondary);
+  max-width: 700px; margin: 0 auto 2rem;
+}
+.stats-row {
+  display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+  margin-top: 2rem;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-size: 2.5rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+/* ========== Section ========== */
+.section {
+  padding: 80px 2rem;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+.section-title {
+  font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent-teal));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.section-desc {
+  color: var(--text-secondary); margin-bottom: 2.5rem; font-size: 1.05rem;
+}
+
+/* ========== Network SVG ========== */
+.network-container {
+  width: 100%; overflow-x: auto;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  position: relative;
+}
+.network-container svg { display: block; margin: 0 auto; }
+.network-legend {
+  display: flex; gap: 1.5rem; flex-wrap: wrap;
+  margin-top: 1rem; padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.8rem; color: var(--text-secondary);
+}
+.legend-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+
+/* ========== Project Cards ========== */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+}
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--card-accent, var(--accent-teal));
+  opacity: 0; transition: var(--transition);
+}
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+.card:hover::before { opacity: 1; }
+.card-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.card-name {
+  font-size: 1.1rem; font-weight: 700; color: var(--text-primary);
+  display: flex; align-items: center; gap: 8px;
+}
+.card-name a {
+  color: inherit; text-decoration: none;
+}
+.card-name a:hover { color: var(--accent-teal); }
+.card-stars {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.8rem; color: var(--accent-orange);
+  background: rgba(245,158,11,0.1);
+  padding: 4px 10px; border-radius: 12px;
+  white-space: nowrap;
+}
+.card-desc {
+  font-size: 0.9rem; color: var(--text-secondary);
+  margin-bottom: 1rem; line-height: 1.6;
+  display: -webkit-box; -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: 0.72rem; padding: 3px 10px;
+  border-radius: 10px; font-weight: 500;
+  border: 1px solid;
+}
+.tag-ml { color: var(--accent-green); background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.2); }
+.tag-llm { color: var(--accent-purple); background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.2); }
+.tag-web { color: var(--accent-blue); background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); }
+.tag-data { color: var(--accent-orange); background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.2); }
+.tag-spark { color: var(--accent-cyan); background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.2); }
+.tag-xai { color: var(--accent-pink); background: rgba(236,72,153,0.1); border-color: rgba(236,72,153,0.2); }
+.tag-edu { color: var(--accent-red); background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); }
+.tag-tool { color: var(--accent-teal); background: rgba(20,184,166,0.1); border-color: rgba(20,184,166,0.2); }
+.card-lang {
+  font-size: 0.75rem; color: var(--text-muted);
+  margin-top: 0.75rem; display: flex; align-items: center; gap: 6px;
+}
+.lang-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+
+/* ========== Applications ========== */
+.apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+.app-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: var(--transition);
+  position: relative;
+}
+.app-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.app-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; margin-bottom: 1rem;
+}
+.app-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+.app-card p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; }
+.app-techs {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 0.75rem;
+}
+.app-tech {
+  font-size: 0.7rem; padding: 2px 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-color);
+  border-radius: 6px; color: var(--text-muted);
+}
+
+/* ========== Timeline ========== */
+.timeline {
+  position: relative;
+  padding-left: 40px;
+}
+.timeline::before {
+  content: ''; position: absolute; left: 15px; top: 0;
+  width: 2px; height: 100%;
+  background: linear-gradient(to bottom, var(--accent-green), var(--accent-teal), var(--accent-blue));
+}
+.timeline-item {
+  position: relative; margin-bottom: 2rem;
+  padding-left: 1.5rem;
+  opacity: 0; transform: translateX(-20px);
+  animation: slideIn 0.5s ease forwards;
+}
+.timeline-item::before {
+  content: ''; position: absolute; left: -33px; top: 6px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--accent-teal);
+  box-shadow: 0 0 12px var(--glow-green);
+  border: 2px solid var(--bg-primary);
+}
+.timeline-year {
+  font-size: 0.8rem; color: var(--accent-teal);
+  font-weight: 700; margin-bottom: 4px;
+}
+.timeline-content h4 { font-size: 1rem; margin-bottom: 4px; }
+.timeline-content p { font-size: 0.85rem; color: var(--text-secondary); }
+
+/* ========== Tech Stack ========== */
+.stack-layers {
+  display: flex; flex-direction: column; gap: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+.stack-layer {
+  padding: 1.25rem 1.5rem;
+  display: flex; align-items: center; gap: 1.5rem;
+  transition: var(--transition);
+  border-bottom: 1px solid var(--border-color);
+}
+.stack-layer:last-child { border-bottom: none; }
+.stack-layer:hover { filter: brightness(1.2); }
+.stack-label {
+  min-width: 120px; font-size: 0.85rem; font-weight: 700;
+  color: #fff; text-align: center; padding: 4px 12px;
+  border-radius: 6px;
+}
+.stack-items {
+  display: flex; flex-wrap: wrap; gap: 8px; flex: 1;
+}
+.stack-item {
+  font-size: 0.78rem; padding: 4px 12px;
+  border-radius: 8px; background: rgba(255,255,255,0.08);
+  color: #fff; border: 1px solid rgba(255,255,255,0.1);
+  transition: var(--transition);
+}
+.stack-item:hover {
+  background: rgba(255,255,255,0.15);
+  transform: scale(1.05);
+}
+
+/* ========== Footer ========== */
+.footer {
+  text-align: center; padding: 3rem 2rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted); font-size: 0.85rem;
+}
+.footer a { color: var(--accent-teal); text-decoration: none; }
+
+/* ========== Animations ========== */
+@keyframes slideIn {
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { opacity: 0; transform: translateY(30px); transition: all 0.6s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hero h1 { font-size: 2rem; }
+  .stats-row { gap: 1.5rem; }
+  .stat-num { font-size: 1.8rem; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .apps-grid { grid-template-columns: 1fr; }
+  .stack-layer { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .stack-label { min-width: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ====== Navigation ====== -->
+<nav class="nav">
+  <div class="nav-logo">
+    <svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="#10b981" stroke-width="2"/><path d="M10 18 L16 10 L22 18 L19 18 L19 22 L13 22 L13 18Z" fill="#10b981"/></svg>
+    <span data-i18n="nav.logo">H2O.ai Open Source</span>
+  </div>
+  <div class="nav-links">
+    <a href="#network" data-i18n="nav.network">Network</a>
+    <a href="#projects" data-i18n="nav.projects">Projects</a>
+    <a href="#applications" data-i18n="nav.apps">Applications</a>
+    <a href="#timeline" data-i18n="nav.timeline">Timeline</a>
+    <a href="#techstack" data-i18n="nav.stack">Tech Stack</a>
+  </div>
+  <button class="lang-btn" onclick="toggleLang()" id="langBtn">中文</button>
+</nav>
+
+<!-- ====== Hero ====== -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🌊 AI for Good · Open Source Since 2011</div>
+    <h1 data-i18n="hero.title">H2O.ai Open Source Ecosystem</h1>
+    <p data-i18n="hero.desc">From AutoML to LLMs — The most comprehensive open-source AI platform covering machine learning, generative AI, explainability, and real-time web applications.</p>
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-num">260+</div><div class="stat-label" data-i18n="stat.repos">Repositories</div></div>
+      <div class="stat-item"><div class="stat-num">38K+</div><div class="stat-label" data-i18n="stat.stars">GitHub Stars</div></div>
+      <div class="stat-item"><div class="stat-num">7</div><div class="stat-label" data-i18n="stat.domains">Core Domains</div></div>
+      <div class="stat-item"><div class="stat-num">15+</div><div class="stat-label" data-i18n="stat.years">Years Active</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Knowledge Network ====== -->
+<section class="section" id="network">
+  <h2 class="section-title" data-i18n="net.title">Knowledge Association Network</h2>
+  <p class="section-desc" data-i18n="net.desc">Core project topology — node size reflects star count, edges represent functional dependencies and ecosystem connections</p>
+  <div class="network-container">
+    <svg viewBox="0 0 1100 700" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glowStrong"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <radialGradient id="bgGrad" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(16,185,129,0.03)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <!-- Node gradients -->
+        <radialGradient id="gGreen" cx="40%" cy="35%"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#059669"/></radialGradient>
+        <radialGradient id="gPurple" cx="40%" cy="35%"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#7c3aed"/></radialGradient>
+        <radialGradient id="gBlue" cx="40%" cy="35%"><stop offset="0%" stop-color="#60a5fa"/><stop offset="100%" stop-color="#2563eb"/></radialGradient>
+        <radialGradient id="gCyan" cx="40%" cy="35%"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#0891b2"/></radialGradient>
+        <radialGradient id="gOrange" cx="40%" cy="35%"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#d97706"/></radialGradient>
+        <radialGradient id="gPink" cx="40%" cy="35%"><stop offset="0%" stop-color="#f472b6"/><stop offset="100%" stop-color="#db2777"/></radialGradient>
+        <radialGradient id="gRed" cx="40%" cy="35%"><stop offset="0%" stop-color="#f87171"/><stop offset="100%" stop-color="#dc2626"/></radialGradient>
+        <radialGradient id="gTeal" cx="40%" cy="35%"><stop offset="0%" stop-color="#2dd4bf"/><stop offset="100%" stop-color="#0d9488"/></radialGradient>
+      </defs>
+      <rect width="1100" height="700" fill="url(#bgGrad)"/>
+
+      <!-- ===== Edges ===== -->
+      <g stroke-opacity="0.2" stroke-width="1.5" fill="none">
+        <!-- H2O-3 connections -->
+        <path d="M420,310 L200,240" stroke="#10b981"/>
+        <path d="M420,310 L680,280" stroke="#10b981"/>
+        <path d="M420,310 L550,440" stroke="#10b981"/>
+        <path d="M420,310 L280,400" stroke="#10b981"/>
+        <path d="M420,310 L420,160" stroke="#10b981"/>
+        <path d="M420,310 L560,560" stroke="#10b981"/>
+        <!-- h2oGPT connections -->
+        <path d="M200,240 L100,360" stroke="#8b5cf6"/>
+        <path d="M200,240 L680,280" stroke="#8b5cf6"/>
+        <path d="M200,240 L280,400" stroke="#8b5cf6"/>
+        <path d="M200,240 L420,160" stroke="#8b5cf6"/>
+        <!-- LLM Studio connections -->
+        <path d="M680,280 L550,440" stroke="#8b5cf6"/>
+        <path d="M680,280 L830,220" stroke="#8b5cf6"/>
+        <path d="M680,280 L100,360" stroke="#8b5cf6"/>
+        <!-- Wave connections -->
+        <path d="M550,440 L760,420" stroke="#3b82f6"/>
+        <path d="M550,440 L920,380" stroke="#3b82f6"/>
+        <path d="M550,440 L680,540" stroke="#3b82f6"/>
+        <!-- Sparkling Water connections -->
+        <path d="M420,160 L280,80" stroke="#06b6d4"/>
+        <!-- XAI connections -->
+        <path d="M280,400 L180,520" stroke="#ec4899"/>
+        <path d="M280,400 L420,560" stroke="#ec4899"/>
+        <!-- Data connections -->
+        <path d="M830,220 L920,380" stroke="#f59e0b"/>
+        <path d="M830,220 L1000,180" stroke="#f59e0b"/>
+        <!-- Education connections -->
+        <path d="M560,560 L420,560" stroke="#ef4444"/>
+        <path d="M560,560 L680,540" stroke="#ef4444"/>
+        <!-- Cross connections -->
+        <path d="M420,310 L830,220" stroke="rgba(255,255,255,0.1)" stroke-dasharray="5,5"/>
+        <path d="M280,400 L550,440" stroke="rgba(255,255,255,0.1)" stroke-dasharray="5,5"/>
+      </g>
+
+      <!-- ===== Node: H2O-3 (center, large) ===== -->
+      <g filter="url(#glowStrong)">
+        <circle cx="420" cy="310" r="52" fill="url(#gGreen)" opacity="0.9"/>
+        <text x="420" y="305" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">H2O-3</text>
+        <text x="420" y="323" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">⭐ 7.5K</text>
+      </g>
+
+      <!-- ===== Node: h2oGPT (left, large) ===== -->
+      <g filter="url(#glowStrong)">
+        <circle cx="200" cy="240" r="48" fill="url(#gPurple)" opacity="0.9"/>
+        <text x="200" y="235" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">h2oGPT</text>
+        <text x="200" y="253" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">⭐ 12K</text>
+      </g>
+
+      <!-- ===== Node: LLM Studio (right) ===== -->
+      <g filter="url(#glowStrong)">
+        <circle cx="680" cy="280" r="44" fill="url(#gPurple)" opacity="0.9"/>
+        <text x="680" y="275" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">LLM Studio</text>
+        <text x="680" y="293" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">⭐ 5K</text>
+      </g>
+
+      <!-- ===== Node: Wave (bottom center) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="550" cy="440" r="40" fill="url(#gBlue)" opacity="0.9"/>
+        <text x="550" y="435" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Wave</text>
+        <text x="550" y="453" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">⭐ 4.2K</text>
+      </g>
+
+      <!-- ===== Node: Sparkling Water (top) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="420" cy="160" r="36" fill="url(#gCyan)" opacity="0.9"/>
+        <text x="420" y="152" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Sparkling</text>
+        <text x="420" y="166" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Water</text>
+        <text x="420" y="180" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="9">⭐ 977</text>
+      </g>
+
+      <!-- ===== Node: MLI/XAI (left mid-low) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="280" cy="400" r="34" fill="url(#gPink)" opacity="0.9"/>
+        <text x="280" y="395" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">MLI</text>
+        <text x="280" y="411" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="9">⭐ 492</text>
+      </g>
+
+      <!-- ===== Node: datatable (right top) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="830" cy="220" r="34" fill="url(#gOrange)" opacity="0.9"/>
+        <text x="830" y="215" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">datatable</text>
+        <text x="830" y="233" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="9">⭐ 1.9K</text>
+      </g>
+
+      <!-- ===== Node: h2oGPTe (left lower) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="100" cy="360" r="30" fill="url(#gPurple)" opacity="0.85"/>
+        <text x="100" y="355" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">h2oGPTe</text>
+        <text x="100" y="370" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="9">⭐ 90</text>
+      </g>
+
+      <!-- ===== Node: Nitro (right mid) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="760" cy="420" r="28" fill="url(#gBlue)" opacity="0.85"/>
+        <text x="760" y="416" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Nitro</text>
+        <text x="760" y="430" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="9">⭐ 203</text>
+      </g>
+
+      <!-- ===== Node: h2o-tutorials (bottom left) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="560" cy="560" r="30" fill="url(#gRed)" opacity="0.85"/>
+        <text x="560" y="555" text-anchor="middle" fill="#fff" font-size="10" font-weight="700">Tutorials</text>
+        <text x="560" y="570" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="9">⭐ 1.5K</text>
+      </g>
+
+      <!-- ===== Node: h2o-meetups (bottom) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="680" cy="540" r="26" fill="url(#gRed)" opacity="0.8"/>
+        <text x="680" y="536" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">Meetups</text>
+        <text x="680" y="550" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8">⭐ 406</text>
+      </g>
+
+      <!-- ===== Node: awesome-h2o (bottom right) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="920" cy="380" r="28" fill="url(#gRed)" opacity="0.85"/>
+        <text x="920" y="375" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">awesome</text>
+        <text x="920" y="389" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">-h2o</text>
+        <text x="920" y="402" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8">⭐ 389</text>
+      </g>
+
+      <!-- ===== Node: db-benchmark (far right) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="1000" cy="180" r="26" fill="url(#gOrange)" opacity="0.8"/>
+        <text x="1000" y="176" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">db-bench</text>
+        <text x="1000" y="190" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8">⭐ 347</text>
+      </g>
+
+      <!-- ===== Node: Sparkling Water enterprise (top left) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="280" cy="80" r="24" fill="url(#gCyan)" opacity="0.8"/>
+        <text x="280" y="77" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">h2o-k8s</text>
+        <text x="280" y="91" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8">⭐ 25</text>
+      </g>
+
+      <!-- ===== Node: XAI Guidelines (left lower) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="180" cy="520" r="22" fill="url(#gPink)" opacity="0.8"/>
+        <text x="180" y="518" text-anchor="middle" fill="#fff" font-size="8" font-weight="700">XAI</text>
+        <text x="180" y="530" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8">Guide</text>
+      </g>
+
+      <!-- ===== Node: h2o-flow (bottom center-left) ===== -->
+      <g filter="url(#glow)">
+        <circle cx="420" cy="560" r="22" fill="url(#gGreen)" opacity="0.8"/>
+        <text x="420" y="557" text-anchor="middle" fill="#fff" font-size="9" font-weight="700">h2o-flow</text>
+        <text x="420" y="570" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="8">⭐ 145</text>
+      </g>
+
+      <!-- ===== Animated particles ===== -->
+      <g opacity="0.3">
+        <circle cx="350" cy="270" r="2" fill="#10b981"><animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="500" cy="350" r="2" fill="#3b82f6"><animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite"/></circle>
+        <circle cx="620" cy="330" r="2" fill="#8b5cf6"><animate attributeName="opacity" values="0.3;1;0.3" dur="3.5s" repeatCount="indefinite"/></circle>
+        <circle cx="300" cy="350" r="1.5" fill="#ec4899"><animate attributeName="opacity" values="0.3;1;0.3" dur="4.5s" repeatCount="indefinite"/></circle>
+        <circle cx="780" cy="320" r="1.5" fill="#f59e0b"><animate attributeName="opacity" values="0.3;1;0.3" dur="3.8s" repeatCount="indefinite"/></circle>
+      </g>
+    </svg>
+    <div class="network-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div><span data-i18n="leg.ml">AutoML / ML Platform</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div><span data-i18n="leg.llm">LLM / GenAI</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div><span data-i18n="leg.web">Web App / Viz</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#06b6d4"></div><span data-i18n="leg.spark">Spark / Big Data</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ec4899"></div><span data-i18n="leg.xai">Explainable AI</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span data-i18n="leg.data">Data Tools</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div><span data-i18n="leg.edu">Education / Community</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Core Projects ====== -->
+<section class="section" id="projects">
+  <h2 class="section-title" data-i18n="proj.title">Core Project Cards</h2>
+  <p class="section-desc" data-i18n="proj.desc">Key open-source projects from H2O.ai — click project name to visit GitHub</p>
+  <div class="cards-grid">
+
+    <!-- h2oGPT -->
+    <div class="card" style="--card-accent:#8b5cf6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2ogpt" target="_blank">🤖 h2oGPT</a></div>
+        <div class="card-stars">⭐ 12K</div>
+      </div>
+      <div class="card-desc" data-i18n="card.h2ogpt.desc">Private chat with local GPT — document, image, video Q&A. 100% private, Apache 2.0. Supports oLLaMa, Mixtral, llama.cpp and more.</div>
+      <div class="card-tags">
+        <span class="tag tag-llm">LLM</span>
+        <span class="tag tag-llm">RAG</span>
+        <span class="tag tag-llm">Privacy</span>
+        <span class="tag tag-tool">Chatbot</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#3572A5"></div>Python</div>
+    </div>
+
+    <!-- H2O-3 -->
+    <div class="card" style="--card-accent:#10b981">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2o-3" target="_blank">🧠 H2O-3</a></div>
+        <div class="card-stars">⭐ 7.5K</div>
+      </div>
+      <div class="card-desc" data-i18n="card.h2o3.desc">Distributed, fast & scalable ML platform: Deep Learning, GBM, XGBoost, Random Forest, GLM, K-Means, PCA, GAM, SVM, Stacked Ensembles, AutoML and more.</div>
+      <div class="card-tags">
+        <span class="tag tag-ml">AutoML</span>
+        <span class="tag tag-ml">GBM</span>
+        <span class="tag tag-ml">XGBoost</span>
+        <span class="tag tag-ml">Distributed</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#b07219"></div>Java / Python / R</div>
+    </div>
+
+    <!-- H2O LLM Studio -->
+    <div class="card" style="--card-accent:#8b5cf6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2o-llmstudio" target="_blank">🔧 H2O LLM Studio</a></div>
+        <div class="card-stars">⭐ 5K</div>
+      </div>
+      <div class="card-desc" data-i18n="card.llmstudio.desc">Framework and no-code GUI for fine-tuning LLMs. Supports quantization, LoRA, multi-GPU training, and evaluation with chatbot-style interface.</div>
+      <div class="card-tags">
+        <span class="tag tag-llm">Fine-tuning</span>
+        <span class="tag tag-llm">LoRA</span>
+        <span class="tag tag-tool">No-Code</span>
+        <span class="tag tag-llm">GUI</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#3572A5"></div>Python</div>
+    </div>
+
+    <!-- Wave -->
+    <div class="card" style="--card-accent:#3b82f6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/wave" target="_blank">🌊 H2O Wave</a></div>
+        <div class="card-stars">⭐ 4.2K</div>
+      </div>
+      <div class="card-desc" data-i18n="card.wave.desc">Realtime Web Apps and Dashboards for Python and R. Build AI apps 10x faster with reactive programming and rich UI components.</div>
+      <div class="card-tags">
+        <span class="tag tag-web">Dashboard</span>
+        <span class="tag tag-web">Realtime</span>
+        <span class="tag tag-web">Python/R</span>
+        <span class="tag tag-web">UI</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#3572A5"></div>Python / TypeScript</div>
+    </div>
+
+    <!-- datatable -->
+    <div class="card" style="--card-accent:#f59e0b">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/datatable" target="_blank">📊 datatable</a></div>
+        <div class="card-stars">⭐ 1.9K</div>
+      </div>
+      <div class="card-desc" data-i18n="card.datatable.desc">Python package for manipulating 2-dimensional tabular data structures. High-performance data processing — 10x faster than pandas for large datasets.</div>
+      <div class="card-tags">
+        <span class="tag tag-data">DataFrame</span>
+        <span class="tag tag-data">High-Perf</span>
+        <span class="tag tag-data">C++</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#f34b7d"></div>C++ / Python</div>
+    </div>
+
+    <!-- Sparkling Water -->
+    <div class="card" style="--card-accent:#06b6d4">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/sparkling-water" target="_blank">💧 Sparkling Water</a></div>
+        <div class="card-stars">⭐ 977</div>
+      </div>
+      <div class="card-desc" data-i18n="card.sparkling.desc">H2O functionality inside Spark cluster. Seamless integration of H2O ML algorithms with Spark data processing pipelines.</div>
+      <div class="card-tags">
+        <span class="tag tag-spark">Spark</span>
+        <span class="tag tag-spark">ML Pipeline</span>
+        <span class="tag tag-ml">H2O-3</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#c22d40"></div>Scala / Python</div>
+    </div>
+
+    <!-- h2o-tutorials -->
+    <div class="card" style="--card-accent:#ef4444">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2o-tutorials" target="_blank">📚 H2O Tutorials</a></div>
+        <div class="card-stars">⭐ 1.5K</div>
+      </div>
+      <div class="card-desc" data-i18n="card.tutorials.desc">Tutorials and training material for the H2O Machine Learning Platform — covering H2O-3, Driverless AI, Sparkling Water and more.</div>
+      <div class="card-tags">
+        <span class="tag tag-edu">Tutorial</span>
+        <span class="tag tag-edu">Training</span>
+        <span class="tag tag-edu">Notebook</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#DA5B0B"></div>Jupyter Notebook</div>
+    </div>
+
+    <!-- h2o-meetups -->
+    <div class="card" style="--card-accent:#ef4444">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2o-meetups" target="_blank">🎤 H2O Meetups</a></div>
+        <div class="card-stars">⭐ 406</div>
+      </div>
+      <div class="card-desc" data-i18n="card.meetups.desc">Presentations from H2O meetups & conferences by the H2O.ai team. Community knowledge sharing and event materials.</div>
+      <div class="card-tags">
+        <span class="tag tag-edu">Community</span>
+        <span class="tag tag-edu">Presentation</span>
+        <span class="tag tag-edu">Events</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#DA5B0B"></div>Jupyter Notebook</div>
+    </div>
+
+    <!-- awesome-h2o -->
+    <div class="card" style="--card-accent:#ef4444">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/awesome-h2o" target="_blank">⭐ Awesome H2O</a></div>
+        <div class="card-stars">⭐ 389</div>
+      </div>
+      <div class="card-desc" data-i18n="card.awesome.desc">Curated list of research, applications and projects built using the H2O Machine Learning platform. Essential reference for H2O ecosystem.</div>
+      <div class="card-tags">
+        <span class="tag tag-edu">Awesome List</span>
+        <span class="tag tag-edu">Research</span>
+        <span class="tag tag-edu">Applications</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#999"></div>Markdown</div>
+    </div>
+
+    <!-- MLI Resources -->
+    <div class="card" style="--card-accent:#ec4899">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/mli-resources" target="_blank">🔍 MLI Resources</a></div>
+        <div class="card-stars">⭐ 492</div>
+      </div>
+      <div class="card-desc" data-i18n="card.mli.desc">H2O.ai Machine Learning Interpretability Resources. SHAP, LIME, partial dependence, feature importance — tools and techniques for model explainability.</div>
+      <div class="card-tags">
+        <span class="tag tag-xai">SHAP</span>
+        <span class="tag tag-xai">LIME</span>
+        <span class="tag tag-xai">Interpretability</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#DA5B0B"></div>Jupyter Notebook</div>
+    </div>
+
+    <!-- db-benchmark -->
+    <div class="card" style="--card-accent:#f59e0b">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/db-benchmark" target="_blank">⚡ db-benchmark</a></div>
+        <div class="card-stars">⭐ 347</div>
+      </div>
+      <div class="card-desc" data-i18n="card.dbbench.desc">Reproducible benchmark of database-like ops. Compares pandas, datatable, polars, dask, spark, julia, and more on group-by and join operations.</div>
+      <div class="card-tags">
+        <span class="tag tag-data">Benchmark</span>
+        <span class="tag tag-data">Performance</span>
+        <span class="tag tag-data">DataFrame</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#198CE7"></div>R / Python</div>
+    </div>
+
+    <!-- h2o-wizardlm -->
+    <div class="card" style="--card-accent:#8b5cf6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2o-wizardlm" target="_blank">🧙 WizardLM</a></div>
+        <div class="card-stars">⭐ 307</div>
+      </div>
+      <div class="card-desc" data-i18n="card.wizard.desc">Open-Source Implementation of WizardLM to turn documents into Q:A pairs for LLM fine-tuning. Automated training data generation pipeline.</div>
+      <div class="card-tags">
+        <span class="tag tag-llm">Fine-tuning</span>
+        <span class="tag tag-llm">Data Gen</span>
+        <span class="tag tag-llm">QA</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#3572A5"></div>Python</div>
+    </div>
+
+    <!-- pystacknet -->
+    <div class="card" style="--card-accent:#10b981">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/pystacknet" target="_blank">🔗 PyStackNet</a></div>
+        <div class="card-stars">⭐ 297</div>
+      </div>
+      <div class="card-desc" data-i18n="card.pystack.desc">Stacking / ensemble learning in Python. Implementations of Super Learner (stacked ensembles) for classification and regression.</div>
+      <div class="card-tags">
+        <span class="tag tag-ml">Ensemble</span>
+        <span class="tag tag-ml">Stacking</span>
+        <span class="tag tag-ml">Super Learner</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#DA5B0B"></div>Jupyter Notebook</div>
+    </div>
+
+    <!-- deepwater -->
+    <div class="card" style="--card-accent:#10b981">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/deepwater" target="_blank">🌊 Deep Water</a></div>
+        <div class="card-stars">⭐ 279</div>
+      </div>
+      <div class="card-desc" data-i18n="card.deepwater.desc">Deep Learning in H2O using Native GPU Backends — TensorFlow, Caffe, MXNet integration within H2O-3 platform.</div>
+      <div class="card-tags">
+        <span class="tag tag-ml">Deep Learning</span>
+        <span class="tag tag-ml">GPU</span>
+        <span class="tag tag-ml">TensorFlow</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#f34b7d"></div>C++ / Java</div>
+    </div>
+
+    <!-- h2o-2 -->
+    <div class="card" style="--card-accent:#10b981">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2o-2" target="_blank">📜 H2O-2</a></div>
+        <div class="card-stars">⭐ 2.3K</div>
+      </div>
+      <div class="card-desc" data-i18n="card.h2o2.desc">Legacy H2O platform (successor: h2o-3). Historical reference for the evolution of H2O's distributed computing architecture.</div>
+      <div class="card-tags">
+        <span class="tag tag-ml">Legacy</span>
+        <span class="tag tag-ml">Distributed</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#b07219"></div>Java</div>
+    </div>
+
+    <!-- H2O4GPU -->
+    <div class="card" style="--card-accent:#10b981">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2o4gpu" target="_blank">🎮 H2O4GPU</a></div>
+        <div class="card-stars">⭐ 466</div>
+      </div>
+      <div class="card-desc" data-i18n="card.h2o4gpu.desc">H2O GPU Edition — GPU-accelerated machine learning. XGBoost, GLM, K-Means on GPU with scikit-learn compatible API.</div>
+      <div class="card-tags">
+        <span class="tag tag-ml">GPU</span>
+        <span class="tag tag-ml">XGBoost</span>
+        <span class="tag tag-ml">scikit-learn</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#f34b7d"></div>C++ / Python</div>
+    </div>
+
+    <!-- driverlessai-recipes -->
+    <div class="card" style="--card-accent:#10b981">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/driverlessai-recipes" target="_blank">🍳 DAI Recipes</a></div>
+        <div class="card-stars">⭐ 255</div>
+      </div>
+      <div class="card-desc" data-i18n="card.dai.desc">Recipes for Driverless AI — custom transformers, models, and scorers. Extend DAI with your own ML components.</div>
+      <div class="card-tags">
+        <span class="tag tag-ml">AutoML</span>
+        <span class="tag tag-tool">Extensible</span>
+        <span class="tag tag-ml">Custom</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#3572A5"></div>Python</div>
+    </div>
+
+    <!-- Nitro -->
+    <div class="card" style="--card-accent:#3b82f6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/nitro" target="_blank">⚡ Nitro</a></div>
+        <div class="card-stars">⭐ 203</div>
+      </div>
+      <div class="card-desc" data-i18n="card.nitro.desc">Create apps 10x quicker, without Javascript/HTML/CSS. Declarative UI framework for building data apps in pure Python.</div>
+      <div class="card-tags">
+        <span class="tag tag-web">Low-Code</span>
+        <span class="tag tag-web">UI</span>
+        <span class="tag tag-web">Python</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#2b7489"></div>TypeScript</div>
+    </div>
+
+    <!-- wave-apps -->
+    <div class="card" style="--card-accent:#3b82f6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/wave-apps" target="_blank">📱 Wave Apps</a></div>
+        <div class="card-stars">⭐ 165</div>
+      </div>
+      <div class="card-desc" data-i18n="card.waveapps.desc">Sample AI Apps built with H2O Wave. Collection of ready-to-use dashboards, chatbots, and ML demo applications.</div>
+      <div class="card-tags">
+        <span class="tag tag-web">Templates</span>
+        <span class="tag tag-web">Demos</span>
+        <span class="tag tag-web">AI Apps</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#3572A5"></div>Python</div>
+    </div>
+
+    <!-- h2o-flow -->
+    <div class="card" style="--card-accent:#10b981">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2o-flow" target="_blank">💧 H2O Flow</a></div>
+        <div class="card-stars">⭐ 145</div>
+      </div>
+      <div class="card-desc" data-i18n="card.flow.desc">Web based interactive computing environment for H2O. Jupyter-like notebook UI for H2O-3 model building and evaluation.</div>
+      <div class="card-tags">
+        <span class="tag tag-web">Notebook</span>
+        <span class="tag tag-ml">Interactive</span>
+        <span class="tag tag-web">UI</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#244776"></div>CoffeeScript</div>
+    </div>
+
+    <!-- rsparkling -->
+    <div class="card" style="--card-accent:#06b6d4">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/rsparkling" target="_blank">🧊 RSparkling</a></div>
+        <div class="card-stars">⭐ 62</div>
+      </div>
+      <div class="card-desc" data-i18n="card.rsparkling.desc">Use H2O Sparkling Water from R. Spark + R + Machine Learning integration for R users.</div>
+      <div class="card-tags">
+        <span class="tag tag-spark">R</span>
+        <span class="tag tag-spark">Spark</span>
+        <span class="tag tag-ml">ML</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#198CE7"></div>R</div>
+    </div>
+
+    <!-- enterprise-h2ogpte -->
+    <div class="card" style="--card-accent:#8b5cf6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/enterprise-h2ogpte" target="_blank">🏢 h2oGPTe</a></div>
+        <div class="card-stars">⭐ 90</div>
+      </div>
+      <div class="card-desc" data-i18n="card.h2ogpte.desc">Enterprise h2oGPTe RAG-Based GenAI Platform — client code examples, use cases and benchmarks for enterprise document Q&A.</div>
+      <div class="card-tags">
+        <span class="tag tag-llm">RAG</span>
+        <span class="tag tag-llm">Enterprise</span>
+        <span class="tag tag-llm">GenAI</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#3572A5"></div>Python</div>
+    </div>
+
+    <!-- h2o-LLM-eval -->
+    <div class="card" style="--card-accent:#8b5cf6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/h2o-LLM-eval" target="_blank">📊 H2O LLM Eval</a></div>
+        <div class="card-stars">⭐ 52</div>
+      </div>
+      <div class="card-desc" data-i18n="card.llmeval.desc">Large-language Model Evaluation framework with Elo Leaderboard and A/B testing. Compare and rank LLMs systematically.</div>
+      <div class="card-tags">
+        <span class="tag tag-llm">Evaluation</span>
+        <span class="tag tag-llm">Elo</span>
+        <span class="tag tag-llm">Leaderboard</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#DA5B0B"></div>Jupyter Notebook</div>
+    </div>
+
+    <!-- wave-h2o-automl -->
+    <div class="card" style="--card-accent:#3b82f6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/wave-h2o-automl" target="_blank">🤖 Wave AutoML</a></div>
+        <div class="card-stars">⭐ 23</div>
+      </div>
+      <div class="card-desc" data-i18n="card.waveautoml.desc">Wave App for H2O AutoML — interactive dashboard for running and monitoring AutoML experiments with real-time visualizations.</div>
+      <div class="card-tags">
+        <span class="tag tag-web">Dashboard</span>
+        <span class="tag tag-ml">AutoML</span>
+        <span class="tag tag-web">Realtime</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#3572A5"></div>Python</div>
+    </div>
+
+    <!-- wave-ml -->
+    <div class="card" style="--card-accent:#3b82f6">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/wave-ml" target="_blank">⚙️ Wave ML</a></div>
+        <div class="card-stars">⭐ 32</div>
+      </div>
+      <div class="card-desc" data-i18n="card.waveml.desc">Automatic Machine Learning (AutoML) for Wave Apps. Simplified ML integration layer for H2O Wave applications.</div>
+      <div class="card-tags">
+        <span class="tag tag-ml">AutoML</span>
+        <span class="tag tag-web">Wave</span>
+        <span class="tag tag-tool">API</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#3572A5"></div>Python</div>
+    </div>
+
+    <!-- Hydrogen Torch -->
+    <div class="card" style="--card-accent:#10b981">
+      <div class="card-header">
+        <div class="card-name"><a href="https://github.com/h2oai/ht-catalog" target="_blank">🔥 Hydrogen Torch</a></div>
+        <div class="card-stars">⭐ 11</div>
+      </div>
+      <div class="card-desc" data-i18n="card.ht.desc">Diverse collection of 100 Hydrogen Torch use-cases by different industries, data-types, and problem types. No-code deep learning training.</div>
+      <div class="card-tags">
+        <span class="tag tag-ml">Deep Learning</span>
+        <span class="tag tag-tool">No-Code</span>
+        <span class="tag tag-ml">PyTorch</span>
+      </div>
+      <div class="card-lang"><div class="lang-dot" style="background:#e44b23"></div>HTML / Python</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ====== Applications ====== -->
+<section class="section" id="applications">
+  <h2 class="section-title" data-i18n="app.title">Technology Application Directions</h2>
+  <p class="section-desc" data-i18n="app.desc">From AutoML to GenAI — how H2O.ai's open-source projects map to real-world AI scenarios</p>
+  <div class="apps-grid">
+
+    <div class="app-card">
+      <div class="app-icon" style="background:rgba(16,185,129,0.15); color:#10b981;">🧪</div>
+      <h3 data-i18n="app.automl.title">AutoML Pipeline</h3>
+      <p data-i18n="app.automl.desc">End-to-end automated machine learning — feature engineering, model selection, hyperparameter tuning, ensembling and deployment.</p>
+      <div class="app-techs">
+        <span class="app-tech">H2O-3</span><span class="app-tech">DAI Recipes</span><span class="app-tech">Wave AutoML</span><span class="app-tech">H2O4GPU</span>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-icon" style="background:rgba(139,92,246,0.15); color:#8b5cf6;">🤖</div>
+      <h3 data-i18n="app.llm.title">LLM Fine-tuning & RAG</h3>
+      <p data-i18n="app.llm.desc">Fine-tune and deploy large language models with no-code GUI, private document Q&A, and enterprise-grade RAG pipelines.</p>
+      <div class="app-techs">
+        <span class="app-tech">h2oGPT</span><span class="app-tech">LLM Studio</span><span class="app-tech">h2oGPTe</span><span class="app-tech">WizardLM</span>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-icon" style="background:rgba(236,72,153,0.15); color:#ec4899;">🔍</div>
+      <h3 data-i18n="app.xai.title">Explainable AI</h3>
+      <p data-i18n="app.xai.desc">Model interpretability toolkit — SHAP values, partial dependence plots, feature importance, LIME explanations and fairness auditing.</p>
+      <div class="app-techs">
+        <span class="app-tech">MLI Resources</span><span class="app-tech">XAI Guidelines</span><span class="app-tech">h2o-sonar</span>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-icon" style="background:rgba(59,130,246,0.15); color:#3b82f6;">📊</div>
+      <h3 data-i18n="app.viz.title">AI Dashboard & Apps</h3>
+      <p data-i18n="app.viz.desc">Build real-time AI dashboards and web applications with reactive programming — from ML monitoring to interactive data exploration.</p>
+      <div class="app-techs">
+        <span class="app-tech">Wave</span><span class="app-tech">Nitro</span><span class="app-tech">wave-apps</span><span class="app-tech">h2o-flow</span>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-icon" style="background:rgba(6,182,212,0.15); color:#06b6d4;">⚡</div>
+      <h3 data-i18n="app.spark.title">Spark ML at Scale</h3>
+      <p data-i18n="app.spark.desc">Run H2O ML algorithms on Spark clusters — process billions of rows with distributed computing and GPU acceleration.</p>
+      <div class="app-techs">
+        <span class="app-tech">Sparkling Water</span><span class="app-tech">RSparkling</span><span class="app-tech">h2o-k8s</span>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-icon" style="background:rgba(245,158,11,0.15); color:#f59e0b;">🚀</div>
+      <h3 data-i18n="app.data.title">High-Performance Data</h3>
+      <p data-i18n="app.data.desc">10x faster data manipulation with C++ backend. Benchmarked against pandas, polars, dask for ETL and analytics workloads.</p>
+      <div class="app-techs">
+        <span class="app-tech">datatable</span><span class="app-tech">db-benchmark</span><span class="app-tech">gQuant</span>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-icon" style="background:rgba(139,92,246,0.15); color:#8b5cf6;">🛡️</div>
+      <h3 data-i18n="app.responsible.title">Responsible AI</h3>
+      <p data-i18n="app.responsible.desc">AI safety, fairness, and accountability — model auditing, bias detection, hallucination monitoring, and responsible deployment practices.</p>
+      <div class="app-techs">
+        <span class="app-tech">h2o-sonar</span><span class="app-tech">h2o-LLM-eval</span><span class="app-tech">ML Security</span>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="app-icon" style="background:rgba(239,68,68,0.15); color:#ef4444;">🎓</div>
+      <h3 data-i18n="app.edu.title">ML Education & Community</h3>
+      <p data-i18n="app.edu.desc">Tutorials, meetup presentations, curated resource lists, and training material — the learning backbone of the H2O ecosystem.</p>
+      <div class="app-techs">
+        <span class="app-tech">h2o-tutorials</span><span class="app-tech">h2o-meetups</span><span class="app-tech">awesome-h2o</span><span class="app-tech">HAIC Tutorials</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ====== Timeline ====== -->
+<section class="section" id="timeline">
+  <h2 class="section-title" data-i18n="tl.title">Development Timeline</h2>
+  <p class="section-desc" data-i18n="tl.desc">From 0xdata to H2O.ai — 15+ years of open-source AI innovation</p>
+  <div class="timeline">
+
+    <div class="timeline-item" style="animation-delay:0.1s">
+      <div class="timeline-year">2011</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2011.title">0xdata Founded</h4>
+        <p data-i18n="tl.2011.desc">Sri Ambati and Cliff Click founded 0xdata (later H2O.ai) to democratize machine learning with open-source distributed computing.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item" style="animation-delay:0.2s">
+      <div class="timeline-year">2013</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2013.title">H2O-2 Released</h4>
+        <p data-i18n="tl.2013.desc">H2O-2 launched as a Java-based distributed ML platform with in-memory processing and Key-Value store architecture.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item" style="animation-delay:0.3s">
+      <div class="timeline-year">2014</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2014.title">H2O-3 & Sparkling Water</h4>
+        <p data-i18n="tl.2014.desc">H2O-3 major release with GLM, GBM, Deep Learning. Sparkling Water integrated H2O with Apache Spark for distributed pipelines.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item" style="animation-delay:0.4s">
+      <div class="timeline-year">2016</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2016.title">Driverless AI & Deep Water</h4>
+        <p data-i18n="tl.2016.desc">Driverless AI brought automated feature engineering and model interpretability. Deep Water added GPU deep learning backends.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item" style="animation-delay:0.5s">
+      <div class="timeline-year">2017</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2017.title">MLI & AutoML</h4>
+        <p data-i18n="tl.2017.desc">Machine Learning Interpretability resources published. H2O AutoML automated model selection and ensembling in H2O-3.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item" style="animation-delay:0.6s">
+      <div class="timeline-year">2019</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2019.title">H2O4GPU & datatable</h4>
+        <p data-i18n="tl.2019.desc">H2O4GPU brought GPU-accelerated ML with scikit-learn API. datatable provided 10x faster data processing than pandas.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item" style="animation-delay:0.7s">
+      <div class="timeline-year">2020</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2020.title">H2O Wave</h4>
+        <p data-i18n="tl.2020.desc">H2O Wave launched — realtime web apps and dashboards for Python and R, enabling rapid AI application development.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item" style="animation-delay:0.8s">
+      <div class="timeline-year">2023</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2023.title">h2oGPT & LLM Studio</h4>
+        <p data-i18n="tl.2023.desc">h2oGPT brought private local GPT with document Q&A. H2O LLM Studio provided no-code LLM fine-tuning framework.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item" style="animation-delay:0.9s">
+      <div class="timeline-year">2024</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2024.title">Enterprise GenAI & h2oGPTe</h4>
+        <p data-i18n="tl.2024.desc">Enterprise h2oGPTe launched as RAG-based GenAI platform. H2O.ai expanded into responsible AI with h2o-sonar for AI safety.</p>
+      </div>
+    </div>
+
+    <div class="timeline-item" style="animation-delay:1.0s">
+      <div class="timeline-year">2025</div>
+      <div class="timeline-content">
+        <h4 data-i18n="tl.2025.title">AI Agents & MCP</h4>
+        <p data-i18n="tl.2025.desc">Flood Intelligence Agent with NVIDIA NIM integration, h2oGPTe MCP server, AI-powered issue tracker (tk), and continued GenAI innovation.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ====== Tech Stack ====== -->
+<section class="section" id="techstack">
+  <h2 class="section-title" data-i18n="stack.title">Technology Stack Panorama</h2>
+  <p class="section-desc" data-i18n="stack.desc">Five-layer architecture — from GenAI applications to distributed computing infrastructure</p>
+  <div class="stack-layers">
+
+    <div class="stack-layer" style="background:linear-gradient(90deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05))">
+      <div class="stack-label" style="background:rgba(139,92,246,0.3)">GenAI / LLM</div>
+      <div class="stack-items">
+        <span class="stack-item">h2oGPT</span>
+        <span class="stack-item">LLM Studio</span>
+        <span class="stack-item">h2oGPTe</span>
+        <span class="stack-item">WizardLM</span>
+        <span class="stack-item">LLM Eval</span>
+        <span class="stack-item">Nova Act</span>
+        <span class="stack-item">MCP Server</span>
+      </div>
+    </div>
+
+    <div class="stack-layer" style="background:linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05))">
+      <div class="stack-label" style="background:rgba(16,185,129,0.3)">AutoML / ML</div>
+      <div class="stack-items">
+        <span class="stack-item">H2O-3</span>
+        <span class="stack-item">H2O4GPU</span>
+        <span class="stack-item">Deep Water</span>
+        <span class="stack-item">DAI Recipes</span>
+        <span class="stack-item">Hydrogen Torch</span>
+        <span class="stack-item">PyStackNet</span>
+      </div>
+    </div>
+
+    <div class="stack-layer" style="background:linear-gradient(90deg, rgba(236,72,153,0.15), rgba(236,72,153,0.05))">
+      <div class="stack-label" style="background:rgba(236,72,153,0.3)">XAI / Safety</div>
+      <div class="stack-items">
+        <span class="stack-item">MLI Resources</span>
+        <span class="stack-item">XAI Guidelines</span>
+        <span class="stack-item">h2o-sonar</span>
+        <span class="stack-item">ML Security Audits</span>
+        <span class="stack-item">h2o-evals</span>
+      </div>
+    </div>
+
+    <div class="stack-layer" style="background:linear-gradient(90deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05))">
+      <div class="stack-label" style="background:rgba(59,130,246,0.3)">Web / Viz</div>
+      <div class="stack-items">
+        <span class="stack-item">Wave</span>
+        <span class="stack-item">Nitro</span>
+        <span class="stack-item">h2o-flow</span>
+        <span class="stack-item">wave-apps</span>
+        <span class="stack-item">Wave AutoML</span>
+        <span class="stack-item">autoviz</span>
+      </div>
+    </div>
+
+    <div class="stack-layer" style="background:linear-gradient(90deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05))">
+      <div class="stack-label" style="background:rgba(6,182,212,0.3)">Data / Infra</div>
+      <div class="stack-items">
+        <span class="stack-item">datatable</span>
+        <span class="stack-item">Sparkling Water</span>
+        <span class="stack-item">db-benchmark</span>
+        <span class="stack-item">h2o-k8s</span>
+        <span class="stack-item">gQuant</span>
+        <span class="stack-item">RAPIDS</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ====== Footer ====== -->
+<footer class="footer">
+  <p data-i18n="footer.text">H2O.ai Open Source Ecosystem Knowledge Base · Data from GitHub · Built with ❤️</p>
+  <p style="margin-top:0.5rem"><a href="https://github.com/h2oai" target="_blank">github.com/h2oai</a></p>
+</footer>
+
+<!-- ====== i18n & Scroll Animation ====== -->
+<script>
+const i18n = {
+  en: {
+    'nav.logo': 'H2O.ai Open Source',
+    'nav.network': 'Network',
+    'nav.projects': 'Projects',
+    'nav.apps': 'Applications',
+    'nav.timeline': 'Timeline',
+    'nav.stack': 'Tech Stack',
+    'hero.title': 'H2O.ai Open Source Ecosystem',
+    'hero.desc': 'From AutoML to LLMs — The most comprehensive open-source AI platform covering machine learning, generative AI, explainability, and real-time web applications.',
+    'stat.repos': 'Repositories',
+    'stat.stars': 'GitHub Stars',
+    'stat.domains': 'Core Domains',
+    'stat.years': 'Years Active',
+    'net.title': 'Knowledge Association Network',
+    'net.desc': 'Core project topology — node size reflects star count, edges represent functional dependencies and ecosystem connections',
+    'leg.ml': 'AutoML / ML Platform',
+    'leg.llm': 'LLM / GenAI',
+    'leg.web': 'Web App / Viz',
+    'leg.spark': 'Spark / Big Data',
+    'leg.xai': 'Explainable AI',
+    'leg.data': 'Data Tools',
+    'leg.edu': 'Education / Community',
+    'proj.title': 'Core Project Cards',
+    'proj.desc': 'Key open-source projects from H2O.ai — click project name to visit GitHub',
+    'card.h2ogpt.desc': 'Private chat with local GPT — document, image, video Q&A. 100% private, Apache 2.0. Supports oLLaMa, Mixtral, llama.cpp and more.',
+    'card.h2o3.desc': 'Distributed, fast & scalable ML platform: Deep Learning, GBM, XGBoost, Random Forest, GLM, K-Means, PCA, GAM, SVM, Stacked Ensembles, AutoML and more.',
+    'card.llmstudio.desc': 'Framework and no-code GUI for fine-tuning LLMs. Supports quantization, LoRA, multi-GPU training, and evaluation with chatbot-style interface.',
+    'card.wave.desc': 'Realtime Web Apps and Dashboards for Python and R. Build AI apps 10x faster with reactive programming and rich UI components.',
+    'card.datatable.desc': 'Python package for manipulating 2-dimensional tabular data structures. High-performance data processing — 10x faster than pandas for large datasets.',
+    'card.sparkling.desc': 'H2O functionality inside Spark cluster. Seamless integration of H2O ML algorithms with Spark data processing pipelines.',
+    'card.tutorials.desc': 'Tutorials and training material for the H2O Machine Learning Platform — covering H2O-3, Driverless AI, Sparkling Water and more.',
+    'card.meetups.desc': 'Presentations from H2O meetups & conferences by the H2O.ai team. Community knowledge sharing and event materials.',
+    'card.awesome.desc': 'Curated list of research, applications and projects built using the H2O Machine Learning platform. Essential reference for H2O ecosystem.',
+    'card.mli.desc': 'H2O.ai Machine Learning Interpretability Resources. SHAP, LIME, partial dependence, feature importance — tools and techniques for model explainability.',
+    'card.dbbench.desc': 'Reproducible benchmark of database-like ops. Compares pandas, datatable, polars, dask, spark, julia, and more on group-by and join operations.',
+    'card.wizard.desc': 'Open-Source Implementation of WizardLM to turn documents into Q:A pairs for LLM fine-tuning. Automated training data generation pipeline.',
+    'card.pystack.desc': 'Stacking / ensemble learning in Python. Implementations of Super Learner (stacked ensembles) for classification and regression.',
+    'card.deepwater.desc': 'Deep Learning in H2O using Native GPU Backends — TensorFlow, Caffe, MXNet integration within H2O-3 platform.',
+    'card.h2o2.desc': 'Legacy H2O platform (successor: h2o-3). Historical reference for the evolution of H2O\'s distributed computing architecture.',
+    'card.h2o4gpu.desc': 'H2O GPU Edition — GPU-accelerated machine learning. XGBoost, GLM, K-Means on GPU with scikit-learn compatible API.',
+    'card.dai.desc': 'Recipes for Driverless AI — custom transformers, models, and scorers. Extend DAI with your own ML components.',
+    'card.nitro.desc': 'Create apps 10x quicker, without Javascript/HTML/CSS. Declarative UI framework for building data apps in pure Python.',
+    'card.waveapps.desc': 'Sample AI Apps built with H2O Wave. Collection of ready-to-use dashboards, chatbots, and ML demo applications.',
+    'card.flow.desc': 'Web based interactive computing environment for H2O. Jupyter-like notebook UI for H2O-3 model building and evaluation.',
+    'card.rsparkling.desc': 'Use H2O Sparkling Water from R. Spark + R + Machine Learning integration for R users.',
+    'card.h2ogpte.desc': 'Enterprise h2oGPTe RAG-Based GenAI Platform — client code examples, use cases and benchmarks for enterprise document Q&A.',
+    'card.llmeval.desc': 'Large-language Model Evaluation framework with Elo Leaderboard and A/B testing. Compare and rank LLMs systematically.',
+    'card.waveautoml.desc': 'Wave App for H2O AutoML — interactive dashboard for running and monitoring AutoML experiments with real-time visualizations.',
+    'card.waveml.desc': 'Automatic Machine Learning (AutoML) for Wave Apps. Simplified ML integration layer for H2O Wave applications.',
+    'card.ht.desc': 'Diverse collection of 100 Hydrogen Torch use-cases by different industries, data-types, and problem types. No-code deep learning training.',
+    'app.title': 'Technology Application Directions',
+    'app.desc': 'From AutoML to GenAI — how H2O.ai\'s open-source projects map to real-world AI scenarios',
+    'app.automl.title': 'AutoML Pipeline',
+    'app.automl.desc': 'End-to-end automated machine learning — feature engineering, model selection, hyperparameter tuning, ensembling and deployment.',
+    'app.llm.title': 'LLM Fine-tuning & RAG',
+    'app.llm.desc': 'Fine-tune and deploy large language models with no-code GUI, private document Q&A, and enterprise-grade RAG pipelines.',
+    'app.xai.title': 'Explainable AI',
+    'app.xai.desc': 'Model interpretability toolkit — SHAP values, partial dependence plots, feature importance, LIME explanations and fairness auditing.',
+    'app.viz.title': 'AI Dashboard & Apps',
+    'app.viz.desc': 'Build real-time AI dashboards and web applications with reactive programming — from ML monitoring to interactive data exploration.',
+    'app.spark.title': 'Spark ML at Scale',
+    'app.spark.desc': 'Run H2O ML algorithms on Spark clusters — process billions of rows with distributed computing and GPU acceleration.',
+    'app.data.title': 'High-Performance Data',
+    'app.data.desc': '10x faster data manipulation with C++ backend. Benchmarked against pandas, polars, dask for ETL and analytics workloads.',
+    'app.responsible.title': 'Responsible AI',
+    'app.responsible.desc': 'AI safety, fairness, and accountability — model auditing, bias detection, hallucination monitoring, and responsible deployment practices.',
+    'app.edu.title': 'ML Education & Community',
+    'app.edu.desc': 'Tutorials, meetup presentations, curated resource lists, and training material — the learning backbone of the H2O ecosystem.',
+    'tl.title': 'Development Timeline',
+    'tl.desc': 'From 0xdata to H2O.ai — 15+ years of open-source AI innovation',
+    'tl.2011.title': '0xdata Founded',
+    'tl.2011.desc': 'Sri Ambati and Cliff Click founded 0xdata (later H2O.ai) to democratize machine learning with open-source distributed computing.',
+    'tl.2013.title': 'H2O-2 Released',
+    'tl.2013.desc': 'H2O-2 launched as a Java-based distributed ML platform with in-memory processing and Key-Value store architecture.',
+    'tl.2014.title': 'H2O-3 & Sparkling Water',
+    'tl.2014.desc': 'H2O-3 major release with GLM, GBM, Deep Learning. Sparkling Water integrated H2O with Apache Spark for distributed pipelines.',
+    'tl.2016.title': 'Driverless AI & Deep Water',
+    'tl.2016.desc': 'Driverless AI brought automated feature engineering and model interpretability. Deep Water added GPU deep learning backends.',
+    'tl.2017.title': 'MLI & AutoML',
+    'tl.2017.desc': 'Machine Learning Interpretability resources published. H2O AutoML automated model selection and ensembling in H2O-3.',
+    'tl.2019.title': 'H2O4GPU & datatable',
+    'tl.2019.desc': 'H2O4GPU brought GPU-accelerated ML with scikit-learn API. datatable provided 10x faster data processing than pandas.',
+    'tl.2020.title': 'H2O Wave',
+    'tl.2020.desc': 'H2O Wave launched — realtime web apps and dashboards for Python and R, enabling rapid AI application development.',
+    'tl.2023.title': 'h2oGPT & LLM Studio',
+    'tl.2023.desc': 'h2oGPT brought private local GPT with document Q&A. H2O LLM Studio provided no-code LLM fine-tuning framework.',
+    'tl.2024.title': 'Enterprise GenAI & h2oGPTe',
+    'tl.2024.desc': 'Enterprise h2oGPTe launched as RAG-based GenAI platform. H2O.ai expanded into responsible AI with h2o-sonar for AI safety.',
+    'tl.2025.title': 'AI Agents & MCP',
+    'tl.2025.desc': 'Flood Intelligence Agent with NVIDIA NIM integration, h2oGPTe MCP server, AI-powered issue tracker (tk), and continued GenAI innovation.',
+    'stack.title': 'Technology Stack Panorama',
+    'stack.desc': 'Five-layer architecture — from GenAI applications to distributed computing infrastructure',
+    'footer.text': 'H2O.ai Open Source Ecosystem Knowledge Base · Data from GitHub · Built with ❤️',
+  },
+  zh: {
+    'nav.logo': 'H2O.ai 开源生态',
+    'nav.network': '知识网络',
+    'nav.projects': '核心项目',
+    'nav.apps': '应用方向',
+    'nav.timeline': '发展历程',
+    'nav.stack': '技术栈',
+    'hero.title': 'H2O.ai 开源技术生态',
+    'hero.desc': '从AutoML到LLM——最全面的开源AI平台，涵盖机器学习、生成式AI、可解释性与实时Web应用。',
+    'stat.repos': '代码仓库',
+    'stat.stars': 'GitHub 星标',
+    'stat.domains': '核心领域',
+    'stat.years': '活跃年数',
+    'net.title': '知识关联网络',
+    'net.desc': '核心项目拓扑——节点大小反映星标数，连线表示功能依赖与生态关联',
+    'leg.ml': 'AutoML / 机器学习平台',
+    'leg.llm': 'LLM / 生成式AI',
+    'leg.web': 'Web应用 / 可视化',
+    'leg.spark': 'Spark / 大数据',
+    'leg.xai': '可解释AI',
+    'leg.data': '数据工具',
+    'leg.edu': '教育 / 社区',
+    'proj.title': '核心项目卡片',
+    'proj.desc': 'H2O.ai 关键开源项目——点击项目名称访问GitHub',
+    'card.h2ogpt.desc': '私有化本地GPT聊天——支持文档、图片、视频问答。100%私有，Apache 2.0协议。支持oLLaMa、Mixtral、llama.cpp等。',
+    'card.h2o3.desc': '分布式、快速、可扩展的ML平台：深度学习、GBM、XGBoost、随机森林、GLM、K-Means、PCA、GAM、SVM、堆叠集成、AutoML等。',
+    'card.llmstudio.desc': 'LLM微调框架与无代码GUI。支持量化、LoRA、多GPU训练，以及聊天机器人风格的评估界面。',
+    'card.wave.desc': '面向Python和R的实时Web应用与仪表板。响应式编程加丰富UI组件，10倍速构建AI应用。',
+    'card.datatable.desc': 'Python二维表格数据操作包。高性能数据处理——大数据集下比pandas快10倍。',
+    'card.sparkling.desc': '在Spark集群中运行H2O功能。H2O ML算法与Spark数据处理管道的无缝集成。',
+    'card.tutorials.desc': 'H2O机器学习平台的教程和培训材料——涵盖H2O-3、Driverless AI、Sparkling Water等。',
+    'card.meetups.desc': 'H2O.ai团队在Meetup和会议上的演讲资料。社区知识分享与活动材料。',
+    'card.awesome.desc': '基于H2O机器学习平台的研究、应用和项目精选列表。H2O生态的必备参考。',
+    'card.mli.desc': 'H2O.ai机器学习可解释性资源。SHAP、LIME、偏依赖图、特征重要性——模型可解释性工具与技术。',
+    'card.dbbench.desc': '数据库类操作的可复现基准测试。对比pandas、datatable、polars、dask、spark、julia等的group-by和join操作。',
+    'card.wizard.desc': 'WizardLM开源实现——将文档转为QA对用于LLM微调。自动化训练数据生成管道。',
+    'card.pystack.desc': 'Python中的堆叠/集成学习。Super Learner（堆叠集成）的分类和回归实现。',
+    'card.deepwater.desc': 'H2O中使用原生GPU后端的深度学习——TensorFlow、Caffe、MXNet在H2O-3平台内的集成。',
+    'card.h2o2.desc': 'H2O遗留平台（后继：h2o-3）。H2O分布式计算架构演进的历史参考。',
+    'card.h2o4gpu.desc': 'H2O GPU版——GPU加速机器学习。XGBoost、GLM、K-Means在GPU上运行，兼容scikit-learn API。',
+    'card.dai.desc': 'Driverless AI配方——自定义转换器、模型和评分器。用你自己的ML组件扩展DAI。',
+    'card.nitro.desc': '10倍速创建应用，无需Javascript/HTML/CSS。纯Python声明式UI框架，快速构建数据应用。',
+    'card.waveapps.desc': '基于H2O Wave构建的示例AI应用。即用型仪表板、聊天机器人和ML演示应用集合。',
+    'card.flow.desc': 'H2O的Web交互式计算环境。类Jupyter笔记本界面用于H2O-3模型构建与评估。',
+    'card.rsparkling.desc': '在R中使用H2O Sparkling Water。Spark + R + 机器学习集成，面向R用户。',
+    'card.h2ogpte.desc': '企业级h2oGPTe基于RAG的GenAI平台——客户端代码示例、用例和基准测试。',
+    'card.llmeval.desc': '大语言模型评估框架，含Elo排行榜和A/B测试。系统性比较和排名LLM。',
+    'card.waveautoml.desc': 'H2O AutoML的Wave应用——运行和监控AutoML实验的交互式仪表板，支持实时可视化。',
+    'card.waveml.desc': 'Wave应用的自动机器学习（AutoML）。H2O Wave应用的简化ML集成层。',
+    'card.ht.desc': '100个Hydrogen Torch用例集合，覆盖不同行业、数据类型和问题类型。无代码深度学习训练。',
+    'app.title': '技术应用方向',
+    'app.desc': '从AutoML到GenAI——H2O.ai开源项目如何映射到真实AI场景',
+    'app.automl.title': 'AutoML管道',
+    'app.automl.desc': '端到端自动化机器学习——特征工程、模型选择、超参调优、集成与部署。',
+    'app.llm.title': 'LLM微调与RAG',
+    'app.llm.desc': '无代码GUI微调与部署大语言模型，私有化文档问答，企业级RAG管道。',
+    'app.xai.title': '可解释AI',
+    'app.xai.desc': '模型可解释性工具包——SHAP值、偏依赖图、特征重要性、LIME解释与公平性审计。',
+    'app.viz.title': 'AI仪表板与应用',
+    'app.viz.desc': '响应式编程构建实时AI仪表板和Web应用——从ML监控到交互式数据探索。',
+    'app.spark.title': 'Spark大规模ML',
+    'app.spark.desc': '在Spark集群上运行H2O ML算法——分布式计算和GPU加速处理数十亿行数据。',
+    'app.data.title': '高性能数据处理',
+    'app.data.desc': 'C++后端实现10倍速数据操作。与pandas、polars、dask对比ETL和分析负载性能。',
+    'app.responsible.title': '负责任AI',
+    'app.responsible.desc': 'AI安全、公平与问责——模型审计、偏见检测、幻觉监控和负责任部署实践。',
+    'app.edu.title': 'ML教育与社区',
+    'app.edu.desc': '教程、Meetup演讲、精选资源列表和培训材料——H2O生态的学习基石。',
+    'tl.title': '发展历程',
+    'tl.desc': '从0xdata到H2O.ai——15+年开源AI创新之路',
+    'tl.2011.title': '0xdata创立',
+    'tl.2011.desc': 'Sri Ambati和Cliff Click创立0xdata（后更名H2O.ai），以开源分布式计算推动机器学习民主化。',
+    'tl.2013.title': 'H2O-2发布',
+    'tl.2013.desc': 'H2O-2作为Java分布式ML平台发布，具备内存处理和Key-Value存储架构。',
+    'tl.2014.title': 'H2O-3与Sparkling Water',
+    'tl.2014.desc': 'H2O-3重大版本发布，包含GLM、GBM、深度学习。Sparkling Water将H2O与Apache Spark集成。',
+    'tl.2016.title': 'Driverless AI与Deep Water',
+    'tl.2016.desc': 'Driverless AI带来自动化特征工程和模型可解释性。Deep Water添加GPU深度学习后端。',
+    'tl.2017.title': 'MLI与AutoML',
+    'tl.2017.desc': '机器学习可解释性资源发布。H2O AutoML在H2O-3中实现模型选择和集成的自动化。',
+    'tl.2019.title': 'H2O4GPU与datatable',
+    'tl.2019.desc': 'H2O4GPU带来GPU加速ML与scikit-learn API。datatable提供比pandas快10倍的数据处理。',
+    'tl.2020.title': 'H2O Wave',
+    'tl.2020.desc': 'H2O Wave发布——面向Python和R的实时Web应用与仪表板，实现AI应用快速开发。',
+    'tl.2023.title': 'h2oGPT与LLM Studio',
+    'tl.2023.desc': 'h2oGPT带来私有化本地GPT与文档问答。H2O LLM Studio提供无代码LLM微调框架。',
+    'tl.2024.title': '企业级GenAI与h2oGPTe',
+    'tl.2024.desc': '企业级h2oGPTe作为基于RAG的GenAI平台发布。H2O.ai以h2o-sonar进军AI安全领域。',
+    'tl.2025.title': 'AI Agent与MCP',
+    'tl.2025.desc': '洪水智能Agent集成NVIDIA NIM，h2oGPTe MCP服务器，AI驱动的任务追踪器（tk），持续GenAI创新。',
+    'stack.title': '技术栈全景图',
+    'stack.desc': '五层架构——从GenAI应用到分布式计算基础设施',
+    'footer.text': 'H2O.ai 开源技术生态知识库 · 数据来源GitHub · 用❤️构建',
+  }
+};
+
+let currentLang = 'en';
+
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'zh' : 'en';
+  document.getElementById('langBtn').textContent = currentLang === 'en' ? '中文' : 'EN';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[currentLang][key]) el.textContent = i18n[currentLang][key];
+  });
+}
+
+// Scroll fade-in animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.card, .app-card, .timeline-item, .stack-layer').forEach(el => {
+  el.classList.add('fade-in');
+  observer.observe(el);
+});
+</script>
+</body>
+</html>

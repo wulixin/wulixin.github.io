@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R异常检测包技能汇总 | R Anomaly Detection Package Skills</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1a;--bg2:#111827;--bg3:#1e293b;--text:#e2e8f0;--text2:#94a3b8;--border:#1e293b;--accent:#f43f5e;--glow:rgba(244,63,94,.3)}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:1400px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:12px 0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{font-size:28px}
+.logo h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,#f43f5e,#8b5cf6,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lang-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:6px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:600;transition:all .3s;letter-spacing:1px}
+.lang-btn:hover{background:rgba(244,63,94,.2);border-color:rgba(244,63,94,.4)}
+.stats-bar{display:flex;gap:24px;padding:24px 0;flex-wrap:wrap;justify-content:center}
+.stat-item{text-align:center}
+.stat-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#f43f5e,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-label{font-size:12px;color:var(--text2);margin-top:2px}
+.search-box{max-width:500px;margin:16px auto;position:relative}
+.search-box input{width:100%;padding:12px 20px 12px 44px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:14px;outline:none;transition:all .3s}
+.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.search-box input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:18px}
+.tabs{display:flex;gap:4px;background:var(--bg2);border-radius:12px;padding:4px;margin:20px auto;max-width:460px}
+.tab-btn{flex:1;padding:10px 16px;border:none;background:transparent;color:var(--text2);border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .3s}
+.tab-btn.active{background:linear-gradient(135deg,#f43f5e,#8b5cf6);color:#fff;box-shadow:0 4px 15px rgba(244,63,94,.3)}
+.tab-btn:hover:not(.active){color:var(--text);background:rgba(255,255,255,.05)}
+.view-container{min-height:500px;padding:10px 0 60px}
+.view{display:none}
+.view.active{display:block}
+#network-view{width:100%;height:700px;position:relative;border-radius:16px;overflow:hidden;background:rgba(17,24,39,.5);border:1px solid var(--border)}
+#network-svg{width:100%;height:100%}
+.tooltip{position:absolute;padding:10px 14px;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:50;max-width:280px;backdrop-filter:blur(10px)}
+.tooltip.show{opacity:1}
+.tooltip-name{font-weight:700;margin-bottom:4px}
+.tooltip-desc{color:var(--text2);font-size:12px}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:10px 0}
+.category-card{background:var(--bg2);border-radius:14px;padding:20px;border-left:4px solid var(--accent);cursor:pointer;transition:all .3s;border-top:1px solid transparent;border-right:1px solid transparent;border-bottom:1px solid transparent}
+.category-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.3);border-top-color:rgba(255,255,255,.06);border-right-color:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.06)}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-icon{font-size:24px}
+.card-title{font-size:16px;font-weight:700}
+.card-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5}
+.card-tags{display:flex;flex-wrap:wrap;gap:6px}
+.pkg-tag{padding:3px 10px;border-radius:12px;font-size:11px;background:rgba(255,255,255,.06);color:var(--text2);transition:all .2s}
+.pkg-tag.core{background:rgba(244,63,94,.15);color:#fda4af;font-weight:600}
+.pkg-tag.more{background:rgba(245,158,11,.15);color:#fcd34d}
+.table-section{margin-bottom:24px}
+.table-cat-header{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg2);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s;border-left:3px solid var(--accent)}
+.table-cat-header:hover{background:var(--bg3)}
+.table-cat-icon{font-size:18px}
+.table-cat-name{font-weight:600;font-size:15px;flex:1}
+.table-cat-count{font-size:12px;color:var(--text2);background:rgba(255,255,255,.06);padding:2px 10px;border-radius:10px}
+.pkg-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:8px}
+.pkg-table th{text-align:left;padding:8px 16px;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.pkg-table td{padding:8px 16px;font-size:13px;background:rgba(17,24,39,.4)}
+.pkg-table tr td:first-child{border-radius:8px 0 0 8px}
+.pkg-table tr td:last-child{border-radius:0 8px 8px 0}
+.pkg-name{font-weight:600;color:#fda4af}
+.core-star{color:#fbbf24}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border-radius:20px;max-width:800px;width:90%;max-height:85vh;overflow-y:auto;padding:32px;border:1px solid rgba(255,255,255,.08);position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:24px;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s}
+.modal-close:hover{background:rgba(255,255,255,.1);color:var(--text)}
+.modal-header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.modal-icon{font-size:32px}
+.modal-title{font-size:22px;font-weight:700}
+.modal-desc{color:var(--text2);margin-bottom:20px;line-height:1.6;font-size:14px}
+.modal-pkgs{display:flex;flex-wrap:wrap;gap:8px}
+.modal-pkg{padding:6px 14px;border-radius:10px;font-size:13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.modal-pkg:hover{background:rgba(255,255,255,.1)}
+.modal-pkg.core{background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.25);color:#fda4af;font-weight:600}
+.modal-pkg-name{font-weight:600}
+.modal-pkg-desc{font-size:11px;color:var(--text2);margin-top:2px}
+footer{text-align:center;padding:40px 0;color:var(--text2);font-size:13px;border-top:1px solid var(--border)}
+footer a{color:#fb7185;text-decoration:none}
+footer a:hover{text-decoration:underline}
+.no-results{text-align:center;padding:60px 20px;color:var(--text2)}
+.no-results-icon{font-size:48px;margin-bottom:12px}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#334155}
+@media(max-width:768px){
+.header-inner{flex-direction:column;align-items:stretch;text-align:center}
+.logo{justify-content:center}
+.stats-bar{gap:16px}
+.cards-grid{grid-template-columns:1fr}
+#network-view{height:500px}
+.modal{width:95%;padding:20px}
+}
+@media(max-width:480px){
+.stat-num{font-size:22px}
+.tabs{max-width:100%}
+.tab-btn{padding:8px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+<div class="container">
+<header>
+<div class="header-inner">
+<div class="logo">
+<span class="logo-icon">🔍</span>
+<h1 data-zh="R异常检测包技能汇总" data-en="R Anomaly Detection Package Skills">R异常检测包技能汇总</h1>
+</div>
+<button class="lang-btn" id="lang-toggle" onclick="toggleLang()">EN</button>
+</div>
+</header>
+
+<div class="stats-bar">
+<div class="stat-item"><div class="stat-num">119</div><div class="stat-label" data-zh="R包" data-en="Packages">R包</div></div>
+<div class="stat-item"><div class="stat-num">12</div><div class="stat-label" data-zh="领域" data-en="Domains">领域</div></div>
+<div class="stat-item"><div class="stat-num">3</div><div class="stat-label" data-zh="核心" data-en="Core">核心</div></div>
+<div class="stat-item"><div class="stat-num">2025</div><div class="stat-label" data-zh="版本" data-en="Version">版本</div></div>
+</div>
+
+<div class="search-box">
+<span class="search-icon">🔍</span>
+<input type="text" id="search-input" data-placeholder-zh="搜索R包或分类..." data-placeholder-en="Search packages or categories..." placeholder="搜索R包或分类..." oninput="handleSearch(this.value)">
+</div>
+
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('network')" data-zh="网络图" data-en="Network">网络图</button>
+<button class="tab-btn" onclick="switchTab('cards')" data-zh="技能卡片" data-en="Skill Cards">技能卡片</button>
+<button class="tab-btn" onclick="switchTab('table')" data-zh="包列表" data-en="Package List">包列表</button>
+</div>
+
+<div class="view-container">
+<div class="view active" id="network-view-container">
+<div id="network-view">
+<svg id="network-svg"></svg>
+</div>
+<div class="tooltip" id="tooltip"></div>
+</div>
+<div class="view" id="cards-view"></div>
+<div class="view" id="table-view"></div>
+</div>
+
+<footer>
+<p data-zh="数据来源：" data-en="Data source: ">数据来源：<a href="https://mirrors.tuna.tsinghua.edu.cn/CRAN/web/views/AnomalyDetection.html" target="_blank">CRAN Task View: Anomaly Detection</a></p>
+<p style="margin-top:6px" data-zh="2025 · R异常检测生态系统全景" data-en="2025 · R Anomaly Detection Ecosystem Overview">2025 · R异常检测生态系统全景</p>
+</footer>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="modal" id="modal">
+<button class="modal-close" onclick="closeModal()">&times;</button>
+<div id="modal-content"></div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+const categories = [
+{id:"univariate",icon:"📊",color:"#f43f5e",zh:"单变量异常检测",en:"Univariate Outlier Detection",zhDesc:"聚焦单一特征空间的异常值检测方法",enDesc:"Outlier detection methods for a single feature space",
+packages:[
+{name:"univOutl",zh:"多种单变量异常检测方法，含Hidiroglou-Berthelot法和偏态分布处理",en:"Various univariate outlier methods incl. Hidiroglou-Berthelot & skewed distributions"},
+{name:"dixonTest",zh:"Dixon比率检验，适用于小样本正态分布异常值检测",en:"Dixon's ratio test for small normally-distributed samples"},
+{name:"hotspots",zh:"基于统计分布偏差和相似性识别不成比例高值",en:"Identify disproportionately high values based on distribution deviance & similarity"},
+{name:"outliers",zh:"常用异常值检验函数集合",en:"Collection of commonly used outlier tests"},
+{name:"extremevalues",zh:"基于估计分布的离群值检测与绘图",en:"Outlier detection & plots based on estimated distribution"},
+{name:"funModeling",zh:"Top/Bottom X%、Tukey箱线图、Hampel法异常检测",en:"Outlier detection: top/bottom X%, Tukey boxplot, Hampel method"},
+{name:"alphaOutlier",zh:"Alpha-Outlier区域（Davies & Gather 1993）",en:"Alpha-Outlier regions (Davies & Gather 1993)"}
+]},
+
+{id:"mv_density",icon:"🌊",color:"#8b5cf6",zh:"多变量-密度方法",en:"Multivariate: Density-based",zhDesc:"基于LOF和密度方法的多变量异常检测",enDesc:"Density-based multivariate outlier detection using LOF and related approaches",
+packages:[
+{name:"DescTools",zh:"LOF和Tukey箱线图异常检测",en:"LOF and Tukey boxplot outlier detection"},
+{name:"dbscan",zh:"LOF()和GLOSH密度异常检测，kd-tree加速kNN搜索",en:"LOF() and GLOSH density-based anomaly with kd-tree accelerated kNN"},
+{name:"Rlof",zh:"LOF并行实现，多CPU显著加速大规模数据",en:"Parallel LOF implementation using multiple CPUs"},
+{name:"bigutilsr",zh:"大规模数据异常检测工具，含LOF和直方图偏离法",en:"Large-scale outlier detection: LOF & histogram departure method"},
+{name:"SMLoutliers",zh:"局部相关积分(LOCI)法多变量异常检测",en:"Local Correlation Integral method for multivariate outliers"},
+{name:"ldbod",zh:"灵活局部密度异常评分，支持子采样/半监督",en:"Flexible local density-based outlier scores, supports subsampling/semi-supervised"},
+{name:"kernlab",zh:"核方法机器学习，含一类SVM新颖性检测",en:"Kernel-based ML including one-class SVM for novelty detection"},
+{name:"amelie",zh:"多变量横截面数据二元分类异常检测",en:"Anomaly detection as binary classification for multivariate cross-sectional data"},
+{name:"densratio",zh:"密度比估计，用于异常/变点检测和协变量偏移适应",en:"Density ratio estimation for anomaly/change-point detection & covariate shift"},
+{name:"lookout",zh:"留一核密度估计+极值理论+持续同调带宽选择异常检测",en:"Leave-one-out KDE + EVT + persistent homology bandwidth for outlier detection"},
+{name:"wbacon",zh:"加权BACON算法多变量异常检测和稳健线性回归",en:"Weighted BACON for multivariate outlier detection & robust regression"}
+]},
+
+{id:"mv_distance",icon:"📏",color:"#06b6d4",zh:"多变量-距离方法",en:"Multivariate: Distance-based",zhDesc:"基于距离度量（如马氏距离）的多变量异常检测",enDesc:"Distance-based multivariate outlier detection (e.g. Mahalanobis distance)",
+packages:[
+{name:"HDoutliers",zh:"混合分类/连续变量异常检测，处理异常值遮蔽问题",en:"Mixed categorical/continuous outlier detection handling masking problems",core:true},
+{name:"stray",zh:"高维数据异常检测，极值理论计算异常阈值",en:"High-dimensional anomaly detection with EVT-based threshold"},
+{name:"modi",zh:"缺失值存在下的马氏距离/深度异常检测（不完整调查数据）",en:"Mahalanobis/depth-based outlier detection with missing values"},
+{name:"CerioliOutlierDetection",zh:"迭代RMCD法稳健马氏距离多变量异常检测",en:"Iterated RMCD for multivariate outlier detection via robust Mahalanobis"},
+{name:"rrcovHD",zh:"稳健马氏距离和主成分分析异常识别",en:"Robust Mahalanobis & PCA-based outlier identification"},
+{name:"mvoutlier",zh:"多种稳健多变量异常检测：自适应截断/局部邻域/成分数据",en:"Various robust multivariate methods: adaptive cutoff, local neighbourhood, compositional"},
+{name:"DJL",zh:"马氏距离异常检测，含箱线图可视化",en:"Mahalanobis distance outlier detection with boxplot visualization"},
+{name:"mvout",zh:"基于MCD估计量的稳健马氏距离多变量异常检测",en:"Robust Mahalanobis outlier detection based on MCD estimator"},
+{name:"outlierMBC",zh:"高斯混合模型序贯异常识别，扩展至线性聚类加权模型",en:"Sequential outlier identification for Gaussian mixture models"},
+{name:"RMSD",zh:"改进Stahel-Donoho估计量检测椭圆分布多变量异常值",en:"Modified Stahel-Donoho estimators for elliptical multivariate outlier detection"},
+{name:"RMSDp",zh:"RMSD并行版本，优化高维数据",en:"Parallelized RMSD optimized for high-dimensional data"}
+]},
+
+{id:"mv_cluster",icon:"🎯",color:"#10b981",zh:"多变量-聚类方法",en:"Multivariate: Clustering-based",zhDesc:"同时聚类和识别异常值的方法",enDesc:"Methods that simultaneously cluster and identify outliers",
+packages:[
+{name:"kmodR",zh:"k-means推广方法同时聚类和发现高维异常值",en:"Generalized k-means for simultaneous clustering & outlier discovery"},
+{name:"odetector",zh:"模糊C均值等软划分聚类低典型度异常检测",en:"Soft partitioning clustering (fuzzy C-means) low-typicality outlier detection"},
+{name:"oclust",zh:"高斯混合模型聚类异常值检测与修剪",en:"Gaussian mixture model-based outlier detection & trimming"}
+]},
+
+{id:"mv_angle",icon:"📐",color:"#f97316",zh:"多变量-角度方法",en:"Multivariate: Angle-based",zhDesc:"基于角度度量的高维异常检测",enDesc:"Angle-based measures for high-dimensional anomaly detection",
+packages:[
+{name:"abodOutlier",zh:"角度异常检测：完整法/随机法/KNN法",en:"Angle-based outlier detection: full, randomized, and KNN-based methods"}
+]},
+
+{id:"mv_tree",icon:"🌳",color:"#22d3ee",zh:"多变量-决策树方法",en:"Multivariate: Decision Tree-based",zhDesc:"基于孤立森林、OutlierTree等集成方法的异常检测",enDesc:"Isolation Forest, OutlierTree and ensemble-based anomaly detection",
+packages:[
+{name:"outliertree",zh:"可解释决策树条件异常检测",en:"Explainable outlier detection through decision tree conditioning"},
+{name:"bagged.outliertrees",zh:"Bagging集成OutlierTree减少遮蔽效应",en:"Bagged OutlierTrees ensemble reducing masking effect"},
+{name:"isotree",zh:"扩展孤立森林/Fair-Cut Forest/SCiForest快速多线程实现",en:"Extended Isolation Forest, Fair-Cut Forest, SCiForest fast multi-threaded"},
+{name:"outForest",zh:"随机森林多变量异常检测：OOB预测残差异常判定",en:"Random forest multivariate outlier detection via OOB prediction residuals"},
+{name:"solitude",zh:"孤立森林实现，无需距离/密度度量",en:"Isolation forest implementation without distance/density measures"},
+{name:"bulkQC",zh:"孤立森林多变量异常检测（含质控功能）",en:"Isolation Forest multivariate outlier detection with QC functionality"}
+]},
+
+{id:"mv_other",icon:"🧩",color:"#a855f7",zh:"多变量-其他方法",en:"Multivariate: Other Approaches",zhDesc:"不变坐标/神经网络/深度度量/单元格异常等其他多变量方法",enDesc:"Invariant coordinates, neural networks, depth measures, cellwise outliers & other approaches",
+packages:[
+{name:"ICSOutlier",zh:"不变坐标多变量异常检测，选择合适分量的不同方法",en:"Invariant coordinate selection for multivariate outlier detection"},
+{name:"sGMRFmix",zh:"稀疏高斯马尔可夫随机场混合多变量传感器异常检测",en:"Sparse GMRF mixtures for multivariate noisy sensor anomaly detection"},
+{name:"ANN2",zh:"人工神经网络异常检测",en:"Artificial neural networks for anomaly detection"},
+{name:"probout",zh:"非参数多变量数值数据无监督异常概率估计",en:"Nonparametric unsupervised outlier probability estimation"},
+{name:"mrfDepth",zh:"深度度量工具：异常检测/数据探索/分类（多变量/回归/函数数据）",en:"Depth measures for outlier detection, data exploration & classification"},
+{name:"cellWise",zh:"单元格级别异常值检测和稳健分析方法",en:"Cellwise outlier detection & robust analysis methods"},
+{name:"FastPCS",zh:"投影一致子集(PCS)多变量异常检测方法",en:"Projection Congruent Subset for multivariate outlier detection"},
+{name:"outlierensembles",zh:"异常检测集成方法，含项目反应理论集成",en:"Ensemble methods for outlier detection incl. IRT-based ensemble"},
+{name:"ShapleyOutlier",zh:"Shapley值+马氏距离解释多变量异常值和单元格异常",en:"Shapley values & Mahalanobis to explain/detect multivariate & cellwise outliers"},
+{name:"HRTnomaly",zh:"历史/关系/尾部异常检测：无分布评分/模糊逻辑/贝叶斯自助法",en:"Historical, relational & tail anomaly detection with distribution-free scoring"}
+]},
+
+{id:"temporal",icon:"⏱️",color:"#ec4899",zh:"时间数据异常检测",en:"Temporal Data Anomaly Detection",zhDesc:"时间序列异常检测：上下文异常/异常子序列/异常序列，含离线批处理和在线实时方法",enDesc:"Time series anomaly detection: contextual anomalies, anomalous subsequences & series, offline and online methods",
+packages:[
+{name:"trendsegmentR",zh:"非平衡小波变换检测点异常和线性趋势变化",en:"Unbalanced wavelet transform for point anomalies & linear trend changes"},
+{name:"anomaly",zh:"CAPA/MVCAPA/PASS/BARD方法：似然分割+贝叶斯建模",en:"CAPA, MVCAPA, PASS, BARD: likelihood segmentation + Bayesian modeling"},
+{name:"anomalize",zh:"Tidy工作流：time_decompose→anomalize→time_recompose",en:"Tidy workflow: decompose → anomalize → recompose"},
+{name:"TSA",zh:"detectAO()/detectIO()检测加性/创新异常值",en:"detectAO()/detectIO() for additive & innovational outlier detection"},
+{name:"washeR",zh:"非参数检验时间序列异常值检测",en:"Nonparametric test for time series outlier detection"},
+{name:"tsoutliers",zh:"Chen-Liu法检测IO/AO/水平位移/临时变化/季节水平位移",en:"Chen-Liu approach for IO, AO, level shifts, temporary changes, seasonal level shifts"},
+{name:"seasonal",zh:"X-13-ARIMA-SEATS接口，含异常值检测",en:"X-13-ARIMA-SEATS interface with outlier detection"},
+{name:"npphen",zh:"非参数核方法检测植被物候周期与异常",en:"Nonparametric kernel-based phenological cycle & anomaly detection"},
+{name:"outliers.ts.oga",zh:"正交贪婪算法(OGA)时间序列异常检测，可并行",en:"Orthogonal Greedy Algorithm for scalable TS outlier detection with parallelization"},
+{name:"RobKF",zh:"鲁棒卡尔曼滤波检测加性/创新/混合异常值",en:"Robust Kalman filter for additive, innovational or combined outliers"},
+{name:"spectralAnomaly",zh:"谱残差算法检测时间序列异常",en:"Spectral residual algorithm for time series anomaly detection"},
+{name:"oddnet",zh:"基于特征的时序网络异常检测",en:"Feature-based anomaly detection in temporal networks"},
+{name:"oddstream",zh:"流式时间序列集合中异常序列早期检测",en:"Early detection of anomalous series in streaming TS collections"},
+{name:"pasadr",zh:"双阶段传感器监控：训练基线+序贯结构变化检测",en:"Dual-phase sensor monitoring: training baseline + sequential change detection"},
+{name:"kfino",zh:"卡尔曼滤波递归估计流式脉冲噪声异常检测",en:"Kalman filter-based recursive impulse-noise outlier detection for streaming data"}
+]},
+
+{id:"spatial",icon:"🗺️",color:"#14b8a6",zh:"空间与时空数据",en:"Spatial & Spatio-temporal Data",zhDesc:"空间异常值/异常空间模式检测及时空聚类扫描统计",enDesc:"Spatial outlier/pattern detection and spatio-temporal scan statistics",
+packages:[
+{name:"EFDR",zh:"小波增强FDR检测空间信号，含空间不规则数据网格插值",en:"Wavelet-based enhanced FDR for spatial signal detection with grid interpolation"},
+{name:"depth.plot",zh:"spatial.outlier()多变量空间异常值识别",en:"spatial.outlier() for multivariate spatial outlier identification"},
+{name:"CoordinateCleaner",zh:"生物/古生物发生数据空间和时间错误自动检测标记",en:"Automated spatial/temporal error detection in biological occurrence data"},
+{name:"scanstatistics",zh:"时空异常聚类扫描统计，支持前瞻性监测",en:"Spatio-temporal anomalous cluster detection via scan statistics"}
+]},
+
+{id:"functional",icon:"📐",color:"#6366f1",zh:"函数型数据异常检测",en:"Functional Data Anomaly Detection",zhDesc:"函数型数据异常曲线检测：深度度量/弹性分析/方向异常度等",enDesc:"Functional outlier detection: depth measures, elastic analysis, directional outlyingness, etc.",
+packages:[
+{name:"rainbow",zh:"foutliers()函数型异常检测+bagplot/boxplot可视化",en:"foutliers() functional outlier detection + bagplot/boxplot visualization"},
+{name:"adamethods",zh:"原型分析算法检测多变量/函数型数据异常",en:"Archetypoid algorithms for multivariate/functional anomaly detection"},
+{name:"ddalpha",zh:"shape.fd.outliers()基于阶扩展积分深度的函数型异常检测",en:"shape.fd.outliers() based on order-extended integrated depth"},
+{name:"fda.usc",zh:"函数型异常曲线检测：似然比/深度度量/自助分位数",en:"Functional atypical curve detection: likelihood ratio, depth, bootstrap quantiles"},
+{name:"fdasrvf",zh:"平方根速度框架弹性函数数据分析异常检测",en:"Square-root velocity framework elastic functional outlier detection"},
+{name:"fdaoutlier",zh:"方向异常度/MS-plot/总变差深度/序贯变换等函数型异常检测",en:"Directional outlyingness, MS-plot, total variation depth, sequential transforms"},
+{name:"DeBoinR",zh:"函数型箱线图检测概率密度函数集合异常值",en:"Functional boxplots for outlier detection in PDF ensembles"},
+{name:"mrct",zh:"最小正则化协方差迹(MRCT)估计量函数型异常检测",en:"Minimum Regularized Covariance Trace estimator for functional outlier detection"}
+]},
+
+{id:"apps",icon:"🔬",color:"#f59e0b",zh:"领域应用",en:"Domain Applications",zhDesc:"流行病学/环境/生物医学/遗传/地震/政治/金融等领域的异常检测应用",enDesc:"Anomaly detection applications in epidemiology, environment, biomedicine, genetics, seismology, politics, finance, etc.",
+packages:[
+{name:"ABPS",zh:"异常血液特征评分(ABPS)检测血液兴奋剂",en:"Abnormal Blood Profile Score for detecting blood doping"},
+{name:"surveillance",zh:"流行病时间序列异常检测与时空监测建模",en:"Aberration detection in epidemiological TS & spatio-temporal monitoring"},
+{name:"outbreaker2",zh:"贝叶斯重建疾病暴发，检测未观察/输入病例",en:"Bayesian reconstruction of disease outbreaks detecting unobserved/imported cases"},
+{name:"outbreaks",zh:"疾病暴发经验/模拟数据",en:"Empirical/simulated disease outbreak data"},
+{name:"wql",zh:"水质监测数据异常检测与处理",en:"Water quality monitoring data anomaly detection & processing"},
+{name:"MGBT",zh:"多重Grubbs-Beck低异常值检验（美国洪水频率计算）",en:"Multiple Grubbs-Beck low-outlier test for US flood flow frequency"},
+{name:"envoutliers",zh:"环境数据半参数异常检测：核回归+平滑残差分析",en:"Semi-parametric environmental outlier detection via kernel regression residuals"},
+{name:"extremeIndex",zh:"极端事件预测信息量指数（天气/气候预报）",en:"Index for extreme event forecast information (weather/climate)"},
+{name:"survBootOutliers",zh:"生存分析一致性自助法异常值检测",en:"Concordance-based bootstrap outlier detection in survival analysis"},
+{name:"referenceIntervals",zh:"医学参考范围计算含异常值检测",en:"Medical reference interval calculation with outlier detection"},
+{name:"bulkQC",zh:"多中心随机试验质控和异常值识别",en:"QC & outlier identification in multicenter randomized trials"},
+{name:"NMAoutlier",zh:"网络Meta分析前瞻搜索算法检测异常研究",en:"Forward search algorithm for detecting outlying studies in network meta-analysis"},
+{name:"boutliers",zh:"Meta分析自助法异常值和影响诊断",en:"Bootstrap outlier detection & influence diagnostics for meta-analysis"},
+{name:"pcadapt",zh:"主成分分析检测生物适应相关遗传标记",en:"PCA-based detection of genetic markers involved in biological adaptation"},
+{name:"GGoutlieR",zh:"K近邻法检测异常地理-遗传模式个体",en:"KNN-based detection of individuals with unusual geo-genetic patterns"},
+{name:"MALDIrppa",zh:"MALDI质谱数据质控与稳健预处理分析",en:"MALDI mass spectrometry QC & robust preprocessing"},
+{name:"qpcR",zh:"实时PCR动力学异常检测(KOD)",en:"Kinetic outlier detection in real-time PCR"},
+{name:"OmicsQC",zh:"基因组测序质控：z评分+余弦相似度异常检测",en:"Genomic sequencing QC: z-scores + Cosine Similarity Outlier Detection"},
+{name:"OutSeekR",zh:"RNA-seq数据五统计量异常检测方法",en:"Five-statistic outlier detection for RNA-seq data"},
+{name:"phylter",zh:"系统发育组学数据异常检测与剔除（Distatis方法）",en:"Outlier detection in phylogenomics via Distatis approach"},
+{name:"seismicRoll",zh:"地震学快速滚动函数：Hampel滤波器异常检测",en:"Fast rolling functions for seismology with Hampel filter outlier detection"},
+{name:"spikes",zh:"重采样核密度法检测选举舞弊（票数分布不规则）",en:"Resampled kernel density method for election fraud detection"},
+{name:"crseEventStudy",zh:"长窗口事件研究异常股票收益检测",en:"Abnormal stock return detection in long-horizon event studies"}
+]},
+
+{id:"other",icon:"🧪",color:"#94a3b8",zh:"可视化/预处理/教学/杂项",en:"Visualization, Preprocessing, Education & Misc",zhDesc:"异常值可视化工具、预处理降维方法、教学资源及其他杂项",enDesc:"Outlier visualization, preprocessing/dimension reduction, educational resources & miscellaneous",
+packages:[
+{name:"OutliersO3",zh:"多变量异常值模式展示工具，分析变量组合异常模式",en:"Multivariate outlier pattern display across variable combinations",core:true},
+{name:"Morpho",zh:"几何形态测量与网格处理，含异常值图形界面",en:"Geometric morphometrics & mesh processing with outlier GUI"},
+{name:"StatDA",zh:"环境数据异常值定位可视化工具",en:"Visualization tools for outlier detection in environmental data"},
+{name:"dobin",zh:"异常检测维度压缩：基于邻居构建基向量突出异常值",en:"Dimension reduction for outlier detection using neighbour-based basis vectors"},
+{name:"weird",zh:"Hyndman(2024)《That's Weird: Anomaly Detection Using R》配套数据与函数",en:"Datasets & functions from Hyndman (2024) 'That's Weird: Anomaly Detection Using R'",core:true},
+{name:"SCOUTer",zh:"基于PCA模拟可控异常值（SPE和Hotelling T²统计量）",en:"Simulate controlled outliers via PCA using SPE and Hotelling's T²"},
+{name:"OutliersLearn",zh:"异常检测算法教学实现，含逐步执行解释教程模式",en:"Outlier detection algorithms with tutorial mode & step-by-step explanations"},
+{name:"UAHDataScienceO",zh:"关键异常检测算法教学实现+逐步教程",en:"Key outlier detection algorithms with tutorial mode & step-by-step explanation"},
+{name:"CircOutlier",zh:"圆-圆回归模型异常值检测",en:"Outlier detection in circular-circular regression models"},
+{name:"FastRCS",zh:"残差一致子集(RCS)回归异常值检测",en:"Residual Congruent Subset for regression outlier detection"},
+{name:"SeleMix",zh:"潜在变量混合模型检测异常值和影响观测",en:"Latent variable mixture model for outlier & influential observation detection"},
+{name:"compositions",zh:"成分数据集各类异常值检测",en:"Various outlier detection for compositional datasets"},
+{name:"kuiper.2samp",zh:"双样本Kuiper检验评估连续一维概率分布异常",en:"Two-sample Kuiper test for distributional anomaly assessment"},
+{name:"enpls",zh:"集成偏最小二乘异常值检测enpls.od()",en:"Ensemble PLS outlier detection via enpls.od()"},
+{name:"faoutlier",zh:"因子分析/结构方程模型影响案例检测与汇总",en:"Influential case detection for factor analysis & SEM models"}
+]}
+];
+
+// ========== STATE ==========
+let lang = 'zh';
+let searchQuery = '';
+let currentTab = 'network';
+let simulation = null;
+
+// ========== LANGUAGE TOGGLE ==========
+function toggleLang() {
+  lang = lang === 'zh' ? 'en' : 'zh';
+  const btn = document.getElementById('lang-toggle');
+  btn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.querySelectorAll('[data-zh]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + lang);
+  });
+  const input = document.getElementById('search-input');
+  input.placeholder = input.getAttribute('data-placeholder-' + lang);
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  renderCurrentView();
+}
+
+// ========== SEARCH ==========
+function handleSearch(val) {
+  searchQuery = val.toLowerCase().trim();
+  renderCurrentView();
+}
+
+function getFilteredCategories() {
+  if (!searchQuery) return categories;
+  return categories.map(cat => {
+    const catMatch = cat[lang].toLowerCase().includes(searchQuery) || cat.id.toLowerCase().includes(searchQuery);
+    const filteredPkgs = cat.packages.filter(p =>
+      p.name.toLowerCase().includes(searchQuery) ||
+      p[lang].toLowerCase().includes(searchQuery)
+    );
+    if (catMatch) return cat;
+    if (filteredPkgs.length > 0) return {...cat, packages: filteredPkgs};
+    return null;
+  }).filter(Boolean);
+}
+
+// ========== TAB SWITCHING ==========
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  document.querySelectorAll('.view').forEach((v, i) => {
+    v.classList.toggle('active', ['network','cards','table'][i] === tab);
+  });
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (currentTab === 'cards') renderCards();
+  else if (currentTab === 'table') renderTable();
+  else if (currentTab === 'network') renderNetwork();
+}
+
+// ========== NETWORK GRAPH ==========
+function renderNetwork() {
+  const container = document.getElementById('network-view');
+  const svg = d3.select('#network-svg');
+  svg.selectAll('*').remove();
+
+  const width = container.clientWidth;
+  const height = container.clientHeight;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+
+  const filteredCats = getFilteredCategories();
+  const catIds = new Set(filteredCats.map(c => c.id));
+
+  const catNodes = filteredCats.map(c => ({
+    id: c.id, type: 'category', name: c[lang], icon: c.icon, color: c.color,
+    pkgCount: c.packages.length, radius: Math.max(28, Math.min(55, 20 + c.packages.length * 0.8))
+  }));
+
+  const pkgNodes = [];
+  const links = [];
+  filteredCats.forEach(c => {
+    c.packages.forEach(p => {
+      const nid = c.id + '::' + p.name;
+      if (!pkgNodes.find(n => n.id === nid)) {
+        pkgNodes.push({
+          id: nid, type: 'package', name: p.name, desc: p[lang],
+          core: p.core, catId: c.id, catName: c[lang], color: c.color,
+          radius: p.core ? 7 : 5
+        });
+      }
+      links.push({source: c.id, target: nid});
+    });
+  });
+
+  const nodes = [...catNodes, ...pkgNodes];
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(d => {
+      const s = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return s && s.type === 'category' ? 50 : 30;
+    }).strength(0.6))
+    .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -200 : -15))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collision', d3.forceCollide().radius(d => d.radius + 2))
+    .force('x', d3.forceX(width/2).strength(0.03))
+    .force('y', d3.forceY(height/2).strength(0.03));
+
+  const g = svg.append('g');
+
+  const zoom = d3.zoom().scaleExtent([0.2, 5]).on('zoom', (event) => {
+    g.attr('transform', event.transform);
+  });
+  svg.call(zoom);
+
+  const linkSel = g.append('g').selectAll('line').data(links).enter().append('line')
+    .attr('stroke', d => {
+      const src = typeof d.source === 'object' ? d.source : nodes.find(n=>n.id===d.source);
+      return src ? src.color : '#333';
+    })
+    .attr('stroke-opacity', 0.15)
+    .attr('stroke-width', 0.8);
+
+  const nodeSel = g.append('g').selectAll('g').data(nodes).enter().append('g')
+    .call(d3.drag()
+      .on('start', (event, d) => { if(!event.active) simulation.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (event, d) => { d.fx=event.x; d.fy=event.y; })
+      .on('end', (event, d) => { if(!event.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+
+  nodeSel.filter(d => d.type === 'category').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.color).attr('fill-opacity', 0.15)
+      .attr('stroke', d.color).attr('stroke-width', 2).attr('stroke-opacity', 0.6);
+    g2.append('text').attr('text-anchor','middle').attr('dy', d.radius > 35 ? '-0.3em' : '-0.5em')
+      .attr('fill', d.color).attr('font-size', d.radius > 35 ? '16px' : '12px')
+      .text(d.icon);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '1.2em')
+      .attr('fill', '#e2e8f0').attr('font-size', d.radius > 35 ? '10px' : '8px')
+      .attr('font-weight', '600')
+      .text(d.name.length > 8 ? d.name.substring(0,7)+'…' : d.name);
+    g2.append('text').attr('text-anchor','middle').attr('dy', '2.2em')
+      .attr('fill', '#94a3b8').attr('font-size', '8px')
+      .text(d.pkgCount + (lang==='zh'?'包':' pkgs'));
+  });
+
+  nodeSel.filter(d => d.type === 'package').each(function(d) {
+    const g2 = d3.select(this);
+    g2.append('circle').attr('r', d.radius)
+      .attr('fill', d.core ? d.color : d.color)
+      .attr('fill-opacity', d.core ? 0.7 : 0.3)
+      .attr('stroke', d.core ? d.color : 'none')
+      .attr('stroke-width', d.core ? 1.5 : 0);
+  });
+
+  const tooltip = document.getElementById('tooltip');
+
+  nodeSel.on('mouseover', (event, d) => {
+    tooltip.innerHTML = d.type === 'category'
+      ? `<div class="tooltip-name" style="color:${d.color}">${d.icon} ${d.name}</div><div class="tooltip-desc">${d.pkgCount} ${lang==='zh'?'个R包':' R packages'}</div>`
+      : `<div class="tooltip-name" style="color:${d.color}">${d.name}${d.core?' ★':''}</div><div class="tooltip-desc">${d.desc}</div>`;
+    tooltip.classList.add('show');
+    tooltip.style.left = (event.pageX - container.getBoundingClientRect().left + 15) + 'px';
+    tooltip.style.top = (event.pageY - container.getBoundingClientRect().top - 10) + 'px';
+  }).on('mouseout', () => {
+    tooltip.classList.remove('show');
+  });
+
+  nodeSel.filter(d => d.type === 'category').on('click', (event, d) => {
+    const cat = categories.find(c => c.id === d.id);
+    if (cat) openModal(cat);
+  });
+
+  simulation.on('tick', () => {
+    linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+// ========== SKILL CARDS ==========
+function renderCards() {
+  const container = document.getElementById('cards-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cards-grid">${filtered.map(cat => {
+    const displayPkgs = cat.packages.slice(0, 12);
+    const more = cat.packages.length - displayPkgs.length;
+    return `<div class="category-card" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+      <div class="card-header">
+        <span class="card-icon">${cat.icon}</span>
+        <span class="card-title" style="color:${cat.color}">${cat[lang]}</span>
+      </div>
+      <div class="card-desc">${cat[lang+'Desc']}</div>
+      <div class="card-tags">
+        ${displayPkgs.map(p => `<span class="pkg-tag${p.core?' core':''}">${p.name}</span>`).join('')}
+        ${more > 0 ? `<span class="pkg-tag more">+${more}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ========== PACKAGE TABLE ==========
+function renderTable() {
+  const container = document.getElementById('table-view');
+  const filtered = getFilteredCategories();
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="no-results-icon">🔍</div><div>${lang==='zh'?'未找到匹配的R包':'No matching packages found'}</div></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(cat => `
+    <div class="table-section">
+      <div class="table-cat-header" style="border-left-color:${cat.color}" onclick='openModal(categories.find(c=>c.id===${JSON.stringify(cat.id)}))'>
+        <span class="table-cat-icon">${cat.icon}</span>
+        <span class="table-cat-name">${cat[lang]}</span>
+        <span class="table-cat-count">${cat.packages.length} ${lang==='zh'?'包':'pkgs'}</span>
+      </div>
+      <table class="pkg-table">
+        <thead><tr><th>${lang==='zh'?'包名':'Package'}</th><th>${lang==='zh'?'说明':'Description'}</th><th></th></tr></thead>
+        <tbody>${cat.packages.map(p => `<tr>
+          <td><span class="pkg-name" style="color:${cat.color}">${p.name}</span></td>
+          <td>${p[lang]}</td>
+          <td>${p.core ? '<span class="core-star">★</span>' : ''}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  `).join('');
+}
+
+// ========== MODAL ==========
+function openModal(cat) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  content.innerHTML = `
+    <div class="modal-header">
+      <span class="modal-icon">${cat.icon}</span>
+      <div>
+        <div class="modal-title" style="color:${cat.color}">${cat[lang]}</div>
+        <div style="font-size:13px;color:var(--text2)">${cat[lang==='zh'?'en':'zh']}</div>
+      </div>
+    </div>
+    <div class="modal-desc">${cat[lang+'Desc']}<br><span style="color:var(--text2)">${cat[(lang==='zh'?'en':'zh')+'Desc'] || ''}</span></div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${cat.packages.length} ${lang==='zh'?'个R包':' R packages'}</div>
+    <div class="modal-pkgs">
+      ${cat.packages.map(p => `<div class="modal-pkg${p.core?' core':''}">
+        <div class="modal-pkg-name">${p.name}${p.core?' ★':''}</div>
+        <div class="modal-pkg-desc">${p[lang]}</div>
+      </div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(event) {
+  if (event && event.target !== document.getElementById('modal-overlay') && event.target !== document.querySelector('.modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ========== PARTICLES ==========
+function initParticles() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const count = 60;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      r: Math.random() * 1.5 + 0.5
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(244,63,94,0.25)';
+      ctx.fill();
+    });
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(244,63,94,${0.08 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ========== INIT ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initParticles();
+  renderNetwork();
+});
+
+window.addEventListener('resize', () => {
+  if (currentTab === 'network') {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(renderNetwork, 300);
+  }
+});
+</script>
+</body>
+</html>
