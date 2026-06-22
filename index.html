@@ -6,193 +6,290 @@
 <title>武利鑫 LiXin WU | Data Science & Quantitative Finance</title>
 <style>
 /* ============================================================
-   RESET & BASE
+   RESET & BASE — Space Theme
    ============================================================ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg-primary:#0a0e1a;
-  --bg-secondary:#111827;
-  --bg-card:#1a2235;
-  --bg-card-hover:#1f2a40;
-  --text-primary:#f0f4ff;
-  --text-secondary:#94a3b8;
-  --text-muted:#64748b;
-  --accent-r:#3b82f6;
-  --accent-python:#f59e0b;
-  --accent-sas:#10b981;
-  --border:rgba(255,255,255,0.06);
-  --radius:16px;
-  --transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+  --space-deep:#020510;
+  --glass-bg:rgba(8,12,30,0.55);
+  --glass-bg-hover:rgba(12,18,42,0.7);
+  --glass-border:rgba(255,255,255,0.07);
+  --glass-border-hover:rgba(255,255,255,0.14);
+  --core-blue:#4a6cf7;
+  --core-purple:#8b5cf6;
+  --arm-gold:#f59e0b;
+  --text-primary:#e2e8f4;
+  --text-secondary:#8892b0;
+  --text-muted:#5a6680;
+  --radius:18px;
+  --transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
 }
 html{scroll-behavior:smooth}
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif;
-  background:var(--bg-primary);
+  background:var(--space-deep);
   color:var(--text-primary);
   overflow-x:hidden;
   min-height:100vh;
-  line-height:1.6;
+  line-height:1.7;
 }
 
 /* ============================================================
-   PARTICLE BACKGROUND
+   WEBGL GALAXY CANVAS
    ============================================================ */
-#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#galaxy{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:0;pointer-events:none;
+}
+
+/* Interactive layer for drag events */
+#galaxy-interact{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:0;cursor:grab;
+}
+#galaxy-interact:active{cursor:grabbing}
 
 /* ============================================================
-   MAIN CONTAINER
+   MAIN CONTENT OVERLAY
    ============================================================ */
 .main{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px}
 
 /* ============================================================
-   NAVIGATION
+   NAVIGATION — Glass
    ============================================================ */
 .nav{
   position:sticky;top:0;z-index:100;
-  background:rgba(10,14,26,0.82);backdrop-filter:blur(24px);
-  border-bottom:1px solid var(--border);padding:14px 0;
+  background:rgba(8,12,30,0.72);backdrop-filter:blur(28px) saturate(1.6);
+  -webkit-backdrop-filter:blur(28px) saturate(1.6);
+  border-bottom:1px solid var(--glass-border);padding:14px 0;
 }
 .nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
-.nav-brand{font-size:18px;font-weight:700;background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.nav-links{display:flex;gap:24px;list-style:none}
-.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:14px;font-weight:500;transition:color .3s}
+.nav-brand{
+  font-size:18px;font-weight:700;
+  background:linear-gradient(135deg,var(--core-blue),var(--core-purple),var(--arm-gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:14px;font-weight:500;transition:color .3s;position:relative}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;
+  background:linear-gradient(90deg,var(--core-blue),var(--core-purple));
+  transition:width .3s;border-radius:1px;
+}
 .nav-links a:hover{color:var(--text-primary)}
+.nav-links a:hover::after{width:100%}
 
 /* ============================================================
    HERO
    ============================================================ */
-.hero{text-align:center;padding:80px 0 60px;position:relative}
+.hero{text-align:center;padding:100px 0 70px;position:relative}
+.hero-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(139,92,246,0.12) 0%,transparent 70%);
+  pointer-events:none;z-index:-1;
+}
+.hero-avatar-group{position:relative;display:inline-block;margin-bottom:32px}
 .hero-avatar{
-  width:100px;height:100px;border-radius:50%;
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);
+  width:110px;height:110px;border-radius:50%;
+  background:linear-gradient(135deg,var(--core-blue),var(--core-purple),var(--arm-gold));
   display:flex;align-items:center;justify-content:center;
-  margin:0 auto 28px;font-size:42px;font-weight:900;color:#fff;
-  box-shadow:0 0 60px rgba(59,130,246,0.25);
-  animation:avatarPulse 3s ease-in-out infinite;
+  font-size:46px;font-weight:900;color:#fff;
+  box-shadow:0 0 80px rgba(74,108,247,0.3),0 0 40px rgba(139,92,246,0.2);
+  position:relative;z-index:2;
 }
-@keyframes avatarPulse{
-  0%,100%{box-shadow:0 0 60px rgba(59,130,246,0.25)}
-  50%{box-shadow:0 0 90px rgba(139,92,246,0.4)}
+.avatar-ring{
+  position:absolute;top:-12px;left:-12px;width:134px;height:134px;
+  border-radius:50%;border:2px solid rgba(139,92,246,0.2);
+  animation:ringPulse 3s ease-in-out infinite;
 }
-.hero h1{font-size:48px;font-weight:900;margin-bottom:12px;letter-spacing:-0.5px}
+.avatar-ring:nth-child(2){
+  top:-24px;left:-24px;width:158px;height:158px;
+  border-color:rgba(74,108,247,0.12);animation-delay:.5s;
+}
+@keyframes ringPulse{
+  0%,100%{transform:scale(1);opacity:.6}
+  50%{transform:scale(1.05);opacity:1}
+}
+.hero h1{font-size:52px;font-weight:900;margin-bottom:16px;letter-spacing:-1px}
 .hero h1 .gradient{
-  background:linear-gradient(135deg,#3b82f6,#8b5cf6,#ec4899);
+  background:linear-gradient(135deg,var(--core-blue),var(--core-purple),var(--arm-gold));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.hero .subtitle{font-size:18px;color:var(--text-secondary);font-weight:400;margin-bottom:8px}
-.hero .tagline{font-size:14px;color:var(--text-muted);max-width:600px;margin:0 auto;line-height:1.8}
+.hero .subtitle{font-size:20px;color:var(--text-secondary);font-weight:300;margin-bottom:12px;letter-spacing:1px}
+.hero .tagline{font-size:15px;color:var(--text-muted);max-width:640px;margin:0 auto;line-height:1.9}
 
 /* ============================================================
    STATS ROW
    ============================================================ */
-.stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;padding:20px 0 60px}
-.stat-item{text-align:center;min-width:120px}
-.stat-num{font-size:36px;font-weight:900;background:linear-gradient(135deg,#3b82f6,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.stat-label{font-size:12px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.stats{display:flex;gap:48px;justify-content:center;flex-wrap:wrap;padding:10px 0 70px}
+.stat-item{text-align:center;min-width:130px;position:relative}
+.stat-num{
+  font-size:42px;font-weight:900;
+  background:linear-gradient(135deg,var(--core-blue),var(--arm-gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.stat-label{font-size:12px;color:var(--text-muted);margin-top:6px;text-transform:uppercase;letter-spacing:2px}
+.stat-item::after{
+  content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  width:20px;height:1px;background:rgba(139,92,246,0.3);border-radius:1px;
+}
 
 /* ============================================================
    SECTION HEADERS
    ============================================================ */
-.section{margin-bottom:80px}
-.section-header{text-align:center;margin-bottom:48px}
-.section-header h2{font-size:32px;font-weight:800;margin-bottom:8px}
+.section{margin-bottom:90px}
+.section-header{text-align:center;margin-bottom:56px;position:relative}
+.section-header h2{font-size:34px;font-weight:800;margin-bottom:10px;letter-spacing:-0.5px}
 .section-header p{color:var(--text-secondary);font-size:15px}
-.section-divider{width:60px;height:3px;border-radius:3px;margin:16px auto 0}
-.section-divider.r{background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
-.section-divider.python{background:linear-gradient(90deg,#f59e0b,#ef4444)}
-.section-divider.sas{background:linear-gradient(90deg,#10b981,#06b6d4)}
+.section-divider{width:70px;height:3px;border-radius:3px;margin:18px auto 0}
+.section-divider.r{background:linear-gradient(90deg,var(--core-blue),var(--core-purple))}
+.section-divider.python{background:linear-gradient(90deg,var(--arm-gold),#ef4444)}
+.section-divider.edu{background:linear-gradient(90deg,#6c63ff,#fd79a8)}
+.section-divider.agent{background:linear-gradient(90deg,#ed145a,var(--arm-gold),#10b981)}
+
+/* Section glow */
+.section-header::before{
+  content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);
+  width:200px;height:80px;
+  background:radial-gradient(ellipse,rgba(139,92,246,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
 
 /* ============================================================
-   SKILL CARDS GRID
+   SKILL CARDS GRID — Glass Morphism
    ============================================================ */
-.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px}
 
-/* Card */
 .skill-card{
-  background:var(--bg-card);border:1px solid var(--border);
-  border-radius:var(--radius);padding:28px;cursor:pointer;
+  background:var(--glass-bg);border:1px solid var(--glass-border);
+  border-radius:var(--radius);padding:32px;cursor:pointer;
   transition:var(--transition);position:relative;overflow:hidden;
   text-decoration:none;display:block;color:inherit;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
 }
 .skill-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  border-radius:3px 3px 0 0;transition:height .35s;
+  border-radius:3px 3px 0 0;transition:height .4s;
 }
-.skill-card.r-card::before{background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
-.skill-card.python-card::before{background:linear-gradient(90deg,#f59e0b,#ef4444)}
-.skill-card.sas-card::before{background:linear-gradient(90deg,#10b981,#06b6d4)}
-.skill-card:hover{background:var(--bg-card-hover);border-color:rgba(255,255,255,0.12);transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,0,0,0.4)}
-.skill-card:hover::before{height:4px}
-.skill-card .card-icon{font-size:32px;margin-bottom:16px}
-.skill-card .card-title{font-size:18px;font-weight:700;margin-bottom:6px;color:var(--text-primary)}
-.skill-card .card-sub{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.skill-card::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 20%,rgba(139,92,246,0.04),transparent 60%);
+  opacity:0;transition:opacity .4s;
+}
+.skill-card.r-card::before{background:linear-gradient(90deg,var(--core-blue),var(--core-purple))}
+.skill-card.python-card::before{background:linear-gradient(90deg,var(--arm-gold),#ef4444)}
+.skill-card.edu-card::before{background:linear-gradient(90deg,#6c63ff,#a78bfa)}
+.skill-card.agent-card::before{background:linear-gradient(90deg,#ed145a,var(--arm-gold),#10b981)}
+.skill-card:hover{
+  background:var(--glass-bg-hover);border-color:var(--glass-border-hover);
+  transform:translateY(-6px);
+  box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 40px rgba(139,92,246,0.08);
+}
+.skill-card:hover::before{height:5px}
+.skill-card:hover::after{opacity:1}
+.skill-card .card-icon{font-size:36px;margin-bottom:18px;transition:transform .3s}
+.skill-card:hover .card-icon{transform:scale(1.1)}
+.skill-card .card-title{font-size:19px;font-weight:700;margin-bottom:8px;color:var(--text-primary)}
+.skill-card .card-sub{font-size:14px;color:var(--text-secondary);line-height:1.7}
 .skill-card .card-badge{
-  display:inline-block;margin-top:12px;padding:3px 12px;border-radius:20px;
+  display:inline-block;margin-top:14px;padding:4px 14px;border-radius:24px;
   font-size:11px;font-weight:600;letter-spacing:0.5px;
 }
-.badge-r{background:rgba(59,130,246,0.15);color:#60a5fa}
-.badge-python{background:rgba(245,158,11,0.15);color:#fbbf24}
-.badge-sas{background:rgba(16,185,129,0.15);color:#34d399}
+.badge-r{background:rgba(74,108,247,0.12);color:#7b9cf7}
+.badge-python{background:rgba(245,158,11,0.12);color:#fbbf24}
+.badge-edu{background:rgba(108,99,255,0.12);color:#a29bfe}
+.badge-agent{background:rgba(237,20,90,0.12);color:#f87171}
 
 /* ============================================================
    ABOUT SECTION
    ============================================================ */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
 .about-card{
-  background:var(--bg-card);border:1px solid var(--border);
+  background:var(--glass-bg);border:1px solid var(--glass-border);
   border-radius:var(--radius);padding:32px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:var(--transition);
 }
-.about-card h3{font-size:18px;font-weight:700;margin-bottom:16px;color:var(--text-primary)}
-.about-card p,.about-card li{color:var(--text-secondary);font-size:14px;line-height:1.8}
+.about-card:hover{
+  background:var(--glass-bg-hover);border-color:var(--glass-border-hover);
+  box-shadow:0 16px 40px rgba(0,0,0,0.4);
+}
+.about-card h3{font-size:19px;font-weight:700;margin-bottom:18px;color:var(--text-primary)}
+.about-card p,.about-card li{color:var(--text-secondary);font-size:14px;line-height:1.9}
 .about-card ul{list-style:none;padding:0}
-.about-card li{padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.about-card li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:12px}
 .about-card li:last-child{border-bottom:none}
-.about-card li .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.dot-r{background:#3b82f6;box-shadow:0 0 8px rgba(59,130,246,0.5)}
-.dot-python{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,0.5)}
-.dot-sas{background:#10b981;box-shadow:0 0 8px rgba(16,185,129,0.5)}
+.about-card li .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-r{background:var(--core-blue);box-shadow:0 0 10px rgba(74,108,247,0.5)}
+.dot-python{background:var(--arm-gold);box-shadow:0 0 10px rgba(245,158,11,0.5)}
+.dot-sas{background:#10b981;box-shadow:0 0 10px rgba(16,185,129,0.5)}
 
 /* ============================================================
    FOOTER
    ============================================================ */
 .footer{
-  text-align:center;padding:40px 0;border-top:1px solid var(--border);
+  text-align:center;padding:44px 0;border-top:1px solid var(--glass-border);
   color:var(--text-muted);font-size:13px;margin-top:40px
 }
 .footer a{color:var(--text-secondary);text-decoration:none;transition:color .3s}
-.footer a:hover{color:var(--text-primary)}
+.footer a:hover{color:var(--arm-gold)}
+
+/* ============================================================
+   CONSTELLATION LINE DECORATION
+   ============================================================ */
+.constellation{
+  position:absolute;pointer-events:none;z-index:0;opacity:.15;
+}
+.constellation svg{width:100%;height:100%}
 
 /* ============================================================
    ANIMATIONS
    ============================================================ */
 .fade-in{opacity:0;transform:translateY(30px);animation:fadeInUp .8s forwards}
-.fade-in:nth-child(1){animation-delay:0s}
-.fade-in:nth-child(2){animation-delay:.1s}
-.fade-in:nth-child(3){animation-delay:.2s}
-.fade-in:nth-child(4){animation-delay:.3s}
-.fade-in:nth-child(5){animation-delay:.4s}
-.fade-in:nth-child(6){animation-delay:.5s}
-.fade-in:nth-child(7){animation-delay:.6s}
-.fade-in:nth-child(8){animation-delay:.7s}
 @keyframes fadeInUp{to{opacity:1;transform:translateY(0)}}
+
+/* Stagger delays */
+.fade-in:nth-child(1){animation-delay:0s}
+.fade-in:nth-child(2){animation-delay:.08s}
+.fade-in:nth-child(3){animation-delay:.16s}
+.fade-in:nth-child(4){animation-delay:.24s}
+.fade-in:nth-child(5){animation-delay:.32s}
+.fade-in:nth-child(6){animation-delay:.4s}
+.fade-in:nth-child(7){animation-delay:.48s}
+.fade-in:nth-child(8){animation-delay:.56s}
+.fade-in:nth-child(9){animation-delay:.64s}
+.fade-in:nth-child(10){animation-delay:.72s}
+.fade-in:nth-child(11){animation-delay:.80s}
+.fade-in:nth-child(12){animation-delay:.88s}
+.fade-in:nth-child(13){animation-delay:.96s}
+.fade-in:nth-child(14){animation-delay:1.04s}
+.fade-in:nth-child(15){animation-delay:1.12s}
 
 /* ============================================================
    RESPONSIVE
    ============================================================ */
 @media(max-width:768px){
   .hero h1{font-size:32px}
-  .hero{padding:60px 0 40px}
+  .hero{padding:70px 0 40px}
   .skills-grid{grid-template-columns:1fr}
   .about-grid{grid-template-columns:1fr}
-  .stats{gap:20px}
+  .stats{gap:24px}
+  .stat-num{font-size:30px}
   .nav-links{display:none}
+  .hero-avatar{width:80px;height:80px;font-size:34px}
+  .avatar-ring{top:-10px;left:-10px;width:100px;height:100px}
+  .avatar-ring:nth-child(2){top:-20px;left:-20px;width:120px;height:120px}
 }
 </style>
 </head>
 <body>
 
-<!-- Particle Canvas -->
-<canvas id="particles"></canvas>
+<!-- WebGL Galaxy Canvas (background layer, pointer-events: none) -->
+<canvas id="galaxy"></canvas>
+
+<!-- Interactive drag layer (captures mouse events) -->
+<div id="galaxy-interact"></div>
 
 <!-- Navigation -->
 <nav class="nav">
@@ -208,12 +305,17 @@ body{
   </div>
 </nav>
 
-<!-- Main Content -->
+<!-- Main Content Overlay -->
 <div class="main">
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-avatar">W</div>
+    <div class="hero-glow"></div>
+    <div class="hero-avatar-group">
+      <div class="avatar-ring"></div>
+      <div class="avatar-ring"></div>
+      <div class="hero-avatar">W</div>
+    </div>
     <h1><span class="gradient">武利鑫</span> LiXin WU</h1>
     <p class="subtitle">Data Scientist · Quantitative Finance Researcher</p>
     <p class="tagline">
@@ -230,9 +332,7 @@ body{
     <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">技术语言</div></div>
   </div>
 
-  <!-- ================================================================
-       R 技能生态
-       ================================================================ -->
+  <!-- R Skills -->
   <section class="section" id="r-skills">
     <div class="section-header">
       <h2>🔬 R 语言包技能汇总</h2>
@@ -241,7 +341,6 @@ body{
     </div>
 
     <div class="skills-grid">
-
       <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/timeseries.html" target="_blank">
         <div class="card-icon">📈</div>
         <div class="card-title">Time Series 时间序列</div>
@@ -346,13 +445,10 @@ body{
         <div class="card-sub">统计教学辅助、可视化教学、互动学习R包</div>
         <span class="card-badge badge-r">R · Teaching</span>
       </a>
-
     </div>
   </section>
 
-  <!-- ================================================================
-       Python 技能生态
-       ================================================================ -->
+  <!-- Python Skills -->
   <section class="section" id="python-skills">
     <div class="section-header">
       <h2>🐍 Python 开源生态分析</h2>
@@ -361,7 +457,6 @@ body{
     </div>
 
     <div class="skills-grid">
-
       <a class="skill-card python-card fade-in" href="https://wulixin.github.io/Python开源技术分享/quantopian-ecosystem.html" target="_blank">
         <div class="card-icon">🎯</div>
         <div class="card-title">Quantopian 开源生态</div>
@@ -389,46 +484,67 @@ body{
         <div class="card-sub">可解释AI完整工具链 · DALEX/DrWhy/shapviz/fairmodels/survex 全解析</div>
         <span class="card-badge badge-python">R+Python · XAI</span>
       </a>
-
     </div>
   </section>
 
-  <!-- ================================================================
-       SAS 技能
-  <section class="section" id="sas-skills">
+  <!-- Education Software -->
+  <section class="section" id="edu-skills">
     <div class="section-header">
-      <h2>📐 SAS 技能积累</h2>
-      <p>统计分析系统在金融与医药领域的深度应用</p>
-      <div class="section-divider sas"></div>
+      <h2>🎓 面向未来定制化教育软件开发</h2>
+      <p>以 AI + 交互式 Web 技术打造个性化学习工具，助力下一代教育</p>
+      <div class="section-divider edu"></div>
     </div>
 
     <div class="skills-grid">
-      <div class="skill-card sas-card fade-in">
-        <div class="card-icon">💊</div>
-        <div class="card-title">SAS 金融分析</div>
-        <div class="card-sub">风险建模、信用评分、监管报表等金融行业SAS应用</div>
-        <span class="card-badge badge-sas">SAS · Finance</span>
-      </div>
+      <a class="skill-card edu-card fade-in" href="初中生背单词/index.html" target="_blank">
+        <div class="card-icon">📖</div>
+        <div class="card-title">WordQuest · 初中英语词汇闯关</div>
+        <div class="card-sub">基于四六级6000词的多维题型训练系统，涵盖介词、冠词、时态、拼写等闯关模式，游戏化学习体验</div>
+        <span class="card-badge badge-edu">Web App · Education</span>
+      </a>
 
-      <div class="skill-card sas-card fade-in">
-        <div class="card-icon">📉</div>
-        <div class="card-title">SAS 统计建模</div>
-        <div class="card-sub">PROC REG / LOGISTIC / MIXED / GENMOD 等核心过程步</div>
-        <span class="card-badge badge-sas">SAS · Stats</span>
-      </div>
-
-      <div class="skill-card sas-card fade-in">
-        <div class="card-icon">📊</div>
-        <div class="card-title">SAS 宏编程</div>
-        <div class="card-sub">宏变量、宏函数、自动化报表生成与批处理</div>
-        <span class="card-badge badge-sas">SAS · Macro</span>
-      </div>
+      <a class="skill-card edu-card fade-in" href="初中物理常识训练/index.html" target="_blank">
+        <div class="card-icon">⚛️</div>
+        <div class="card-title">初中物理常识训练 · 1000题</div>
+        <div class="card-sub">覆盖力学、电学、光学、热学等全部知识模块，智能批改 + 错题回顾 + 进度追踪</div>
+        <span class="card-badge badge-edu">Web App · Education</span>
+      </a>
     </div>
   </section>
 
-  <!-- ================================================================
-       ABOUT
-       ================================================================ -->
+  <!-- QuandlFinance Agent -->
+  <section class="section" id="quandl-agent">
+    <div class="section-header">
+      <h2>🤖 QuandlFinance Agent · 24h 超级投研助理</h2>
+      <p>Quant · Data Science · Marketing — 三合一智能研究平台</p>
+      <div class="section-divider agent"></div>
+    </div>
+
+    <div class="skills-grid">
+      <a class="skill-card agent-card fade-in" href="QuandlFinance/home.html" target="_blank">
+        <div class="card-icon">📈</div>
+        <div class="card-title">股票/基金投资研究</div>
+        <div class="card-sub">热点板块深度研究 · 涨停股关联分析 · 量化指标挖掘 · 基金组合构建 · 指数基金预测</div>
+        <span class="card-badge badge-agent">Quant · 24h Online</span>
+      </a>
+
+      <a class="skill-card agent-card fade-in" href="QuandlFinance/datascience.html" target="_blank">
+        <div class="card-icon">🧪</div>
+        <div class="card-title">数据科学与 AI</div>
+        <div class="card-sub">推荐算法 · 情感分析 · 文本挖掘 · 机器学习框架 · 共享单车数据挖掘 · 算法与AI应用</div>
+        <span class="card-badge badge-agent">Data Science · 24h Online</span>
+      </a>
+
+      <a class="skill-card agent-card fade-in" href="QuandlFinance/marketing.html" target="_blank">
+        <div class="card-icon">🎯</div>
+        <div class="card-title">市场营销科学</div>
+        <div class="card-sub">选择模型产品设计 · HLM分层线性模型 · 客户渠道转化分析 · 服务营销策略</div>
+        <span class="card-badge badge-agent">Marketing · 24h Online</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- About -->
   <section class="section" id="about">
     <div class="section-header">
       <h2>👤 关于我</h2>
@@ -436,11 +552,10 @@ body{
     </div>
 
     <div class="about-grid">
-
       <div class="about-card fade-in">
         <h3>📚 教育背景</h3>
         <ul>
-          <li><span class="dot dot-r"></span> 湖北经济学院 · 市场营销 (2013.9 – 2017.7) · 导师：<a href="https://mp.weixin.qq.com/s/36E2tsmPKxZIf1qYRdBnSQ" target="_blank" style="color:#60a5fa">叶敏教授</a> · 毕业论文：<a href="https://mp.weixin.qq.com/s/36E2tsmPKxZIf1qYRdBnSQ" target="_blank" style="color:#60a5fa">基于RFM数据挖掘的动态客户管理</a></li>
+          <li><span class="dot dot-r"></span> 湖北经济学院 · 市场营销 (2013.9 – 2017.7) · 导师：<a href="https://mp.weixin.qq.com/s/36E2tsmPKxZIf1qYRdBnSQ" target="_blank" style="color:#7b9cf7">叶敏教授</a> · 毕业论文：<a href="https://mp.weixin.qq.com/s/36E2tsmPKxZIf1qYRdBnSQ" target="_blank" style="color:#7b9cf7">基于RFM数据挖掘的动态客户管理</a></li>
           <li><span class="dot dot-python"></span> 青海民族大学 · 金融硕士 (2024.9 – 2027.7)</li>
         </ul>
       </div>
@@ -472,83 +587,12 @@ body{
           <li><span class="dot dot-python"></span> Git / GitHub · 开源协作与版本管理</li>
         </ul>
       </div>
-
-    </div>
-  </section>
-
-  <!-- ================================================================
-       定制化教育软件开发
-       ================================================================ -->
-  <section class="section" id="edu-skills">
-    <div class="section-header">
-      <h2>🎓 面向未来定制化教育软件开发</h2>
-      <p>以 AI + 交互式 Web 技术打造个性化学习工具，助力下一代教育</p>
-      <div class="section-divider" style="background:linear-gradient(90deg,#6c63ff,#fd79a8)"></div>
-    </div>
-
-    <div class="skills-grid">
-
-      <a class="skill-card fade-in" href="初中生背单词/index.html" target="_blank"
-         style="border-left:3px solid #6c63ff;">
-        <div class="card-icon">📖</div>
-        <div class="card-title">WordQuest · 初中英语词汇闯关</div>
-        <div class="card-sub">基于四六级6000词的多维题型训练系统，涵盖介词、冠词、时态、拼写等闯关模式，游戏化学习体验</div>
-        <span class="card-badge" style="background:rgba(108,99,255,0.15);color:#a29bfe">Web App · Education</span>
-      </a>
-
-      <a class="skill-card fade-in" href="初中物理常识训练/index.html" target="_blank"
-         style="border-left:3px solid #4F46E5;">
-        <div class="card-icon">⚛️</div>
-        <div class="card-title">初中物理常识训练 · 1000题</div>
-        <div class="card-sub">覆盖力学、电学、光学、热学等全部知识模块，智能批改 + 错题回顾 + 进度追踪</div>
-        <span class="card-badge" style="background:rgba(79,70,229,0.15);color:#818CF8">Web App · Education</span>
-      </a>
-
-    </div>
-  </section>
-
-  <!-- ================================================================
-       QuandlFinance Agent
-       ================================================================ -->
-  <section class="section" id="quandl-agent">
-    <div class="section-header">
-      <h2>🤖 QuandlFinance Agent · 24h 超级投研助理</h2>
-      <p>Quant · Data Science · Marketing — 三合一智能研究平台</p>
-      <div class="section-divider" style="background:linear-gradient(90deg,#ed145a,#f59e0b,#10b981)"></div>
-    </div>
-
-    <div class="skills-grid">
-
-      <a class="skill-card fade-in" href="QuandlFinance/home.html" target="_blank"
-         style="border-left:3px solid #ed145a;">
-        <div class="card-icon">📈</div>
-        <div class="card-title">股票/基金投资研究</div>
-        <div class="card-sub">热点板块深度研究 · 涨停股关联分析 · 量化指标挖掘 · 基金组合构建 · 指数基金预测</div>
-        <span class="card-badge" style="background:rgba(237,20,90,0.15);color:#f87171">Quant · 24h Online</span>
-      </a>
-
-      <a class="skill-card fade-in" href="QuandlFinance/datascience.html" target="_blank"
-         style="border-left:3px solid #f59e0b;">
-        <div class="card-icon">🧪</div>
-        <div class="card-title">数据科学与 AI</div>
-        <div class="card-sub">推荐算法 · 情感分析 · 文本挖掘 · 机器学习框架 · 共享单车数据挖掘 · 算法与AI应用</div>
-        <span class="card-badge" style="background:rgba(245,158,11,0.15);color:#fbbf24">Data Science · 24h Online</span>
-      </a>
-
-      <a class="skill-card fade-in" href="QuandlFinance/marketing.html" target="_blank"
-         style="border-left:3px solid #10b981;">
-        <div class="card-icon">🎯</div>
-        <div class="card-title">市场营销科学</div>
-        <div class="card-sub">选择模型产品设计 · HLM分层线性模型 · 客户渠道转化分析 · 服务营销策略</div>
-        <span class="card-badge" style="background:rgba(16,185,129,0.15);color:#34d399">Marketing · 24h Online</span>
-      </a>
-
     </div>
   </section>
 
   <!-- Footer -->
   <footer class="footer">
-    <p>© 2026 LiXin WU · Built with ❤️ using D3.js & vanilla HTML/CSS</p>
+    <p>© 2026 LiXin WU · Built with ❤️ using WebGL & vanilla JS</p>
     <p style="margin-top:8px">
       <a href="https://github.com/wulixin" target="_blank">GitHub</a> · 
       <a href="mailto:wulixin@example.com">Email</a>
@@ -557,81 +601,538 @@ body{
 
 </div>
 
-<!-- ================================================================
-     PARTICLE ANIMATION (Vanilla JS + Canvas)
-     ================================================================ -->
+<!-- ============================================================
+     GLSL SHADERS (inlined via script tags)
+     ============================================================ -->
+<script id="vs-galaxy" type="x-shader/x-vertex">
+precision highp float;
+
+attribute float a_type;        /* 0=core, 1=arm, 2=halo */
+attribute float a_armIdx;      /* which spiral arm */
+attribute float a_radiusFrac;  /* 0..1 along arm */
+attribute float a_angleOff;    /* angular scatter */
+attribute float a_heightOff;   /* vertical scatter */
+attribute float a_size;
+attribute float a_seed;        /* noise seed */
+
+uniform mat4 u_mvp;
+uniform float u_time;
+uniform float u_twist;
+uniform float u_armCount;
+uniform float u_noiseScale;
+uniform float u_noiseAmp;
+
+varying float v_radius;
+varying float v_type;
+varying float v_seed;
+varying float v_alpha;
+
+/* ===== 3D Simplex Noise (Ashima Arts) ===== */
+vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
+vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+
+float snoise(vec3 v){
+  const vec2 C=vec2(1.0/6.0,1.0/3.0);
+  const vec4 D=vec4(0.0,0.5,1.0,2.0);
+  vec3 i=floor(v+dot(v,C.yyy));
+  vec3 x0=v-i+dot(i,C.xxx);
+  vec3 g=step(x0.yzx,x0.xyz);
+  vec3 l=1.0-g;
+  vec3 i1=min(g.xyz,l.zxy);
+  vec3 i2=max(g.xyz,l.zxy);
+  vec3 x1=x0-i1+C.xxx;
+  vec3 x2=x0-i2+C.yyy;
+  vec3 x3=x0-D.yyy;
+  i=mod289(i);
+  vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+  float n_=0.142857142857;
+  vec3 ns=n_*D.wyz-D.xzx;
+  vec4 j=p-49.0*floor(p*ns.z*ns.z);
+  vec4 x_=floor(j*ns.z);
+  vec4 y_=floor(j-7.0*x_);
+  vec4 x=x_*ns.x+ns.yyyy;
+  vec4 y=y_*ns.x+ns.yyyy;
+  vec4 h=1.0-abs(x)-abs(y);
+  vec4 b0=vec4(x.xy,y.xy);
+  vec4 b1=vec4(x.zw,y.zw);
+  vec4 s0=floor(b0)*2.0+1.0;
+  vec4 s1=floor(b1)*2.0+1.0;
+  vec4 sh=-step(h,vec4(0.0));
+  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
+  vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+  vec3 p0=vec3(a0.xy,h.x);
+  vec3 p1=vec3(a0.zw,h.y);
+  vec3 p2=vec3(a1.xy,h.z);
+  vec3 p3=vec3(a1.zw,h.w);
+  vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+  p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+  vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0);
+  m=m*m;
+  return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+}
+
+void main(){
+  /* --- Spiral arm computation --- */
+  float armAngle=a_armIdx*6.2831853/u_armCount;
+  float rMin=0.08;
+  float rMax=3.5;
+  float r=mix(rMin,rMax,a_radiusFrac);
+
+  /* Logarithmic spiral angle */
+  float logR=log(r/rMin);
+  float angle=armAngle+logR*u_twist+a_angleOff;
+
+  /* 3D position before noise */
+  float px=r*cos(angle);
+  float pz=r*sin(angle);
+
+  /* --- Noise perturbation --- */
+  float freq=u_noiseScale;
+  float n1=snoise(vec3(px*freq,pz*freq,u_time*0.15+a_seed));
+  float n2=snoise(vec3(px*freq*2.3+5.7,pz*freq*2.3-3.2,u_time*0.22+a_seed*1.7));
+  float n3=snoise(vec3(px*freq*0.7+9.1,pz*freq*0.7-6.3,u_time*0.08+a_seed*2.9));
+  float noise=n1*0.55+n2*0.3+n3*0.15;
+
+  r+=noise*u_noiseAmp*(0.6+0.4*a_radiusFrac);
+  angle+=noise*0.25*u_noiseAmp;
+  px=r*cos(angle);
+  pz=r*sin(angle);
+
+  /* Height: thin in core, spread in arms, thick in halo */
+  float heightSpread;
+  if(a_type<0.5){
+    heightSpread=0.12;            /* core - thin */
+  }else if(a_type<1.5){
+    heightSpread=0.35*r;          /* arm - spreads with radius */
+  }else{
+    heightSpread=1.5*r;           /* halo - spherical */
+  }
+  float py=a_heightOff*heightSpread;
+
+  /* Extra organic wobble for arms at mid-radius (star-forming regions) */
+  if(a_type>0.5&&a_type<1.5){
+    float midR=smoothstep(0.0,0.5,a_radiusFrac)*(1.0-smoothstep(0.5,1.0,a_radiusFrac));
+    py+=midR*n2*0.25;
+  }
+
+  vec4 worldPos=vec4(px,py,pz,1.0);
+  gl_Position=u_mvp*worldPos;
+
+  /* Point size: big bright core, smaller arms, tiny halo */
+  float baseSize;
+  if(a_type<0.5)baseSize=3.5+a_size*2.5;
+  else if(a_type<1.5)baseSize=1.8+a_size*1.5;
+  else baseSize=0.8+a_size*0.8;
+  gl_PointSize=baseSize*(1.4-0.7*a_radiusFrac);
+
+  v_radius=r;
+  v_type=a_type;
+  v_seed=a_seed;
+
+  /* Alpha: core is bright, arms fade with radius, halo is faint */
+  if(a_type<0.5)v_alpha=0.9;
+  else if(a_type<1.5)v_alpha=0.75*(1.0-0.35*a_radiusFrac);
+  else v_alpha=0.3;
+}
+</script>
+
+<script id="fs-galaxy" type="x-shader/x-fragment">
+precision highp float;
+
+varying float v_radius;
+varying float v_type;
+varying float v_seed;
+varying float v_alpha;
+
+uniform float u_time;
+
+void main(){
+  /* Point-sprite radial gradient */
+  float d=length(gl_PointCoord-0.5)*2.0; /* 0 at center, 1 at edge */
+  float glow=1.0-smoothstep(0.0,1.0,d);
+  glow=pow(glow,1.8); /* sharper falloff for star-like glow */
+
+  /* Twinkling: multi-frequency organic flicker */
+  float t=u_time;
+  float twinkle=0.7
+    +0.15*sin(t*3.7+v_seed*113.0)
+    +0.1*sin(t*7.1+v_seed*79.0)
+    +0.05*sin(t*13.3+v_seed*47.0);
+  twinkle=clamp(twinkle,0.45,1.0);
+
+  /* Color gradient: blue-purple core → gold edges */
+  vec3 coreBlue=vec3(0.20,0.38,0.95);
+  vec3 corePurple=vec3(0.50,0.15,0.85);
+  vec3 midCyan=vec3(0.25,0.75,0.95);
+  vec3 edgeGold=vec3(1.0,0.65,0.08);
+  vec3 edgeWhite=vec3(1.0,0.9,0.7);
+
+  /* Multi-stop gradient based on radius */
+  float rNorm=clamp(v_radius/3.5,0.0,1.0);
+  vec3 color;
+  if(rNorm<0.15){
+    color=mix(coreBlue,corePurple,rNorm/0.15);
+  }else if(rNorm<0.4){
+    color=mix(corePurple,midCyan,(rNorm-0.15)/0.25);
+  }else if(rNorm<0.7){
+    color=mix(midCyan,edgeGold,(rNorm-0.4)/0.3);
+  }else{
+    color=mix(edgeGold,edgeWhite,(rNorm-0.7)/0.3);
+  }
+
+  /* Subtle color variation based on particle seed */
+  color+=vec3(0.04,0.02,-0.01)*sin(v_seed*37.0);
+  color+=vec3(-0.02,0.03,0.02)*cos(v_seed*53.0+1.2);
+
+  /* Core particles: slight purple boost */
+  if(v_type<0.5){
+    color=mix(color,vec3(0.6,0.3,0.9),0.2);
+  }
+
+  /* Brightness boost at center of each point */
+  float coreBright=1.0+0.6*(1.0-d);
+
+  float alpha=glow*twinkle*v_alpha;
+  gl_FragColor=vec4(color*coreBright,alpha);
+}
+</script>
+
+<!-- ============================================================
+     WEBGL GALAXY ENGINE
+     ============================================================ -->
 <script>
 (function(){
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  const PARTICLE_COUNT = 80;
+  'use strict';
 
-  function resize(){
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
+  /* ---- Canvas & GL setup ---- */
+  const canvas=document.getElementById('galaxy');
+  const gl=canvas.getContext('webgl',{alpha:true,antialias:true})||canvas.getContext('experimental-webgl',{alpha:true,antialias:true});
+  if(!gl){console.warn('WebGL not supported, falling back to static bg');return;}
 
-  class Particle{
-    constructor(){
-      this.reset();
-      this.y = Math.random() * canvas.height;
+  /* ---- Shader compilation ---- */
+  function compileShader(src,type){
+    const shader=gl.createShader(type);
+    gl.shaderSource(shader,src);
+    gl.compileShader(shader);
+    if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){
+      console.error('Shader compile error:',gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
     }
-    reset(){
-      this.x = Math.random() * canvas.width;
-      this.y = -10;
-      this.size = Math.random() * 2 + 1;
-      this.speed = Math.random() * 0.6 + 0.2;
-      this.opacity = Math.random() * 0.5 + 0.1;
-      // Color palette
-      const colors = [
-        'rgba(59,130,246,OP)','rgba(139,92,246,OP)','rgba(236,72,153,OP)',
-        'rgba(245,158,11,OP)','rgba(16,185,129,OP)','rgba(6,182,212,OP)'
-      ];
-      this.color = colors[Math.floor(Math.random() * colors.length)];
-    }
-    update(){
-      this.y += this.speed;
-      this.x += Math.sin(this.y * 0.01) * 0.3;
-      if(this.y > canvas.height + 10) this.reset();
-    }
-    draw(){
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fillStyle = this.color.replace('OP', String(this.opacity));
-      ctx.fill();
-    }
+    return shader;
   }
 
-  for(let i = 0; i < PARTICLE_COUNT; i++){
-    particles.push(new Particle());
+  const vsSrc=document.getElementById('vs-galaxy').textContent;
+  const fsSrc=document.getElementById('fs-galaxy').textContent;
+  const vs=compileShader(vsSrc,gl.VERTEX_SHADER);
+  const fs=compileShader(fsSrc,gl.FRAGMENT_SHADER);
+  if(!vs||!fs)return;
+
+  const prog=gl.createProgram();
+  gl.attachShader(prog,vs);
+  gl.attachShader(prog,fs);
+  gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){
+    console.error('Program link error:',gl.getProgramInfoLog(prog));
+    return;
+  }
+  gl.useProgram(prog);
+
+  /* ---- Attribute locations ---- */
+  const aLoc={
+    type:gl.getAttribLocation(prog,'a_type'),
+    armIdx:gl.getAttribLocation(prog,'a_armIdx'),
+    radiusFrac:gl.getAttribLocation(prog,'a_radiusFrac'),
+    angleOff:gl.getAttribLocation(prog,'a_angleOff'),
+    heightOff:gl.getAttribLocation(prog,'a_heightOff'),
+    size:gl.getAttribLocation(prog,'a_size'),
+    seed:gl.getAttribLocation(prog,'a_seed'),
+  };
+
+  /* ---- Uniform locations ---- */
+  const uLoc={
+    mvp:gl.getUniformLocation(prog,'u_mvp'),
+    time:gl.getUniformLocation(prog,'u_time'),
+    twist:gl.getUniformLocation(prog,'u_twist'),
+    armCount:gl.getUniformLocation(prog,'u_armCount'),
+    noiseScale:gl.getUniformLocation(prog,'u_noiseScale'),
+    noiseAmp:gl.getUniformLocation(prog,'u_noiseAmp'),
+  };
+
+  /* ---- Particle generation (8000 particles) ---- */
+  const TOTAL=8000;
+  const ARM_COUNT=4;
+  const CORE_RATIO=0.22;   /* 22% core */
+  const ARM_RATIO=0.62;    /* 62% arms */
+  /* Halo: remaining 16% */
+
+  const attrData={
+    type:new Float32Array(TOTAL),
+    armIdx:new Float32Array(TOTAL),
+    radiusFrac:new Float32Array(TOTAL),
+    angleOff:new Float32Array(TOTAL),
+    heightOff:new Float32Array(TOTAL),
+    size:new Float32Array(TOTAL),
+    seed:new Float32Array(TOTAL),
+  };
+
+  for(let i=0;i<TOTAL;i++){
+    const r=Math.random();
+    let type,armIdx,radiusFrac,angleOff,heightOff,size;
+
+    if(r<CORE_RATIO){
+      /* Core bulge — dense, concentrated at center */
+      type=0;
+      armIdx=Math.floor(Math.random()*ARM_COUNT);
+      radiusFrac=Math.pow(Math.random(),3.5)*0.25;
+      angleOff=(Math.random()-0.5)*Math.PI*2;
+      heightOff=(Math.random()-0.5)*0.3;
+      size=Math.random()*2.5+1.5;
+    }else if(r<(CORE_RATIO+ARM_RATIO)){
+      /* Spiral arms — distributed along arm with noise scatter */
+      type=1;
+      armIdx=Math.floor(Math.random()*ARM_COUNT);
+      radiusFrac=Math.random();
+      angleOff=(Math.random()-0.5)*0.45;
+      heightOff=(Math.random()-0.5)*0.8;
+      size=Math.random()*1.8+0.6;
+    }else{
+      /* Halo — random spherical distribution */
+      type=2;
+      armIdx=Math.floor(Math.random()*ARM_COUNT);
+      radiusFrac=Math.random();
+      angleOff=Math.random()*Math.PI*2;
+      heightOff=(Math.random()-0.5)*2.5;
+      size=Math.random()*0.8+0.2;
+    }
+
+    attrData.type[i]=type;
+    attrData.armIdx[i]=armIdx;
+    attrData.radiusFrac[i]=radiusFrac;
+    attrData.angleOff[i]=angleOff;
+    attrData.heightOff[i]=heightOff;
+    attrData.size[i]=size;
+    attrData.seed[i]=Math.random()*1000;
   }
 
-  function animate(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => { p.update(); p.draw(); });
+  /* ---- Create & fill buffers ---- */
+  function createBuffer(data){
+    const buf=gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+    gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);
+    return buf;
+  }
 
-    // Draw connection lines between nearby particles
-    for(let i = 0; i < particles.length; i++){
-      for(let j = i + 1; j < particles.length; j++){
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if(dist < 120){
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = 'rgba(255,255,255,' + (0.04 * (1 - dist / 120)) + ')';
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
+  const bufs={};
+  for(const key in attrData){
+    bufs[key]=createBuffer(attrData[key]);
+  }
+
+  function bindAttr(name,size){
+    gl.bindBuffer(gl.ARRAY_BUFFER,bufs[name]);
+    gl.enableVertexAttribArray(aLoc[name]);
+    gl.vertexAttribPointer(aLoc[name],size,gl.FLOAT,false,0,0);
+  }
+
+  bindAttr('type',1);
+  bindAttr('armIdx',1);
+  bindAttr('radiusFrac',1);
+  bindAttr('angleOff',1);
+  bindAttr('heightOff',1);
+  bindAttr('size',1);
+  bindAttr('seed',1);
+
+  /* ---- Enable point sprite blending ---- */
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA,gl.ONE);
+  gl.blendEquation(gl.FUNC_ADD);
+  gl.disable(gl.DEPTH_TEST);
+
+  /* ---- Matrix helpers ---- */
+  function mat4Perspective(out,fovy,aspect,near,far){
+    const f=1.0/Math.tan(fovy/2);
+    const nf=1/(near-far);
+    out[0]=f/aspect;out[1]=0;out[2]=0;out[3]=0;
+    out[4]=0;out[5]=f;out[6]=0;out[7]=0;
+    out[8]=0;out[9]=0;out[10]=(far+near)*nf;out[11]=-1;
+    out[12]=0;out[13]=0;out[14]=2*far*near*nf;out[15]=0;
+  }
+
+  function mat4Multiply(out,a,b){
+    for(let i=0;i<4;i++){
+      for(let j=0;j<4;j++){
+        out[i+j*4]=
+          a[i]*b[j*4]+a[i+4]*b[j*4+1]+a[i+8]*b[j*4+2]+a[i+12]*b[j*4+3];
       }
     }
-    requestAnimationFrame(animate);
   }
-  animate();
+
+  function mat4RotX(out,a,angle){
+    const s=Math.sin(angle),c=Math.cos(angle);
+    const m=[1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1];
+    mat4Multiply(out,a,m);
+  }
+
+  function mat4RotY(out,a,angle){
+    const s=Math.sin(angle),c=Math.cos(angle);
+    const m=[c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1];
+    mat4Multiply(out,a,m);
+  }
+
+  function mat4Translate(out,a,vec){
+    out[0]=a[0];out[1]=a[1];out[2]=a[2];out[3]=a[3];
+    out[4]=a[4];out[5]=a[5];out[6]=a[6];out[7]=a[7];
+    out[8]=a[8];out[9]=a[9];out[10]=a[10];out[11]=a[11];
+    out[12]=a[12]+vec[0];
+    out[13]=a[13]+vec[1];
+    out[14]=a[14]+vec[2];
+    out[15]=a[15];
+  }
+
+  /* ---- Interaction state ---- */
+  let rotX=0.45;       /* initial tilt (looking slightly down at galaxy) */
+  let rotY=0;
+  let zoom=4.5;
+  let targetRotX=0.45;
+  let targetRotY=0;
+  let targetZoom=4.5;
+
+  let isDragging=false;
+  let prevMouseX=0,prevMouseY=0;
+  let velocityX=0,velocityY=0;
+  let lastMoveTime=0;
+
+  const interact=document.getElementById('galaxy-interact');
+
+  interact.addEventListener('mousedown',function(e){
+    isDragging=true;
+    prevMouseX=e.clientX;
+    prevMouseY=e.clientY;
+    velocityX=0;velocityY=0;
+  });
+
+  window.addEventListener('mousemove',function(e){
+    if(!isDragging)return;
+    const now=performance.now();
+    const dt=Math.max(now-lastMoveTime,1);
+    const dx=e.clientX-prevMouseX;
+    const dy=e.clientY-prevMouseY;
+    targetRotY+=dx*0.005;
+    targetRotX+=dy*0.005;
+    targetRotX=Math.max(-1.2,Math.min(1.2,targetRotX));
+    velocityX=dx/dt*16;
+    velocityY=dy/dt*16;
+    prevMouseX=e.clientX;
+    prevMouseY=e.clientY;
+    lastMoveTime=now;
+  });
+
+  window.addEventListener('mouseup',function(){isDragging=false;});
+
+  /* Touch support */
+  interact.addEventListener('touchstart',function(e){
+    if(e.touches.length===1){
+      isDragging=true;
+      prevMouseX=e.touches[0].clientX;
+      prevMouseY=e.touches[0].clientY;
+      velocityX=0;velocityY=0;
+    }
+  },{passive:false});
+
+  window.addEventListener('touchmove',function(e){
+    if(!isDragging||e.touches.length!==1)return;
+    const now=performance.now();
+    const dt=Math.max(now-lastMoveTime,1);
+    const dx=e.touches[0].clientX-prevMouseX;
+    const dy=e.touches[0].clientY-prevMouseY;
+    targetRotY+=dx*0.005;
+    targetRotX+=dy*0.005;
+    targetRotX=Math.max(-1.2,Math.min(1.2,targetRotX));
+    velocityX=dx/dt*16;
+    velocityY=dy/dt*16;
+    prevMouseX=e.touches[0].clientX;
+    prevMouseY=e.touches[0].clientY;
+    lastMoveTime=now;
+  },{passive:false});
+
+  window.addEventListener('touchend',function(){isDragging=false;});
+
+  /* Scroll to zoom */
+  window.addEventListener('wheel',function(e){
+    targetZoom+=e.deltaY*0.005;
+    targetZoom=Math.max(2.5,Math.min(10,targetZoom));
+  },{passive:true});
+
+  /* ---- Resize ---- */
+  function resize(){
+    canvas.width=window.innerWidth;
+    canvas.height=window.innerHeight;
+    gl.viewport(0,0,canvas.width,canvas.height);
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  /* ---- Animation loop ---- */
+  const mvp=new Float32Array(16);
+  const persp=new Float32Array(16);
+  const id=new Float32Array(16);
+  id[0]=1;id[5]=1;id[10]=1;id[15]=1;
+
+  let lastTime=performance.now();
+  let autoRotY=0;
+
+  function animate(now){
+    requestAnimationFrame(animate);
+
+    const dt=Math.min((now-lastTime)/1000,0.1);
+    lastTime=now;
+
+    /* Auto-rotate slowly when not dragging */
+    if(!isDragging){
+      autoRotY+=dt*0.08;
+      /* Inertia decay */
+      velocityX*=0.94;
+      velocityY*=0.94;
+      if(Math.abs(velocityX)>0.001)targetRotY+=velocityX*0.016;
+      if(Math.abs(velocityY)>0.001)targetRotX+=velocityY*0.016;
+    }
+
+    /* Smooth interpolation */
+    const lerp=1-Math.exp(-8*dt);
+    rotX+=(targetRotX-rotX)*lerp;
+    rotY+=(targetRotY-rotY)*lerp;
+    zoom+=(targetZoom-zoom)*lerp;
+
+    /* Build MVP matrix */
+    const aspect=canvas.width/Math.max(canvas.height,1);
+    mat4Perspective(persp,0.8,aspect,0.1,50);
+
+    /* View = translate(-z) * rotateX * rotateY */
+    const view=new Float32Array(16);
+    view.set(id);
+    mat4RotX(view,view,-rotX);
+    mat4RotY(view,view,-(rotY+autoRotY));
+    mat4Translate(view,view,[0,0,-zoom]);
+
+    mat4Multiply(mvp,persp,view);
+
+    /* Render */
+    gl.clearColor(0.008,0.012,0.025,1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    gl.uniformMatrix4fv(uLoc.mvp,false,mvp);
+    gl.uniform1f(uLoc.time,now*0.001);
+    gl.uniform1f(uLoc.twist,2.8);
+    gl.uniform1f(uLoc.armCount,ARM_COUNT);
+    gl.uniform1f(uLoc.noiseScale,1.8);
+    gl.uniform1f(uLoc.noiseAmp,0.55);
+
+    gl.drawArrays(gl.POINTS,0,TOTAL);
+  }
+
+  requestAnimationFrame(animate);
 })();
 </script>
 
