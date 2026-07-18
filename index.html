@@ -281,6 +281,16 @@ body{
   .avatar-ring{top:-10px;left:-10px;width:100px;height:100px}
   .avatar-ring:nth-child(2){top:-20px;left:-20px;width:120px;height:120px}
 }
+  /* ===== Financial Professional Skills (finance cards) ===== */
+  .skill-card.finance-card::before{background:linear-gradient(90deg,#22c55e,#38bdf8)}
+  .skill-card.finance-card:hover{box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 40px rgba(34,197,94,0.10)}
+  .badge-finance{background:rgba(34,197,94,0.14);color:#4ade80}
+  .section-divider.finance{background:linear-gradient(90deg,#22c55e,#38bdf8)}
+  .finance-intro{
+    text-align:center;max-width:780px;margin:-28px auto 42px;
+    color:var(--text-secondary);font-size:15px;line-height:1.9;
+  }
+  .finance-intro b{color:var(--text-primary);font-weight:600}
 </style>
 </head>
 <body>
@@ -296,6 +306,7 @@ body{
   <div class="nav-inner">
     <span class="nav-brand">LW · Data Science</span>
     <ul class="nav-links">
+      <li><a href="#finance-skills">金融技能</a></li>
       <li><a href="#r-skills">R 生态</a></li>
       <li><a href="#python-skills">Python 生态</a></li>
       <li><a href="#edu-skills">教育软件</a></li>
@@ -331,6 +342,41 @@ body{
     <div class="stat-item"><div class="stat-num">300+</div><div class="stat-label">开源包技能卡</div></div>
     <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">技术语言</div></div>
   </div>
+
+  <!-- Financial Professional Skills -->
+  <section class="section" id="finance-skills">
+    <div class="section-header">
+      <h2>💼 金融分析师专业技能体系</h2>
+      <p>聚焦期货、衍生品与 ETF 指数化投资三大实战方向，配套 R / Python 双语模型与策略代码</p>
+      <div class="section-divider finance"></div>
+    </div>
+    <p class="finance-intro">
+      在量化与指数化投资时代，体系化的专业分析能力是投研与一线展业的基石。以下三套技能图谱由浅入深梳理核心知识框架、模型算法与可运行代码，
+      分别覆盖 <b>期货分析师</b>、<b>FDA 衍生品分析师</b> 与 <b>ETF 策略师</b> 三条成长路径——
+      既是系统学习的路线图，也是可直接上手的实战工具箱。
+    </p>
+
+    <div class="skills-grid">
+      <a class="skill-card finance-card fade-in" href="期货与衍生品分析师必备技能/期货分析师知识体系.html" target="_blank">
+        <div class="card-icon">📊</div>
+        <div class="card-title">期货分析师知识体系</div>
+        <div class="card-sub">8 大模块 / 30+ 模型算法 / 60+ 双语代码：定价、技术分析、量化模型、风控、期权与套利策略</div>
+        <span class="card-badge badge-finance">期货 · R+Python</span>
+      </a>
+      <a class="skill-card finance-card fade-in" href="期货与衍生品分析师必备技能/FDA衍生品分析师课程.html" target="_blank">
+        <div class="card-icon">🎓</div>
+        <div class="card-title">FDA 衍生品分析师课程体系</div>
+        <div class="card-sub">FDA I / II / III 级 + 法律法规：微观宏观、衍生品定价、信用与结构化产品、波动率与随机模型</div>
+        <span class="card-badge badge-finance">FDA · R+Python</span>
+      </a>
+      <a class="skill-card finance-card fade-in" href="期货与衍生品分析师必备技能/ETF策略师.html" target="_blank">
+        <div class="card-icon">🚀</div>
+        <div class="card-title">ETF 策略师成长之路</div>
+        <div class="card-sub">5 阶成长路径 / 26 只重点 ETF / 9 类策略：指数认知、产品图谱、持有·轮动·期现·组合配置</div>
+        <span class="card-badge badge-finance">ETF · 指数投资</span>
+      </a>
+    </div>
+  </section>
 
   <!-- R Skills -->
   <section class="section" id="r-skills">

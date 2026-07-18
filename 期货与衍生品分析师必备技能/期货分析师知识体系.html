@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>顶级期货分析师知识体系</title>
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --secondary: #16213e;
+    --accent: #e94560;
+    --accent2: #0f3460;
+    --gold: #d4a574;
+    --gold-light: #f0d9b5;
+    --text: #eaeaea;
+    --text-dim: #a0a0b0;
+    --card-bg: #1e2a45;
+    --border: rgba(212,165,116,0.2);
+    --code-bg: #0d1117;
+    --success: #4ecdc4;
+    --warning: #f7b731;
+    --danger: #e94560;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: var(--primary);
+    color: var(--text);
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent2) 100%);
+    padding: 80px 40px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4a574' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero h1 {
+    font-size: 3em; font-weight: 800;
+    background: linear-gradient(135deg, var(--gold), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    position: relative; margin-bottom: 16px;
+  }
+  .hero p { font-size: 1.2em; color: var(--text-dim); max-width: 700px; margin: 0 auto; position: relative; }
+  .hero .stats {
+    display:flex; justify-content:center; gap:50px; margin-top:40px; position:relative; flex-wrap:wrap;
+  }
+  .hero .stat-item { text-align:center; }
+  .hero .stat-num { font-size:2.5em; font-weight:800; color:var(--gold); }
+  .hero .stat-label { font-size:0.9em; color:var(--text-dim); }
+
+  /* Nav */
+  .nav-bar {
+    background: var(--secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 40px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .nav-btn {
+    padding: 8px 20px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--text-dim);
+    cursor: pointer; font-size: 0.9em;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--accent); color: #fff; border-color: var(--accent);
+  }
+
+  /* Main */
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+  /* Module Card */
+  .module {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .module:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(233,69,96,0.1);
+  }
+  .module-header {
+    padding: 24px 30px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .module-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5em; flex-shrink: 0;
+  }
+  .module-title { font-size: 1.3em; font-weight: 700; }
+  .module-subtitle { font-size: 0.85em; color: var(--text-dim); margin-top: 4px; }
+  .module-badge {
+    margin-left: auto; padding: 4px 14px; border-radius: 12px;
+    font-size: 0.75em; font-weight: 600; flex-shrink: 0;
+  }
+  .badge-core { background: rgba(233,69,96,0.2); color: var(--accent); }
+  .badge-adv { background: rgba(78,205,196,0.2); color: var(--success); }
+  .badge-found { background: rgba(212,165,116,0.2); color: var(--gold); }
+  .module-content { padding: 0 30px 30px; display: none; }
+  .module-content.show { display: block; }
+
+  /* Knowledge Items */
+  .knowledge-section { margin-top: 24px; }
+  .knowledge-section h3 {
+    font-size: 1.1em; color: var(--gold);
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .model-card {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px; margin-bottom: 16px;
+    transition: border-color 0.3s;
+  }
+  .model-card:hover { border-color: var(--accent); }
+  .model-card h4 { font-size: 1.05em; color: #fff; margin-bottom: 8px; display:flex; align-items:center; gap:8px; }
+  .model-card .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 6px;
+    font-size: 0.7em; font-weight: 600;
+  }
+  .tag-r { background: rgba(68,153,204,0.2); color: #4499cc; }
+  .tag-py { background: rgba(247,183,49,0.2); color: #f7b731; }
+  .tag-level {
+    font-size: 0.7em; padding: 2px 8px; border-radius: 6px; font-weight: 600;
+  }
+  .level-basic { background: rgba(78,205,196,0.15); color: var(--success); }
+  .level-mid { background: rgba(247,183,49,0.15); color: var(--warning); }
+  .level-adv { background: rgba(233,69,96,0.15); color: var(--danger); }
+  .model-desc { color: var(--text-dim); font-size: 0.9em; margin-bottom: 12px; }
+  .model-formula {
+    background: var(--code-bg); padding: 12px 16px; border-radius: 8px;
+    font-family: 'Courier New', monospace; font-size: 0.88em;
+    color: var(--gold-light); margin: 10px 0; overflow-x: auto;
+    border-left: 3px solid var(--accent);
+  }
+  .model-table {
+    width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.88em;
+  }
+  .model-table th {
+    background: rgba(233,69,96,0.15); color: var(--accent);
+    padding: 8px 12px; text-align: left; font-weight: 600;
+  }
+  .model-table td {
+    padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text-dim);
+  }
+  .model-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+  /* Code Block */
+  .code-tabs { display: flex; gap: 4px; margin: 12px 0 0; }
+  .code-tab {
+    padding: 6px 16px; border-radius: 8px 8px 0 0;
+    background: rgba(255,255,255,0.05); color: var(--text-dim);
+    cursor: pointer; border: 1px solid var(--border); border-bottom: none;
+    font-size: 0.85em; font-weight: 600;
+  }
+  .code-tab.active { background: var(--code-bg); color: var(--gold); }
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 0 8px 8px 8px; padding: 16px;
+    overflow-x: auto; font-family: 'Courier New', monospace;
+    font-size: 0.82em; line-height: 1.6; color: #c9d1d9;
+    display: none; max-height: 500px; overflow-y: auto;
+  }
+  .code-block.show { display: block; }
+  .code-block .comment { color: #6a737d; }
+  .code-block .keyword { color: #ff7b72; }
+  .code-block .string { color: #a5d6ff; }
+  .code-block .func { color: #d2a8ff; }
+  .code-block .num { color: #79c0ff; }
+  .code-block .var { color: #ffa657; }
+
+  /* Roadmap */
+  .roadmap { margin-top: 40px; }
+  .roadmap-line {
+    display: flex; gap: 0; margin-bottom: 0;
+  }
+  .roadmap-stage {
+    flex: 1; padding: 20px; text-align: center;
+    border-right: 2px solid var(--border);
+    position: relative;
+  }
+  .roadmap-stage:last-child { border-right: none; }
+  .roadmap-stage h4 { color: var(--gold); margin-bottom: 8px; }
+  .roadmap-stage ul { list-style: none; font-size: 0.85em; color: var(--text-dim); text-align: left; }
+  .roadmap-stage ul li::before { content: '▸ '; color: var(--accent); }
+  .stage-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; margin-bottom: 12px;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center; padding: 40px;
+    color: var(--text-dim); font-size: 0.85em;
+    border-top: 1px solid var(--border); margin-top: 40px;
+  }
+
+  /* Responsive */
+  @media(max-width:768px) {
+    .hero h1 { font-size: 2em; }
+    .hero .stats { gap: 20px; }
+    .roadmap-line { flex-direction: column; }
+    .roadmap-stage { border-right: none; border-bottom: 2px solid var(--border); }
+    .nav-bar { padding: 8px 12px; flex-wrap: wrap; }
+    .nav-search { margin-left: 0; order: 5; width: 100%; }
+    .nav-search input { width: 100%; }
+  }
+
+  /* ============ 增强功能 ============ */
+  /* 阅读进度条 */
+  #progress-bar{
+    position:fixed;top:0;left:0;height:4px;width:0;z-index:300;
+    background:linear-gradient(90deg,var(--accent),var(--gold));
+    box-shadow:0 0 12px var(--accent);transition:width .12s ease-out;
+  }
+  /* 搜索框 */
+  .nav-search{display:flex;align-items:center;position:relative;}
+  .nav-search input{
+    background:rgba(0,0,0,0.25);border:1px solid var(--border);color:var(--text);
+    border-radius:20px;padding:7px 16px;font-size:0.85em;outline:none;width:190px;
+    transition:all .3s;font-family:inherit;
+  }
+  .nav-search input:focus{width:240px;border-color:var(--accent);box-shadow:0 0 0 3px rgba(233,69,96,0.15);}
+  .nav-search input::placeholder{color:var(--text-dim);}
+  /* 返回顶部 */
+  #back-to-top{
+    position:fixed;right:28px;bottom:28px;width:48px;height:48px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--gold));color:#fff;border:none;
+    cursor:pointer;font-size:1.4em;z-index:200;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 24px rgba(0,0,0,0.45);opacity:0;visibility:hidden;transform:translateY(12px);transition:all .3s;
+  }
+  #back-to-top.show{opacity:1;visibility:visible;transform:translateY(0);}
+  #back-to-top:hover{transform:translateY(-3px) scale(1.06);}
+  /* 模块入场动画 */
+  .module{animation:fadeInUp .7s cubic-bezier(.25,.46,.45,.94) both;}
+  .module:nth-child(1){animation-delay:.03s}
+  .module:nth-child(2){animation-delay:.09s}
+  .module:nth-child(3){animation-delay:.15s}
+  .module:nth-child(4){animation-delay:.21s}
+  .module:nth-child(5){animation-delay:.27s}
+  .module:nth-child(6){animation-delay:.33s}
+  .module:nth-child(7){animation-delay:.39s}
+  .module:nth-child(8){animation-delay:.45s}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  /* 无结果提示 */
+  .no-result{display:none;text-align:center;color:var(--text-dim);padding:40px 20px;font-size:1em;}
+  .no-result.show{display:block;}
+  .no-result span{font-size:2em;display:block;margin-bottom:10px;}
+  /* 系列徽标 */
+  .series-badge{
+    display:inline-block;margin-bottom:18px;padding:6px 18px;border-radius:24px;
+    font-size:0.8em;font-weight:600;letter-spacing:1px;
+    background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--gold);
+  }
+</style>
+</head>
+<body>
+
+<!-- 阅读进度条 -->
+<div id="progress-bar"></div>
+
+<!-- ==================== HERO ==================== -->
+<div class="hero">
+  <div class="series-badge">金融分析师专业技能系列 · 01 / 03</div>
+  <h1>顶级期货分析师知识体系</h1>
+  <p>从基础理论到前沿模型，系统梳理期货分析师必备的知识框架、核心算法与实战代码。涵盖 R 与 Python 双语实现，助力从入门到精通的完整进阶路径。</p>
+  <div class="stats">
+    <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">核心模块</div></div>
+    <div class="stat-item"><div class="stat-num">30+</div><div class="stat-label">模型算法</div></div>
+    <div class="stat-item"><div class="stat-num">60+</div><div class="stat-label">代码实现</div></div>
+    <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">编程语言</div></div>
+  </div>
+</div>
+
+<!-- ==================== NAV ==================== -->
+<div class="nav-bar">
+  <button class="nav-btn active" onclick="filter('all')">全部模块</button>
+  <button class="nav-btn" onclick="filter('foundation')">基础理论</button>
+  <button class="nav-btn" onclick="filter('analysis')">分析框架</button>
+  <button class="nav-btn" onclick="filter('model')">量化模型</button>
+  <button class="nav-btn" onclick="filter('risk')">风控体系</button>
+  <button class="nav-btn" onclick="filter('advanced')">前沿技术</button>
+  <div class="nav-search"><input id="search-box" type="text" placeholder="搜索模型 / 关键词…"></div>
+</div>
+
+<!-- ==================== CONTENT ==================== -->
+<div class="container">
+
+<!-- ============ MODULE 1: 期货市场基础 ============ -->
+<div class="module" data-category="foundation">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#e94560,#c0392b);">📖</div>
+    <div>
+      <div class="module-title">模块一：期货市场基础理论</div>
+      <div class="module-subtitle">市场微观结构、合约机制、定价原理</div>
+    </div>
+    <span class="module-badge badge-found">基础</span>
+  </div>
+  <div class="module-content">
+
+    <div class="knowledge-section">
+      <h3>1.1 期货市场概述</h3>
+      <div class="model-card">
+        <h4>期货合约基本要素</h4>
+        <span class="tag-level level-basic">入门</span>
+        <div class="model-desc">理解期货合约的核心要素是分析师的第一步，包括标的资产、合约规模、交割方式、最小变动价位等。</div>
+        <table class="model-table">
+          <tr><th>要素</th><th>说明</th><th>示例（沪铜）</th></tr>
+          <tr><td>标的资产</td><td>合约所对应的现货商品或金融工具</td><td>阴极铜</td></tr>
+          <tr><td>合约规模</td><td>每手合约代表的数量</td><td>5吨/手</td></tr>
+          <tr><td>最小变动价位</td><td>价格变动的最小单位</td><td>10元/吨</td></tr>
+          <tr><td>涨跌停板</td><td>每日价格波动的最大限制</td><td>±6%</td></tr>
+          <tr><td>交割月份</td><td>合约到期可以进行实物交割的月份</td><td>1-12月</td></tr>
+          <tr><td>保证金比例</td><td>交易所需缴纳的资金占合约价值的比例</td><td>8%-12%</td></tr>
+        </table>
+      </div>
+
+      <div class="model-card">
+        <h4>市场参与者结构</h4>
+        <span class="tag-level level-basic">入门</span>
+        <div class="model-desc">期货市场由套期保值者、投机者和套利者三类参与者构成，三者的交易动机和行为模式截然不同。</div>
+        <table class="model-table">
+          <tr><th>类型</th><th>目的</th><th>风险特征</th><th>典型策略</th></tr>
+          <tr><td>套期保值者</td><td>锁定价格、规避风险</td><td>低（转移风险）</td><td>卖出/买入套保</td></tr>
+          <tr><td>投机者</td><td>承担风险获取利润</td><td>高（主动承担）</td><td>趋势跟踪、波段交易</td></tr>
+          <tr><td>套利者</td><td>利用价差获取无风险收益</td><td>低（统计套利）</td><td>期现套利、跨期套利</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>1.2 期货定价理论</h3>
+      <div class="model-card">
+        <h4>持有成本模型 (Cost of Carry Model)</h4>
+        <span class="tag-level level-basic">入门</span>
+        <div class="model-desc">期货定价的核心理论。期货价格等于现货价格加上持有成本（包括资金利息、仓储费、保险费等），再减去持有收益（如股息、利息收入等）。</div>
+        <div class="model-formula">
+F = S × e^( (r + u - y) × T )
+<br>其中：F = 期货价格, S = 现货价格, r = 无风险利率, u = 仓储费率, y = 便利收益率, T = 到期时间
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="cost_of_carry_r"><span class="comment"># 持有成本模型 - 期货定价</span>
+<span class="comment"># F = S * exp((r + u - y) * T)</span>
+
+<span class="func">cost_of_carry_pricing</span> <span class="keyword">&lt;-</span> <span class="keyword">function</span>(S, r, u, y, T) {
+  F <span class="keyword">&lt;-</span> S <span class="keyword">*</span> <span class="func">exp</span>((r <span class="keyword">+</span> u <span class="keyword">-</span> y) <span class="keyword">*</span> T)
+  components <span class="keyword">&lt;-</span> <span class="func">data.frame</span>(
+    现货价格 <span class="var">=</span> S,
+    无风险利率 <span class="var">=</span> <span class="func">paste0</span>(r<span class="keyword">*</span><span class="num">100</span>, <span class="string">"%"</span>),
+    仓储费率 <span class="var">=</span> <span class="func">paste0</span>(u<span class="keyword">*</span><span class="num">100</span>, <span class="string">"%"</span>),
+    便利收益率 <span class="var">=</span> <span class="func">paste0</span>(y<span class="keyword">*</span><span class="num">100</span>, <span class="string">"%"</span>),
+    到期时间 <span class="var">=</span> <span class="func">paste0</span>(T<span class="keyword">*</span><span class="num">12</span>, <span class="string">"个月"</span>),
+    期货价格 <span class="var">=</span> <span class="func">round</span>(F, <span class="num">4</span>)
+  )
+  <span class="func">cat</span>(<span class="string">"═══ 持有成本模型定价 ═══\n"</span>)
+  <span class="func">print</span>(components)
+  <span class="func">cat</span>(<span class="string">"\n基差 Basis = S - F ="</span>, <span class="func">round</span>(S <span class="keyword">-</span> F, <span class="num">4</span>), <span class="string">"\n"</span>)
+  <span class="keyword">return</span>(F)
+}
+
+<span class="comment"># 示例：沪铜期货定价</span>
+F <span class="keyword">&lt;-</span> <span class="func">cost_of_carry_pricing</span>(
+  S <span class="var">=</span> <span class="num">72000</span>,   <span class="comment"># 现货价格（元/吨）</span>
+  r <span class="var">=</span> <span class="num">0.025</span>,    <span class="comment"># 无风险利率 2.5%</span>
+  u <span class="var">=</span> <span class="num">0.008</span>,    <span class="comment"># 仓储费率 0.8%</span>
+  y <span class="var">=</span> <span class="num">0.005</span>,    <span class="comment"># 便利收益率 0.5%</span>
+  T <span class="var">=</span> <span class="num">0.5</span>      <span class="comment"># 6个月到期</span>
+)
+
+<span class="comment"># 基差分析：Contango vs Backwardation</span>
+basis_analysis <span class="keyword">&lt;-</span> <span class="keyword">function</span>(S, F) {
+  basis <span class="keyword">&lt;-</span> F <span class="keyword">-</span> S
+  <span class="keyword">if</span> (basis <span class="keyword">&gt;</span> <span class="num">0</span>) {
+    <span class="func">cat</span>(<span class="string">"正向市场 (Contango): 期货 &gt; 现货\n"</span>)
+  } <span class="keyword">else</span> {
+    <span class="func">cat</span>(<span class="string">"反向市场 (Backwardation): 现货 &gt; 期货\n"</span>)
+  }
+}
+<span class="func">basis_analysis</span>(<span class="num">72000</span>, F)</div>
+        <div class="code-block" id="cost_of_carry_py"><span class="comment"># 持有成本模型 - 期货定价</span>
+<span class="comment"># F = S * exp((r + u - y) * T)</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+
+<span class="keyword">def</span> <span class="func">cost_of_carry_pricing</span>(S, r, u, y, T):
+    <span class="string">"""
+    持有成本模型计算期货理论价格
+    参数: S=现货价格, r=无风险利率, u=仓储费率, y=便利收益率, T=到期时间(年)
+    """</span>
+    F = S <span class="keyword">*</span> np.exp((r + u - y) <span class="keyword">*</span> T)
+    components = pd.DataFrame({
+        <span class="string">'参数'</span>: [<span class="string">'现货价格'</span>, <span class="string">'无风险利率'</span>, <span class="string">'仓储费率'</span>,
+                 <span class="string">'便利收益率'</span>, <span class="string">'到期时间'</span>, <span class="string">'期货价格'</span>],
+        <span class="string">'值'</span>: [S, <span class="func">f</span><span class="string">"<span class="var">{r*100}</span>%"</span>, <span class="func">f</span><span class="string">"<span class="var">{u*100}</span>%"</span>,
+               <span class="func">f</span><span class="string">"<span class="var">{y*100}</span>%"</span>, <span class="func">f</span><span class="string">"<span class="var">{T*12}</span>个月"</span>, <span class="func">round</span>(F, <span class="num">4</span>)]
+    })
+    <span class="func">print</span>(<span class="string">"═══ 持有成本模型定价 ═══"</span>)
+    <span class="func">print</span>(components.to_string(index=<span class="keyword">False</span>))
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"\n基差 Basis = S - F = <span class="var">{round(S - F, 4)}</span>"</span>)
+    <span class="keyword">return</span> F
+
+<span class="comment"># 示例：沪铜期货定价</span>
+F = <span class="func">cost_of_carry_pricing</span>(
+    S=<span class="num">72000</span>,    <span class="comment"># 现货价格（元/吨）</span>
+    r=<span class="num">0.025</span>,     <span class="comment"># 无风险利率 2.5%</span>
+    u=<span class="num">0.008</span>,     <span class="comment"># 仓储费率 0.8%</span>
+    y=<span class="num">0.005</span>,     <span class="comment"># 便利收益率 0.5%</span>
+    T=<span class="num">0.5</span>       <span class="comment"># 6个月到期</span>
+)
+
+<span class="comment"># 基差分析</span>
+<span class="keyword">def</span> <span class="func">basis_analysis</span>(S, F):
+    <span class="keyword">if</span> F > S:
+        <span class="func">print</span>(<span class="string">"正向市场 (Contango): 期货 > 现货"</span>)
+    <span class="keyword">else</span>:
+        <span class="func">print</span>(<span class="string">"反向市场 (Backwardation): 现货 > 期货"</span>)
+
+<span class="func">basis_analysis</span>(<span class="num">72000</span>, F)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>1.3 期现价差与期限结构</h3>
+      <div class="model-card">
+        <h4>期限结构 (Term Structure)</h4>
+        <span class="tag-level level-mid">中级</span>
+        <div class="model-desc">不同到期月份合约之间的价格关系。分为正向结构（Contango，远月升水）和反向结构（Backwardation，近月升水），反映了市场对未来供需的预期。</div>
+        <div class="model-formula">
+期限结构斜率 = (F_远月 - F_近月) / (T_远月 - T_近月)
+<br>滚动收益 (Roll Yield) = (F_近月 - F_远月) / S × (1/年化时间)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODULE 2: 技术分析体系 ============ -->
+<div class="module" data-category="analysis">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#0f3460,#2980b9);">📊</div>
+    <div>
+      <div class="module-title">模块二：技术分析体系</div>
+      <div class="module-subtitle">K线形态、趋势指标、振荡指标、量价关系</div>
+    </div>
+    <span class="module-badge badge-found">基础</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>2.1 趋势分析指标</h3>
+      <div class="model-card">
+        <h4>移动平均线系统 (MA System)</h4>
+        <span class="tag-level level-basic">入门</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">MA是技术分析最基础也最重要的工具。包括SMA(简单移动平均)、EMA(指数移动平均)、WMA(加权移动平均)等。常见的MA系统包括双均线交叉、均线多头/空头排列、布林带通道等。</div>
+        <div class="model-formula">
+SMA(n) = (P₁ + P₂ + ... + Pₙ) / n
+<br>EMA(n) = P × α + EMA_prev × (1 - α), 其中 α = 2/(n+1)
+<br>MACD = EMA(12) - EMA(26), Signal = EMA(9, MACD)
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="ma_system_r"><span class="comment"># 移动平均线系统 - R实现</span>
+<span class="keyword">library</span>(TTR)
+
+<span class="comment"># 生成示例价格数据</span>
+<span class="func">set.seed</span>(<span class="num">42</span>)
+price <span class="keyword">&lt;-</span> <span class="func">cumsum</span>(<span class="func">rnorm</span>(<span class="num">250</span>, <span class="num">0</span>, <span class="num">50</span>)) + <span class="num">5000</span>
+dates <span class="keyword">&lt;-</span> <span class="func">seq.Date</span>(<span class="func">as.Date</span>(<span class="string">"2025-01-01"</span>), <span class="func">as.Date</span>(<span class="string">"2025-12-08"</span>), <span class="keyword">by</span><span class="var">=</span><span class="string">"day"</span>)
+
+<span class="comment"># 计算各类均线</span>
+sma5  <span class="keyword">&lt;-</span> <span class="func">SMA</span>(price, n <span class="var">=</span> <span class="num">5</span>)
+sma20 <span class="keyword">&lt;-</span> <span class="func">SMA</span>(price, n <span class="var">=</span> <span class="num">20</span>)
+sma60 <span class="keyword">&lt;-</span> <span class="func">SMA</span>(price, n <span class="var">=</span> <span class="num">60</span>)
+ema12 <span class="keyword">&lt;-</span> <span class="func">EMA</span>(price, n <span class="var">=</span> <span class="num">12</span>)
+ema26 <span class="keyword">&lt;-</span> <span class="func">EMA</span>(price, n <span class="var">=</span> <span class="num">26</span>)
+
+<span class="comment"># MACD计算</span>
+macd_line <span class="keyword">&lt;-</span> ema12 <span class="keyword">-</span> ema26
+signal_line <span class="keyword">&lt;-</span> <span class="func">EMA</span>(macd_line, n <span class="var">=</span> <span class="num">9</span>)
+histogram <span class="keyword">&lt;-</span> macd_line <span class="keyword">-</span> signal_line
+
+<span class="comment"># 布林带 (Bollinger Bands)</span>
+bb <span class="keyword">&lt;-</span> <span class="func">BBands</span>(price, n <span class="var">=</span> <span class="num">20</span>, sd <span class="var">=</span> <span class="num">2</span>)
+
+<span class="comment"># 均线交叉信号</span>
+golden_cross <span class="keyword">&lt;-</span> <span class="func">which</span>(<span class="func">diff</span>(<span class="func">sign</span>(sma5 <span class="keyword">-</span> sma20)) == <span class="num">2</span>) <span class="comment"># 金叉</span>
+death_cross  <span class="keyword">&lt;-</span> <span class="func">which</span>(<span class="func">diff</span>(<span class="func">sign</span>(sma5 <span class="keyword">-</span> sma20)) == <span class="num">-2</span>) <span class="comment"># 死叉</span>
+
+<span class="func">cat</span>(<span class="string">"金叉信号:", <span class="var">golden_cross</span>, "\n"</span>)
+<span class="func">cat</span>(<span class="string">"死叉信号:", <span class="var">death_cross</span>, "\n"</span>)</div>
+        <div class="code-block" id="ma_system_py"><span class="comment"># 移动平均线系统 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+
+<span class="comment"># 生成示例价格数据</span>
+np.random.<span class="func">seed</span>(<span class="num">42</span>)
+price = np.<span class="func">cumsum</span>(np.random.<span class="func">normal</span>(<span class="num">0</span>, <span class="num">50</span>, <span class="num">250</span>)) + <span class="num">5000</span>
+dates = pd.<span class="func">date_range</span>(<span class="string">'2025-01-01'</span>, periods=<span class="num">250</span>)
+df = pd.<span class="func">DataFrame</span>({<span class="string">'price'</span>: price}, index=dates)
+
+<span class="comment"># 计算各类均线</span>
+df[<span class="string">'SMA_5'</span>]  = df[<span class="string">'price'</span>].<span class="func">rolling</span>(<span class="num">5</span>).<span class="func">mean</span>()
+df[<span class="string">'SMA_20'</span>] = df[<span class="string">'price'</span>].<span class="func">rolling</span>(<span class="num">20</span>).<span class="func">mean</span>()
+df[<span class="string">'SMA_60'</span>] = df[<span class="string">'price'</span>].<span class="func">rolling</span>(<span class="num">60</span>).<span class="func">mean</span>()
+df[<span class="string">'EMA_12'</span>] = df[<span class="string">'price'</span>].<span class="func">ewm</span>(span=<span class="num">12</span>, adjust=<span class="keyword">False</span>).<span class="func">mean</span>()
+df[<span class="string">'EMA_26'</span>] = df[<span class="string">'price'</span>].<span class="func">ewm</span>(span=<span class="num">26</span>, adjust=<span class="keyword">False</span>).<span class="func">mean</span>()
+
+<span class="comment"># MACD</span>
+df[<span class="string">'MACD'</span>] = df[<span class="string">'EMA_12'</span>] - df[<span class="string">'EMA_26'</span>]
+df[<span class="string">'Signal'</span>] = df[<span class="string">'MACD'</span>].<span class="func">ewm</span>(span=<span class="num">9</span>, adjust=<span class="keyword">False</span>).<span class="func">mean</span>()
+df[<span class="string">'Histogram'</span>] = df[<span class="string">'MACD'</span>] - df[<span class="string">'Signal'</span>]
+
+<span class="comment"># 布林带</span>
+df[<span class="string">'BB_MID'</span>] = df[<span class="string">'price'</span>].<span class="func">rolling</span>(<span class="num">20</span>).<span class="func">mean</span>()
+df[<span class="string">'BB_STD'</span>] = df[<span class="string">'price'</span>].<span class="func">rolling</span>(<span class="num">20</span>).<span class="func">std</span>()
+df[<span class="string">'BB_UP'</span>]  = df[<span class="string">'BB_MID'</span>] + <span class="num">2</span> <span class="keyword">*</span> df[<span class="string">'BB_STD'</span>]
+df[<span class="string">'BB_LO'</span>]  = df[<span class="string">'BB_MID'</span>] - <span class="num">2</span> <span class="keyword">*</span> df[<span class="string">'BB_STD'</span>]
+
+<span class="comment"># 金叉/死叉信号</span>
+df[<span class="string">'Signal_Cross'</span>] = <span class="num">0</span>
+df.<span class="func">loc</span>[df[<span class="string">'SMA_5'</span>] > df[<span class="string">'SMA_20'</span>], <span class="string">'Signal_Cross'</span>] = <span class="num">1</span>
+df[<span class="string">'Golden_Cross'</span>] = df[<span class="string">'Signal_Cross'</span>].<span class="func">diff</span>() == <span class="num">1</span>
+df[<span class="string">'Death_Cross'</span>]  = df[<span class="string">'Signal_Cross'</span>].<span class="func">diff</span>() == <span class="num">-1</span>
+
+<span class="func">print</span>(df[<span class="func">dropna</span>()].<span class="func">tail</span>(<span class="num">10</span>))</div>
+      </div>
+
+      <div class="model-card">
+        <h4>RSI 相对强弱指数</h4>
+        <span class="tag-level level-basic">入门</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">RSI衡量价格变动的速度和幅度，取值范围0-100。RSI>70为超买区域，RSI&lt;30为超卖区域。分析师常用RSI背离来判断趋势反转。</div>
+        <div class="model-formula">
+RSI = 100 - 100/(1 + RS), 其中 RS = 平均涨幅 / 平均跌幅（通常取14日）
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="rsi_r"><span class="comment"># RSI 相对强弱指数 - R实现</span>
+
+<span class="func">calculate_rsi</span> <span class="keyword">&lt;-</span> <span class="keyword">function</span>(price, n <span class="var">=</span> <span class="num">14</span>) {
+  delta <span class="keyword">&lt;-</span> <span class="func">diff</span>(price)
+  gain <span class="keyword">&lt;-</span> <span class="func">ifelse</span>(delta <span class="keyword">&gt;</span> <span class="num">0</span>, delta, <span class="num">0</span>)
+  loss <span class="keyword">&lt;-</span> <span class="func">ifelse</span>(delta <span class="keyword">&lt;</span> <span class="num">0</span>, <span class="keyword">-</span>delta, <span class="num">0</span>)
+
+  avg_gain <span class="keyword">&lt;-</span> <span class="func">SMA</span>(gain, n)  <span class="comment"># 使用TTR包的SMA</span>
+  avg_loss <span class="keyword">&lt;-</span> <span class="func">SMA</span>(loss, n)
+
+  rs <span class="keyword">&lt;-</span> avg_gain / avg_loss
+  rsi <span class="keyword">&lt;-</span> <span class="num">100</span> <span class="keyword">-</span> <span class="num">100</span> / (<span class="num">1</span> <span class="keyword">+</span> rs)
+
+  <span class="comment"># 信号判断</span>
+  signal <span class="keyword">&lt;-</span> <span class="func">ifelse</span>(rsi <span class="keyword">&gt;</span> <span class="num">70</span>, <span class="string">"超买"</span>,
+              <span class="func">ifelse</span>(rsi <span class="keyword">&lt;</span> <span class="num">30</span>, <span class="string">"超卖"</span>, <span class="string">"中性"</span>))
+
+  <span class="keyword">return</span>(<span class="func">data.frame</span>(RSI <span class="var">=</span> rsi, Signal <span class="var">=</span> signal))
+}
+
+<span class="comment"># 使用TTR包直接计算</span>
+<span class="keyword">library</span>(TTR)
+rsi_result <span class="keyword">&lt;-</span> <span class="func">RSI</span>(price, n <span class="var">=</span> <span class="num">14</span>)
+<span class="func">cat</span>(<span class="string">"最近5日RSI值:"</span>, <span class="func">round</span>(<span class="func">tail</span>(rsi_result, <span class="num">5</span>), <span class="num">2</span>))</div>
+        <div class="code-block" id="rsi_py"><span class="comment"># RSI 相对强弱指数 - Python实现</span>
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">def</span> <span class="func">calculate_rsi</span>(series, period=<span class="num">14</span>):
+    <span class="string">"""计算RSI指标"""</span>
+    delta = series.<span class="func">diff</span>()
+    gain = delta.<span class="func">where</span>(delta > <span class="num">0</span>, <span class="num">0</span>)
+    loss = (<span class="keyword">-</span>delta).<span class="func">where</span>(delta < <span class="num">0</span>, <span class="num">0</span>)
+
+    avg_gain = gain.<span class="func">ewm</span>(alpha=<span class="num">1</span>/period, min_periods=period).<span class="func">mean</span>()
+    avg_loss = loss.<span class="func">ewm</span>(alpha=<span class="num">1</span>/period, min_periods=period).<span class="func">mean</span>()
+
+    rs = avg_gain / avg_loss
+    rsi = <span class="num">100</span> - (<span class="num">100</span> / (<span class="num">1</span> + rs))
+
+    <span class="keyword">return</span> rsi
+
+<span class="comment"># 使用示例</span>
+df[<span class="string">'RSI_14'</span>] = <span class="func">calculate_rsi</span>(df[<span class="string">'price'</span>])
+
+<span class="comment"># 信号判断</span>
+df[<span class="string">'RSI_Signal'</span>] = <span class="keyword">None</span>
+df.<span class="func">loc</span>[df[<span class="string">'RSI_14'</span>] > <span class="num">70</span>, <span class="string">'RSI_Signal'</span>] = <span class="string">'超买'</span>
+df.<span class="func">loc</span>[df[<span class="string">'RSI_14'</span>] < <span class="num">30</span>, <span class="string">'RSI_Signal'</span>] = <span class="string">'超卖'</span>
+df.<span class="func">loc</span>[(df[<span class="string">'RSI_14'</span>] >= <span class="num">30</span>) & (df[<span class="string">'RSI_14'</span>] <= <span class="num">70</span>), <span class="string">'RSI_Signal'</span>] = <span class="string">'中性'</span>
+
+<span class="func">print</span>(df[[<span class="string">'price'</span>, <span class="string">'RSI_14'</span>, <span class="string">'RSI_Signal'</span>]].<span class="func">tail</span>(<span class="num">10</span>))</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>2.2 波动率指标</h3>
+      <div class="model-card">
+        <h4>ATR 真实波动幅度</h4>
+        <span class="tag-level level-mid">中级</span>
+        <div class="model-desc">ATR衡量市场波动性的重要指标，综合考虑了当日最高价、最低价与前一日收盘价之间的关系。常用于设置止损位和仓位管理。</div>
+        <div class="model-formula">
+TR = max(High - Low, |High - Prev_Close|, |Low - Prev_Close|)
+<br>ATR = SMA(TR, n), 通常取14日或20日
+        </div>
+      </div>
+
+      <div class="model-card">
+        <h4>KDJ 随机指标</h4>
+        <span class="tag-level level-basic">入门</span>
+        <div class="model-desc">KDJ指标基于随机振荡理论，通过K线、D线和J线反映价格的超买超卖状态。J = 3K - 2D，反应最灵敏。</div>
+        <div class="model-formula">
+RSV = (Close - Low_n) / (High_n - Low_n) × 100
+<br>K = 2/3 × K_prev + 1/3 × RSV
+<br>D = 2/3 × D_prev + 1/3 × K
+<br>J = 3K - 2D
+        </div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>2.3 量价分析</h3>
+      <div class="model-card">
+        <h4>OBV 能量潮指标</h4>
+        <span class="tag-level level-mid">中级</span>
+        <div class="model-desc">OBV将成交量与价格变动联系起来。价格上涨时将当日成交量加到OBV上，价格下跌时减去。OBV的趋势可以确认价格趋势的可靠性。</div>
+      </div>
+
+      <div class="model-card">
+        <h4>VWAP 成交量加权平均价</h4>
+        <span class="tag-level level-mid">中级</span>
+        <div class="model-desc">VWAP是日内交易的重要基准价格。机构交易者常用VWAP作为执行交易的衡量标准。</div>
+        <div class="model-formula">
+VWAP = Σ(Price_i × Volume_i) / Σ(Volume_i)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODULE 3: 基本面分析 ============ -->
+<div class="module" data-category="analysis">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#27ae60,#2ecc71);">🏭</div>
+    <div>
+      <div class="module-title">模块三：基本面分析框架</div>
+      <div class="module-subtitle">供需平衡表、产业链分析、宏观经济指标</div>
+    </div>
+    <span class="module-badge badge-core">核心</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>3.1 供需平衡表分析</h3>
+      <div class="model-card">
+        <h4>供需平衡表构建</h4>
+        <span class="tag-level level-mid">中级</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">供需平衡表是商品期货分析师最核心的工具，通过系统追踪产量、消费量、进口、出口、库存等数据，评估市场供需格局和价格驱动因素。</div>
+        <div class="model-formula">
+期末库存 = 期初库存 + 产量 + 进口量 - 消费量 - 出口量
+<br>库存消费比 = 期末库存 / 年度消费量 × 100%
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="balance_r"><span class="comment"># 供需平衡表分析 - R实现</span>
+<span class="keyword">library</span>(dplyr)
+<span class="keyword">library</span>(tidyr)
+<span class="keyword">library</span>(openxlsx)
+
+<span class="comment"># 构建示例供需平衡表（以沪铜为例）</span>
+balance_sheet <span class="keyword">&lt;-</span> <span class="func">data.frame</span>(
+  年份 <span class="var">=</span> <span class="num">2019</span>:<span class="num">2025</span>,
+  期初库存 <span class="var">=</span> <span class="func">c</span>(<span class="num">180</span>,<span class="num">165</span>,<span class="num">155</span>,<span class="num">140</span>,<span class="num">130</span>,<span class="num">120</span>,<span class="num">135</span>),    <span class="comment"># 万吨</span>
+  产量     <span class="var">=</span> <span class="func">c</span>(<span class="num">985</span>,<span class="num">1002</span>,<span class="num">1049</span>,<span class="num">1106</span>,<span class="num">1150</span>,<span class="num">1198</span>,<span class="num">1240</span>),
+  进口量   <span class="var">=</span> <span class="func">c</span>(<span class="num">380</span>,<span class="num">450</span>,<span class="num">550</span>,<span class="num">530</span>,<span class="num">480</span>,<span class="num">510</span>,<span class="num">525</span>),
+  消费量   <span class="var">=</span> <span class="func">c</span>(<span class="num">1180</span>,<span class="num">1380</span>,<span class="num">1480</span>,<span class="num">1510</span>,<span class="num">1520</span>,<span class="num">1560</span>,<span class="num">1600</span>),
+  出口量   <span class="var">=</span> <span class="func">c</span>(<span class="num">5</span>,<span class="num">8</span>,<span class="num">6</span>,<span class="num">10</span>,<span class="num">8</span>,<span class="num">7</span>,<span class="num">9</span>)
+) <span class="keyword">%&gt;%</span>
+  <span class="func">mutate</span>(
+    总供给 <span class="var">=</span> 期初库存 <span class="keyword">+</span> 产量 <span class="keyword">+</span> 进口量,
+    总需求 <span class="var">=</span> 消费量 <span class="keyword">+</span> 出口量,
+    期末库存 <span class="var">=</span> 总供给 <span class="keyword">-</span> 总需求,
+    供需缺口 <span class="var">=</span> 总供给 <span class="keyword">-</span> 总需求,
+    库存消费比 <span class="var">=</span> <span class="func">round</span>(期末库存 <span class="keyword">/</span> 消费量 <span class="keyword">*</span> <span class="num">100</span>, <span class="num">1</span>)
+  )
+
+<span class="func">print</span>(balance_sheet)
+
+<span class="comment"># 导出Excel</span>
+<span class="func">write.xlsx</span>(balance_sheet, <span class="string">"供需平衡表_沪铜.xlsx"</span>)</div>
+        <div class="code-block" id="balance_py"><span class="comment"># 供需平衡表分析 - Python实现</span>
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># 构建示例供需平衡表（以沪铜为例）</span>
+data = {
+    <span class="string">'年份'</span>: list(<span class="func">range</span>(<span class="num">2019</span>, <span class="num">2026</span>)),
+    <span class="string">'期初库存'</span>: [<span class="num">180</span>,<span class="num">165</span>,<span class="num">155</span>,<span class="num">140</span>,<span class="num">130</span>,<span class="num">120</span>,<span class="num">135</span>],
+    <span class="string">'产量'</span>: [<span class="num">985</span>,<span class="num">1002</span>,<span class="num">1049</span>,<span class="num">1106</span>,<span class="num">1150</span>,<span class="num">1198</span>,<span class="num">1240</span>],
+    <span class="string">'进口量'</span>: [<span class="num">380</span>,<span class="num">450</span>,<span class="num">550</span>,<span class="num">530</span>,<span class="num">480</span>,<span class="num">510</span>,<span class="num">525</span>],
+    <span class="string">'消费量'</span>: [<span class="num">1180</span>,<span class="num">1380</span>,<span class="num">1480</span>,<span class="num">1510</span>,<span class="num">1520</span>,<span class="num">1560</span>,<span class="num">1600</span>],
+    <span class="string">'出口量'</span>: [<span class="num">5</span>,<span class="num">8</span>,<span class="num">6</span>,<span class="num">10</span>,<span class="num">8</span>,<span class="num">7</span>,<span class="num">9</span>]
+}
+df = pd.<span class="func">DataFrame</span>(data)
+
+df[<span class="string">'总供给'</span>] = df[<span class="string">'期初库存'</span>] + df[<span class="string">'产量'</span>] + df[<span class="string">'进口量'</span>]
+df[<span class="string">'总需求'</span>] = df[<span class="string">'消费量'</span>] + df[<span class="string">'出口量'</span>]
+df[<span class="string">'期末库存'</span>] = df[<span class="string">'总供给'</span>] - df[<span class="string">'总需求'</span>]
+df[<span class="string">'供需缺口'</span>] = df[<span class="string">'总供给'</span>] - df[<span class="string">'总需求'</span>]
+df[<span class="string">'库存消费比'</span>] = (df[<span class="string">'期末库存'</span>] / df[<span class="string">'消费量'</span>] * <span class="num">100</span>).<span class="func">round</span>(<span class="num">1</span>)
+
+<span class="func">print</span>(df.<span class="func">to_string</span>(index=<span class="keyword">False</span>))
+
+<span class="comment"># 导出Excel</span>
+df.<span class="func">to_excel</span>(<span class="string">'供需平衡表_沪铜.xlsx'</span>, index=<span class="keyword">False</span>)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>3.2 宏观经济指标体系</h3>
+      <div class="model-card">
+        <h4>关键宏观数据及对期货市场的影响</h4>
+        <span class="tag-level level-mid">中级</span>
+        <table class="model-table">
+          <tr><th>指标类别</th><th>核心指标</th><th>主要影响品种</th><th>传导机制</th></tr>
+          <tr><td>经济增长</td><td>GDP、PMI、工业增加值</td><td>工业品全品种</td><td>需求预期驱动</td></tr>
+          <tr><td>通货膨胀</td><td>CPI、PPI、核心PCE</td><td>贵金属、农产品</td><td>购买力与实际利率</td></tr>
+          <tr><td>货币政策</td><td>利率、M2、社融</td><td>金融期货、贵金属</td><td>资金成本与流动性</td></tr>
+          <tr><td>汇率</td><td>美元指数、人民币汇率</td><td>有色金属、贵金属</td><td>定价货币效应</td></tr>
+          <tr><td>能源</td><td>EIA原油库存、OPEC产量</td><td>原油及化工品</td><td>成本传导效应</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODULE 4: 量化分析模型 ============ -->
+<div class="module" data-category="model">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#8e44ad,#9b59b6);">🧮</div>
+    <div>
+      <div class="module-title">模块四：量化分析模型</div>
+      <div class="module-subtitle">统计建模、时间序列、机器学习</div>
+    </div>
+    <span class="module-badge badge-core">核心</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>4.1 时间序列分析</h3>
+      <div class="model-card">
+        <h4>ARIMA 模型</h4>
+        <span class="tag-level level-mid">中级</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">ARIMA(p,d,q)是时间序列预测的经典模型。通过自回归(AR)、差分(I)和移动平均(MA)三个部分来刻画时间序列的动态特征。分析师用它来预测期货价格趋势。</div>
+        <div class="model-formula">
+AR(p): X_t = c + Σ(φ_i × X_{t-i}) + ε_t
+<br>I(d): 对序列进行d阶差分使其平稳
+<br>MA(q): X_t = μ + Σ(θ_j × ε_{t-j}) + ε_t
+<br>ARIMA(p,d,q): 结合上述三个过程
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="arima_r"><span class="comment"># ARIMA模型 - R实现</span>
+<span class="keyword">library</span>(forecast)
+<span class="keyword">library</span>(tseries)
+
+<span class="comment"># 生成示例期货价格序列</span>
+<span class="func">set.seed</span>(<span class="num">42</span>)
+price_ts <span class="keyword">&lt;-</span> <span class="func">ts</span>(<span class="func">cumsum</span>(<span class="func">rnorm</span>(<span class="num">500</span>, <span class="num">5</span>, <span class="num">30</span>)) + <span class="num">5000</span>)
+
+<span class="comment"># ADF平稳性检验</span>
+adf_test <span class="keyword">&lt;-</span> <span class="func">adf.test</span>(price_ts)
+<span class="func">cat</span>(<span class="string">"ADF统计量:"</span>, <span class="func">round</span>(adf_test$statistic, <span class="num">4</span>), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"p值:"</span>, <span class="func">round</span>(adf_test$p.value, <span class="num">4</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># ACF/PACF确定阶数</span>
+<span class="func">par</span>(mfrow <span class="var">=</span> <span class="func">c</span>(<span class="num">1</span>,<span class="num">2</span>))
+<span class="func">acf</span>(price_ts, main <span class="var">=</span> <span class="string">"自相关函数(ACF)"</span>)
+<span class="func">pacf</span>(price_ts, main <span class="var">=</span> <span class="string">"偏自相关函数(PACF)"</span>)
+
+<span class="comment"># 自动选择最优ARIMA阶数</span>
+fit <span class="keyword">&lt;-</span> <span class="func">auto.arima</span>(price_ts,
+                 seasonal <span class="var">=</span> <span class="keyword">FALSE</span>,
+                 trace <span class="var">=</span> <span class="keyword">TRUE</span>,
+                 stepwise <span class="var">=</span> <span class="keyword">FALSE</span>,
+                 approximation <span class="var">=</span> <span class="keyword">FALSE</span>)
+
+<span class="func">summary</span>(fit)
+
+<span class="comment"># 预测未来20个交易日</span>
+fc <span class="keyword">&lt;-</span> <span class="func">forecast</span>(fit, h <span class="var">=</span> <span class="num">20</span>, level <span class="var">=</span> <span class="func">c</span>(<span class="num">80</span>, <span class="num">95</span>))
+<span class="func">plot</span>(fc, main <span class="var">=</span> <span class="string">"ARIMA期货价格预测"</span>,
+     xlab <span class="var">=</span> <span class="string">"时间"</span>, ylab <span class="var">=</span> <span class="string">"价格"</span>)
+
+<span class="comment"># 模型诊断</span>
+<span class="func">checkresiduals</span>(fit)</div>
+        <div class="code-block" id="arima_py"><span class="comment"># ARIMA模型 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">from</span> statsmodels.tsa.arima.model <span class="keyword">import</span> ARIMA
+<span class="keyword">from</span> statsmodels.tsa.stattools <span class="keyword">import</span> adfuller
+<span class="keyword">from</span> statsmodels.graphics.tsaplots <span class="keyword">import</span> plot_acf, plot_pacf
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+<span class="comment"># 生成示例数据</span>
+np.random.<span class="func">seed</span>(<span class="num">42</span>)
+price = np.<span class="func">cumsum</span>(np.random.<span class="func">normal</span>(<span class="num">5</span>, <span class="num">30</span>, <span class="num">500</span>)) + <span class="num">5000</span>
+
+<span class="comment"># ADF平稳性检验</span>
+adf_result = <span class="func">adfuller</span>(price)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"ADF统计量: <span class="var">{adf_result[0]:.4f}</span>"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"p值: <span class="var">{adf_result[1]:.4f}</span>"</span>)
+
+<span class="comment"># 差分使序列平稳</span>
+price_diff = np.<span class="func">diff</span>(price)
+
+<span class="comment"># 拟合ARIMA模型</span>
+model = <span class="func">ARIMA</span>(price, order=(<span class="num">2</span>, <span class="num">1</span>, <span class="num">2</span>))
+fitted = model.<span class="func">fit</span>()
+<span class="func">print</span>(fitted.<span class="func">summary</span>())
+
+<span class="comment"># 预测</span>
+forecast = fitted.<span class="func">get_forecast</span>(steps=<span class="num">20</span>)
+fc_mean = forecast.predicted_mean
+fc_ci = forecast.conf_int(alpha=<span class="num">0.05</span>)
+
+<span class="comment"># 绘制预测结果</span>
+fig, ax = plt.<span class="func">subplots</span>(figsize=(<span class="num">12</span>, <span class="num">5</span>))
+ax.<span class="func">plot</span>(price[-<span class="num">100</span>:], label=<span class="string">'实际价格'</span>)
+ax.<span class="func">plot</span>(<span class="func">range</span>(<span class="num">400</span>, <span class="num">420</span>), fc_mean, <span class="string">'r--'</span>, label=<span class="string">'预测'</span>)
+ax.<span class="func">fill_between</span>(<span class="func">range</span>(<span class="num">400</span>, <span class="num">420</span>),
+              fc_ci.iloc[:, <span class="num">0</span>], fc_ci.iloc[:, <span class="num">1</span>],
+              alpha=<span class="num">0.2</span>, color=<span class="string">'red'</span>)
+ax.<span class="func">legend</span>()
+ax.<span class="func">set_title</span>(<span class="string">'ARIMA期货价格预测'</span>)
+plt.<span class="func">show</span>()</div>
+      </div>
+
+      <div class="model-card">
+        <h4>GARCH 波动率模型</h4>
+        <span class="tag-level level-adv">高级</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">GARCH(Generalized Autoregressive Conditional Heteroskedasticity)模型专门用于刻画金融时间序列的波动聚集性（volatility clustering）。对期货分析师而言，GARCH是计算VaR、期权定价和风险管理的关键工具。</div>
+        <div class="model-formula">
+均值方程: r_t = μ + ε_t, 其中 ε_t = σ_t × z_t (z_t ~ iid)
+<br>方差方程: σ²_t = ω + α × ε²_{t-1} + β × σ²_{t-1}
+<br>GARCH(1,1)是最常用形式，要求 α + β < 1（平稳条件）
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="garch_r"><span class="comment"># GARCH(1,1)模型 - R实现</span>
+<span class="keyword">library</span>(rugarch)
+
+<span class="comment"># 计算日收益率</span>
+returns <span class="keyword">&lt;-</span> <span class="func">diff</span>(<span class="func">log</span>(price_ts)) <span class="keyword">*</span> <span class="num">100</span>
+
+<span class="comment"># 设定GARCH(1,1)模型</span>
+spec <span class="keyword">&lt;-</span> <span class="func">ugarchspec</span>(
+  mean.model <span class="var">=</span> <span class="func">list</span>(armaOrder <span class="var">=</span> <span class="func">c</span>(<span class="num">0</span>,<span class="num">0</span>), include.mean <span class="var">=</span> <span class="keyword">TRUE</span>),
+  variance.model <span class="var">=</span> <span class="func">list</span>(model <span class="var">=</span> <span class="string">"sGARCH"</span>, garchOrder <span class="var">=</span> <span class="func">c</span>(<span class="num">1</span>,<span class="num">1</span>)),
+  distribution.model <span class="var">=</span> <span class="string">"norm"</span>
+)
+
+<span class="comment"># 拟合模型</span>
+fit <span class="keyword">&lt;-</span> <span class="func">ugarchfit</span>(spec, returns)
+<span class="func">print</span>(fit)
+
+<span class="comment"># 提取波动率预测</span>
+forecast <span class="keyword">&lt;-</span> <span class="func">ugarchforecast</span>(fit, n.ahead <span class="var">=</span> <span class="num">20</span>)
+sigma_fc <span class="keyword">&lt;-</span> <span class="func">sigma</span>(forecast)
+<span class="func">cat</span>(<span class="string">"未来20日波动率预测:\n"</span>)
+<span class="func">print</span>(<span class="func">round</span>(sigma_fc, <span class="num">4</span>))
+
+<span class="comment"># 模型参数解读</span>
+coef <span class="keyword">&lt;-</span> <span class="func">coef</span>(fit)
+<span class="func">cat</span>(<span class="string">"\nω ="</span>, <span class="func">round</span>(coef[<span class="string">"omega"</span>], <span class="num">6</span>),
+    <span class="string">"\nα ="</span>, <span class="func">round</span>(coef[<span class="string">"alpha1"</span>], <span class="num">4</span>),
+    <span class="string">"\nβ ="</span>, <span class="func">round</span>(coef[<span class="string">"beta1"</span>], <span class="num">4</span>),
+    <span class="string">"\nα+β ="</span>, <span class="func">round</span>(coef[<span class="string">"alpha1"</span>] <span class="keyword">+</span> coef[<span class="string">"beta1"</span>], <span class="num">4</span>))
+
+<span class="comment"># 条件波动率图</span>
+<span class="func">plot</span>(<span class="func">sigma</span>(fit), type <span class="var">=</span> <span class="string">"l"</span>, col <span class="var">=</span> <span class="string">"steelblue"</span>,
+     main <span class="var">=</span> <span class="string">"GARCH(1,1)条件波动率"</span>,
+     ylab <span class="var">=</span> <span class="string">"波动率(%)</span>")</div>
+        <div class="code-block" id="garch_py"><span class="comment"># GARCH(1,1)模型 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> arch <span class="keyword">import</span> arch_model
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+<span class="comment"># 计算日收益率</span>
+returns = np.<span class="func">diff</span>(np.<span class="func">log</span>(price)) <span class="keyword">*</span> <span class="num">100</span>
+
+<span class="comment"># 拟合GARCH(1,1)</span>
+model = <span class="func">arch_model</span>(returns, vol=<span class="string">'Garch'</span>, p=<span class="num">1</span>, q=<span class="num">1</span>, mean=<span class="string">'Constant'</span>, dist=<span class="string">'normal'</span>)
+fitted = model.<span class="func">fit</span>(update_freq=<span class="num">5</span>)
+<span class="func">print</span>(fitted.<span class="func">summary</span>())
+
+<span class="comment"># 提取参数</span>
+omega = fitted.params[<span class="string">'omega'</span>]
+alpha = fitted.params[<span class="string">'alpha[1]'</span>]
+beta = fitted.params[<span class="string">'beta[1]'</span>]
+<span class="func">print</span>(<span class="func">f</span><span class="string">"\nω = <span class="var">{omega:.6f}</span>"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"α = <span class="var">{alpha:.4f}</span>"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"β = <span class="var">{beta:.4f}</span>"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"α+β = <span class="var">{alpha+beta:.4f}</span>"</span>)
+
+<span class="comment"># 波动率预测</span>
+forecast = fitted.<span class="func">forecast</span>(horizon=<span class="num">20</span>)
+sigma_fc = np.<span class="func">sqrt</span>(forecast.variance[-<span class="num">1</span>:].<span class="func">values</span>[<span class="num">0</span>])
+<span class="func">print</span>(<span class="func">f</span><span class="string">"未来20日波动率预测: <span class="var">{sigma_fc.round(4)}</span>"</span>)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.2 回归分析与协整</h3>
+      <div class="model-card">
+        <h4>协整检验与套利模型 (Cointegration)</h4>
+        <span class="tag-level level-adv">高级</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">协整关系是统计套利的理论基础。当两个或多个非平稳时间序列存在稳定的线性组合时，它们之间存在长期均衡关系。在期货市场中，跨品种套利、期现套利都基于协整检验。</div>
+        <div class="model-formula">
+Engle-Granger两步法:
+<br>Step 1: Y_t = α + β × X_t + ε_t (回归)
+<br>Step 2: ADF检验残差 ε_t 是否平稳
+<br>如果残差平稳 → 存在协整关系 → 可构建套利组合
+<br>套利信号: z-score = (spread - mean) / std, |z| > 2时入场
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="coint_r"><span class="comment"># 协整检验与配对套利 - R实现</span>
+<span class="keyword">library</span>(urca)
+<span class="keyword">library</span>(tseries)
+<span class="keyword">library</span>(quantmod)
+
+<span class="comment"># 模拟两个协整序列（如螺纹钢 vs 热卷）</span>
+<span class="func">set.seed</span>(<span class="num">42</span>)
+n <span class="keyword">&lt;-</span> <span class="num">500</span>
+common_factor <span class="keyword">&lt;-</span> <span class="func">cumsum</span>(<span class="func">rnorm</span>(n, <span class="num">0.1</span>, <span class="num">1</span>))
+y1 <span class="keyword">&lt;-</span> <span class="num">4000</span> <span class="keyword">+</span> common_factor <span class="keyword">*</span> <span class="num">10</span> <span class="keyword">+</span> <span class="func">rnorm</span>(n, <span class="num">0</span>, <span class="num">20</span>)
+y2 <span class="keyword">&lt;-</span> <span class="num">3800</span> <span class="keyword">+</span> common_factor <span class="keyword">*</span> <span class="num">9</span> <span class="keyword">+</span> <span class="func">rnorm</span>(n, <span class="num">0</span>, <span class="num">18</span>)
+
+<span class="comment"># Step 1: OLS回归</span>
+reg <span class="keyword">&lt;-</span> <span class="func">lm</span>(y1 <span class="keyword">~</span> y2)
+<span class="func">cat</span>(<span class="string">"对冲比 (Hedge Ratio):"</span>, <span class="func">round</span>(<span class="func">coef</span>(reg)[<span class="num">2</span>], <span class="num">4</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># Step 2: 残差ADF检验</span>
+residuals <span class="keyword">&lt;-</span> <span class="func">resid</span>(reg)
+adf <span class="keyword">&lt;-</span> <span class="func">adf.test</span>(residuals)
+<span class="func">cat</span>(<span class="string">"残差ADF p值:"</span>, <span class="func">round</span>(adf$p.value, <span class="num">4</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># 构建套利信号</span>
+spread <span class="keyword">&lt;-</span> y1 <span class="keyword">-</span> <span class="func">coef</span>(reg)[<span class="num">2</span>] <span class="keyword">*</span> y2
+spread_mean <span class="keyword">&lt;-</span> <span class="func">mean</span>(spread)
+spread_std  <span class="keyword">&lt;-</span> <span class="func">sd</span>(spread)
+z_score <span class="keyword">&lt;-</span> (spread <span class="keyword">-</span> spread_mean) <span class="keyword">/</span> spread_std
+
+<span class="comment"># 交易信号</span>
+signal <span class="keyword">&lt;-</span> <span class="func">ifelse</span>(z_score <span class="keyword">&gt;</span> <span class="num">2</span>, <span class="string">"做空价差"</span>,
+            <span class="func">ifelse</span>(z_score <span class="keyword">&lt;</span> <span class="num">-2</span>, <span class="string">"做多价差"</span>, <span class="string">"观望"</span>))
+
+<span class="comment"># 回测统计</span>
+<span class="func">cat</span>(<span class="string">"\n═══ 配对套利统计 ═══\n"</span>)
+<span class="func">cat</span>(<span class="string">"价差均值:"</span>, <span class="func">round</span>(spread_mean, <span class="num">2</span>), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"价差标准差:"</span>, <span class="func">round</span>(spread_std, <span class="num">2</span>), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"做空信号次数:"</span>, <span class="func">sum</span>(signal <span class="keyword">==</span> <span class="string">"做空价差"</span>), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"做多信号次数:"</span>, <span class="func">sum</span>(signal <span class="keyword">==</span> <span class="string">"做多价差"</span>), <span class="string">"\n"</span>)</div>
+        <div class="code-block" id="coint_py"><span class="comment"># 协整检验与配对套利 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">from</span> statsmodels.tsa.stattools <span class="keyword">import</span> adfuller, coint
+<span class="keyword">from</span> statsmodels.regression.linear_model <span class="keyword">import</span> OLS
+<span class="keyword">from</span> statsmodels.tools <span class="keyword">import</span> add_constant
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+<span class="comment"># 模拟两个协整序列</span>
+np.random.<span class="func">seed</span>(<span class="num">42</span>)
+n = <span class="num">500</span>
+common = np.<span class="func">cumsum</span>(np.random.<span class="func">normal</span>(<span class="num">0.1</span>, <span class="num">1</span>, n))
+y1 = <span class="num">4000</span> + common <span class="keyword">*</span> <span class="num">10</span> + np.random.<span class="func">normal</span>(<span class="num">0</span>, <span class="num">20</span>, n)
+y2 = <span class="num">3800</span> + common <span class="keyword">*</span> <span class="num">9</span> + np.random.<span class="func">normal</span>(<span class="num">0</span>, <span class="num">18</span>, n)
+
+<span class="comment"># Step 1: OLS回归获取对冲比</span>
+X = add_constant(y2)
+model = <span class="func">OLS</span>(y1, X).<span class="func">fit</span>()
+hedge_ratio = model.params[<span class="num">1</span>]
+<span class="func">print</span>(<span class="func">f</span><span class="string">"对冲比 (Hedge Ratio): <span class="var">{hedge_ratio:.4f}</span>"</span>)
+
+<span class="comment"># Step 2: 残差ADF检验</span>
+residuals = model.resid
+adf_stat, adf_p, _, _, _, _ = <span class="func">adfuller</span>(residuals)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"残差ADF p值: <span class="var">{adf_p:.4f}</span>"</span>)
+
+<span class="comment"># 构建套利信号</span>
+spread = y1 - hedge_ratio <span class="keyword">*</span> y2
+z_score = (spread - spread.<span class="func">mean</span>()) / spread.<span class="func">std</span>()
+
+df_signal = pd.<span class="func">DataFrame</span>({
+    <span class="string">'y1'</span>: y1, <span class="string">'y2'</span>: y2,
+    <span class="string">'spread'</span>: spread, <span class="string">'z_score'</span>: z_score
+})
+df_signal[<span class="string">'signal'</span>] = <span class="keyword">None</span>
+df_signal.<span class="func">loc</span>[z_score > <span class="num">2</span>, <span class="string">'signal'</span>] = <span class="string">'做空价差'</span>
+df_signal.<span class="func">loc</span>[z_score < <span class="num">-2</span>, <span class="string">'signal'</span>] = <span class="string">'做多价差'</span>
+
+<span class="comment"># 回测统计</span>
+<span class="func">print</span>(<span class="func">f</span><span class="string">"\n═══ 配对套利统计 ═══"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"价差均值: <span class="var">{spread.mean():.2f}</span>"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"价差标准差: <span class="var">{spread.std():.2f}</span>"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"做空信号: <span class="var">{(df_signal['signal']=='做空价差').sum()}</span>次"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"做多信号: <span class="var">{(df_signal['signal']=='做多价差').sum()}</span>次"</span>)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.3 机器学习模型</h3>
+      <div class="model-card">
+        <h4>随机森林 (Random Forest) 预测模型</h4>
+        <span class="tag-level level-adv">高级</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">使用随机森林对期货价格涨跌方向进行分类预测。通过多个技术指标和基本面特征作为输入，构建集成学习模型。</div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="rf_r"><span class="comment"># 随机森林期货涨跌预测 - R实现</span>
+<span class="keyword">library</span>(randomForest)
+<span class="keyword">library</span>(caret)
+<span class="keyword">library</span>(TTR)
+
+<span class="comment"># 准备特征矩阵</span>
+n <span class="keyword">&lt;-</span> <span class="num">500</span>
+<span class="func">set.seed</span>(<span class="num">42</span>)
+close <span class="keyword">&lt;-</span> <span class="func">cumsum</span>(<span class="func">rnorm</span>(n, <span class="num">0</span>, <span class="num">50</span>)) + <span class="num">5000</span>
+high <span class="keyword">&lt;-</span> close <span class="keyword">+</span> <span class="func">abs</span>(<span class="func">rnorm</span>(n, <span class="num">30</span>, <span class="num">15</span>))
+low  <span class="keyword">&lt;-</span> close <span class="keyword">-</span> <span class="func">abs</span>(<span class="func">rnorm</span>(n, <span class="num">30</span>, <span class="num">15</span>))
+volume <span class="keyword">&lt;-</span> <span class="func">abs</span>(<span class="func">rnorm</span>(n, <span class="num">100000</span>, <span class="num">30000</span>))
+
+features <span class="keyword">&lt;-</span> <span class="func">data.frame</span>(
+  returns    <span class="var">=</span> <span class="func">diff</span>(close) / <span class="func">head</span>(close, <span class="keyword">-</span><span class="num">1</span>),
+  volatility <span class="var">=</span> <span class="func">runSD</span>(<span class="func">diff</span>(close)/<span class="func">head</span>(close,<span class="keyword">-</span><span class="num">1</span>), <span class="num">20</span>),
+  ma5_gap    <span class="var">=</span> (<span class="func">SMA</span>(close,<span class="num">5</span>) <span class="keyword">-</span> close) / close,
+  ma20_gap   <span class="var">=</span> (<span class="func">SMA</span>(close,<span class="num">20</span>) <span class="keyword">-</span> close) / close,
+  rsi        <span class="var">=</span> <span class="func">RSI</span>(close, <span class="num">14</span>),
+  macd       <span class="var">=</span> <span class="func">MACD</span>(close)[, <span class="string">"macd"</span>],
+  volume_chg <span class="var">=</span> <span class="func">diff</span>(volume) / <span class="func">head</span>(volume, <span class="keyword">-</span><span class="num">1</span>)
+)
+features <span class="keyword">&lt;-</span> features[<span class="func">complete.cases</span>(features), ]
+
+<span class="comment"># 构建标签：次日涨跌</span>
+label <span class="keyword">&lt;-</span> <span class="func">ifelse</span>(<span class="func">lead</span>(features$returns) <span class="keyword">&gt;</span> <span class="num">0</span>, <span class="num">1</span>, <span class="num">0</span>)
+features$label <span class="keyword">&lt;-</span> label
+
+<span class="comment"># 训练集/测试集划分</span>
+train_idx <span class="keyword">&lt;-</span> <span class="func">createDataPartition</span>(features$label, p <span class="var">=</span> <span class="num">0.8</span>)
+train <span class="keyword">&lt;-</span> features[train_idx$Resample1, ]
+test  <span class="keyword">&lt;-</span> features[<span class="keyword">-</span>train_idx$Resample1, ]
+
+<span class="comment"># 训练随机森林</span>
+rf_fit <span class="keyword">&lt;-</span> <span class="func">randomForest</span>(
+  label <span class="keyword">~</span> ., data <span class="var">=</span> train,
+  ntree <span class="var">=</span> <span class="num">500</span>,
+  mtry <span class="var">=</span> <span class="num">3</span>,
+  importance <span class="var">=</span> <span class="keyword">TRUE</span>
+)
+
+<span class="comment"># 预测与评估</span>
+pred <span class="keyword">&lt;-</span> <span class="func">predict</span>(rf_fit, test)
+cm <span class="keyword">&lt;-</span> <span class="func">confusionMatrix</span>(<span class="func">factor</span>(pred), <span class="func">factor</span>(test$label))
+<span class="func">print</span>(cm)
+
+<span class="comment"># 特征重要性</span>
+<span class="func">importance</span>(rf_fit)
+<span class="func">varImpPlot</span>(rf_fit, main <span class="var">=</span> <span class="string">"特征重要性排名"</span>)</div>
+        <div class="code-block" id="rf_py"><span class="comment"># 随机森林期货涨跌预测 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier
+<span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split
+<span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> classification_report, confusion_matrix
+
+<span class="comment"># 准备数据</span>
+np.random.<span class="func">seed</span>(<span class="num">42</span>)
+n = <span class="num">500</span>
+close = np.<span class="func">cumsum</span>(np.random.<span class="func">normal</span>(<span class="num">0</span>, <span class="num">50</span>, n)) + <span class="num">5000</span>
+volume = np.<span class="func">abs</span>(np.random.<span class="func">normal</span>(<span class="num">100000</span>, <span class="num">30000</span>, n))
+
+df = pd.<span class="func">DataFrame</span>({<span class="string">'close'</span>: close, <span class="string">'volume'</span>: volume})
+df[<span class="string">'returns'</span>] = df[<span class="string">'close'</span>].<span class="func">pct_change</span>()
+df[<span class="string">'volatility'</span>] = df[<span class="string">'returns'</span>].<span class="func">rolling</span>(<span class="num">20</span>).<span class="func">std</span>()
+df[<span class="string">'ma5_gap'</span>] = (df[<span class="string">'close'</span>].<span class="func">rolling</span>(<span class="num">5</span>).<span class="func">mean</span>() <span class="keyword">-</span> df[<span class="string">'close'</span>]) / df[<span class="string">'close'</span>]
+df[<span class="string">'ma20_gap'</span>] = (df[<span class="string">'close'</span>].<span class="func">rolling</span>(<span class="num">20</span>).<span class="func">mean</span>() <span class="keyword">-</span> df[<span class="string">'close'</span>]) / df[<span class="string">'close'</span>]
+df[<span class="string">'rsi'</span>] = <span class="func">calculate_rsi</span>(df[<span class="string">'close'</span>])
+df[<span class="string">'vol_chg'</span>] = df[<span class="string">'volume'</span>].<span class="func">pct_change</span>()
+df = df.<span class="func">dropna</span>()
+
+<span class="comment"># 标签：次日涨跌</span>
+df[<span class="string">'label'</span>] = (df[<span class="string">'returns'</span>].<span class="func">shift</span>(<span class="keyword">-</span><span class="num">1</span>) > <span class="num">0</span>).<span class="func">astype</span>(<span class="keyword">int</span>)
+
+features = [<span class="string">'returns'</span>, <span class="string">'volatility'</span>, <span class="string">'ma5_gap'</span>, <span class="string">'ma20_gap'</span>, <span class="string">'rsi'</span>, <span class="string">'vol_chg'</span>]
+X = df[features].<span class="func">iloc</span>[:-<span class="num">1</span>]
+y = df[<span class="string">'label'</span>].<span class="func">iloc</span>[:-<span class="num">1</span>]
+
+X_train, X_test, y_train, y_test = <span class="func">train_test_split</span>(X, y, test_size=<span class="num">0.2</span>, shuffle=<span class="keyword">False</span>)
+
+<span class="comment"># 训练</span>
+rf = <span class="func">RandomForestClassifier</span>(n_estimators=<span class="num">500</span>, max_features=<span class="num">3</span>, random_state=<span class="num">42</span>)
+rf.<span class="func">fit</span>(X_train, y_train)
+
+<span class="comment"># 预测与评估</span>
+y_pred = rf.<span class="func">predict</span>(X_test)
+<span class="func">print</span>(<span class="func">classification_report</span>(y_test, y_pred, target_names=[<span class="string">'跌'</span>, <span class="string">'涨'</span>]))
+
+<span class="comment"># 特征重要性</span>
+importance = pd.<span class="func">Series</span>(rf.feature_importances_, index=features).<span class="func">sort_values</span>(ascending=<span class="keyword">False</span>)
+<span class="func">print</span>(<span class="string">"\n特征重要性:"</span>)
+<span class="func">print</span>(importance)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODULE 5: 风险管理 ============ -->
+<div class="module" data-category="risk">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#e74c3c,#c0392b);">🛡️</div>
+    <div>
+      <div class="module-title">模块五：风险管理体系</div>
+      <div class="module-subtitle">VaR、CVaR、压力测试、仓位管理</div>
+    </div>
+    <span class="module-badge badge-core">核心</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>5.1 VaR (在险价值)</h3>
+      <div class="model-card">
+        <h4>VaR 计算方法</h4>
+        <span class="tag-level level-adv">高级</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">VaR(Value at Risk)衡量在给定置信水平和时间范围内，投资组合可能遭受的最大损失。期货交易因杠杆特性，VaR尤为重要。</div>
+        <div class="model-formula">
+历史模拟法: VaR = 分位数(收益率序列, α)
+<br>参数法(正态): VaR = μ + z_α × σ, 其中 z_0.95 = -1.645
+<br>蒙特卡洛法: 模拟大量路径，取分位数
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="var_r"><span class="comment"># VaR计算 - R实现</span>
+<span class="keyword">library</span>(PerformanceAnalytics)
+
+<span class="comment"># 假设持仓：螺纹钢10手，沪铜5手</span>
+positions <span class="keyword">&lt;-</span> <span class="func">data.frame</span>(
+  品种 <span class="var">=</span> <span class="func">c</span>(<span class="string">"螺纹钢"</span>, <span class="string">"沪铜"</span>),
+  手数 <span class="var">=</span> <span class="func">c</span>(<span class="num">10</span>, <span class="num">5</span>),
+  合约规模 <span class="var">=</span> <span class="func">c</span>(<span class="num">10</span>, <span class="num">5</span>),       <span class="comment"># 吨/手</span>
+  价格 <span class="var">=</span> <span class="func">c</span>(<span class="num">3800</span>, <span class="num">72000</span>),     <span class="comment"># 元/吨</span>
+  杠杆 <span class="var">=</span> <span class="func">c</span>(<span class="num">12</span>, <span class="num">10</span>)            <span class="comment"># 倍</span>
+)
+
+positions <span class="keyword">&lt;-</span> positions <span class="keyword">%&gt;%</span>
+  <span class="func">mutate</span>(
+    头寸价值 <span class="var">=</span> 手数 <span class="keyword">*</span> 合约规模 <span class="keyword">*</span> 价格,
+    保证金 <span class="var">=</span> 头寸价值 <span class="keyword">/</span> 杠杆
+  )
+
+<span class="comment"># 模拟收益率序列</span>
+<span class="func">set.seed</span>(<span class="num">42</span>)
+returns <span class="keyword">&lt;-</span> <span class="func">rnorm</span>(<span class="num">1000</span>, <span class="num">0.0002</span>, <span class="num">0.015</span>)
+
+<span class="comment"># 1. 历史模拟法</span>
+var_hist <span class="keyword">&lt;-</span> <span class="func">quantile</span>(returns, <span class="num">0.05</span>)
+<span class="func">cat</span>(<span class="string">"历史模拟法 95% VaR:"</span>, <span class="func">round</span>(var_hist<span class="keyword">*</span><span class="num">100</span>,<span class="num">4</span>), <span class="string">"%\n"</span>)
+
+<span class="comment"># 2. 参数法</span>
+var_param <span class="keyword">&lt;-</span> <span class="func">mean</span>(returns) <span class="keyword">-</span> <span class="num">1.645</span> <span class="keyword">*</span> <span class="func">sd</span>(returns)
+<span class="func">cat</span>(<span class="string">"参数法 95% VaR:"</span>, <span class="func">round</span>(var_param<span class="keyword">*</span><span class="num">100</span>,<span class="num">4</span>), <span class="string">"%\n"</span>)
+
+<span class="comment"># 3. CVaR (条件VaR / Expected Shortfall)</span>
+cvar <span class="keyword">&lt;-</span> <span class="func">mean</span>(returns[returns <span class="keyword">&lt;=</span> var_hist])
+<span class="func">cat</span>(<span class="string">"CVaR (Expected Shortfall):"</span>, <span class="func">round</span>(cvar<span class="keyword">*</span><span class="num">100</span>,<span class="num">4</span>), <span class="string">"%\n"</span>)
+
+<span class="comment"># 4. 使用PerformanceAnalytics包</span>
+portfolio <span class="keyword">&lt;-</span> <span class="func">xts</span>(returns, <span class="func">Sys.Date</span>()<span class="keyword">-</span>(<span class="num">1000</span>:<span class="num">1</span>))
+<span class="func">VaR</span>(portfolio, p <span class="var">=</span> <span class="num">0.95</span>, method <span class="var">=</span> <span class="string">"hist"</span>)
+<span class="func">ES</span>(portfolio, p <span class="var">=</span> <span class="num">0.95</span>, method <span class="var">=</span> <span class="string">"hist"</span>)</div>
+        <div class="code-block" id="var_py"><span class="comment"># VaR计算 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> scipy.stats <span class="keyword">import</span> norm
+
+<span class="comment"># 模拟收益率</span>
+np.random.<span class="func">seed</span>(<span class="num">42</span>)
+returns = np.random.<span class="func">normal</span>(<span class="num">0.0002</span>, <span class="num">0.015</span>, <span class="num">1000</span>)
+
+<span class="comment"># 1. 历史模拟法</span>
+var_hist = np.<span class="func">percentile</span>(returns, <span class="num">5</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"历史模拟法 95% VaR: <span class="var">{var_hist*100:.4f}</span>%"</span>)
+
+<span class="comment"># 2. 参数法</span>
+mu, sigma = returns.<span class="func">mean</span>(), returns.<span class="func">std</span>()
+var_param = mu <span class="keyword">-</span> <span class="num">1.645</span> <span class="keyword">*</span> sigma
+<span class="func">print</span>(<span class="func">f</span><span class="string">"参数法 95% VaR: <span class="var">{var_param*100:.4f}</span>%"</span>)
+
+<span class="comment"># 3. CVaR (Expected Shortfall)</span>
+cvar = returns[returns <span class="keyword">&lt;=</span> var_hist].<span class="func">mean</span>()
+<span class="func">print</span>(<span class="func">f</span><span class="string">"CVaR (Expected Shortfall): <span class="var">{cvar*100:.4f}</span>%"</span>)
+
+<span class="comment"># 4. 蒙特卡洛模拟法</span>
+n_sims = <span class="num">10000</span>
+sim_returns = np.random.<span class="func">normal</span>(mu, sigma, n_sims)
+var_mc = np.<span class="func">percentile</span>(sim_returns, <span class="num">5</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"蒙特卡洛 95% VaR: <span class="var">{var_mc*100:.4f}</span>%"</span>)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>5.2 凯利公式与仓位管理</h3>
+      <div class="model-card">
+        <h4>凯利公式 (Kelly Criterion)</h4>
+        <span class="tag-level level-mid">中级</span>
+        <div class="model-desc">凯利公式给出了在已知胜率和赔率条件下的最优仓位比例，是资金管理的理论基础。</div>
+        <div class="model-formula">
+f* = (b × p - q) / b = p - q/b
+<br>其中：f* = 最优仓位比例, b = 赔率(盈亏比), p = 胜率, q = 1 - p
+<br>实际使用中通常采用半凯利(f*/2)以降低风险
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="kelly_r"><span class="comment"># 凯利公式仓位管理 - R实现</span>
+
+<span class="func">kelly_criterion</span> <span class="keyword">&lt;-</span> <span class="keyword">function</span>(win_rate, avg_win, avg_loss) {
+  <span class="comment"># win_rate: 胜率</span>
+  <span class="comment"># avg_win: 平均盈利(元)</span>
+  <span class="comment"># avg_loss: 平均亏损(元)</span>
+
+  odds <span class="keyword">&lt;-</span> avg_win / avg_loss   <span class="comment"># 赔率</span>
+  q <span class="keyword">&lt;-</span> <span class="num">1</span> <span class="keyword">-</span> win_rate
+
+  kelly <span class="keyword">&lt;-</span> (odds <span class="keyword">*</span> win_rate <span class="keyword">-</span> q) / odds
+  half_kelly <span class="keyword">&lt;-</span> kelly / <span class="num">2</span>
+
+  <span class="func">cat</span>(<span class="string">"═══ 凯利公式仓位计算 ═══\n"</span>)
+  <span class="func">cat</span>(<span class="string">"胜率:"</span>, <span class="func">paste0</span>(win_rate<span class="keyword">*</span><span class="num">100</span>, <span class="string">"%"</span>), <span class="string">"\n"</span>)
+  <span class="func">cat</span>(<span class="string">"赔率(盈亏比):"</span>, <span class="func">round</span>(odds, <span class="num">2</span>), <span class="string">"\n"</span>)
+  <span class="func">cat</span>(<span class="string">"最优仓位(凯利):"</span>, <span class="func">paste0</span>(<span class="func">round</span>(kelly<span class="keyword">*</span><span class="num">100</span>,<span class="num">1</span>), <span class="string">"%"</span>), <span class="string">"\n"</span>)
+  <span class="func">cat</span>(<span class="string">"建议仓位(半凯利):"</span>, <span class="func">paste0</span>(<span class="func">round</span>(half_kelly<span class="keyword">*</span><span class="num">100</span>,<span class="num">1</span>), <span class="string">"%"</span>), <span class="string">"\n"</span>)
+
+  <span class="keyword">if</span> (kelly <span class="keyword">&lt;=</span> <span class="num">0</span>) {
+    <span class="func">cat</span>(<span class="string">"⚠️ 凯利值为负，不应交易此策略\n"</span>)
+  }
+
+  <span class="keyword">return</span>(<span class="func">list</span>(kelly <span class="var">=</span> kelly, half_kelly <span class="var">=</span> half_kelly))
+}
+
+<span class="comment"># 示例</span>
+result <span class="keyword">&lt;-</span> <span class="func">kelly_criterion</span>(
+  win_rate <span class="var">=</span> <span class="num">0.55</span>,
+  avg_win  <span class="var">=</span> <span class="num">3000</span>,
+  avg_loss <span class="var">=</span> <span class="num">2000</span>
+)</div>
+        <div class="code-block" id="kelly_py"><span class="comment"># 凯利公式仓位管理 - Python实现</span>
+<span class="keyword">def</span> <span class="func">kelly_criterion</span>(win_rate, avg_win, avg_loss):
+    <span class="string">"""
+    计算凯利最优仓位比例
+    """</span>
+    odds = avg_win / avg_loss  <span class="comment"># 赔率</span>
+    q = <span class="num">1</span> - win_rate
+
+    kelly = (odds <span class="keyword">*</span> win_rate <span class="keyword">-</span> q) / odds
+    half_kelly = kelly / <span class="num">2</span>
+
+    <span class="func">print</span>(<span class="string">"═══ 凯利公式仓位计算 ═══"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"胜率: <span class="var">{win_rate*100}</span>%"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"赔率(盈亏比): <span class="var">{odds:.2f}</span>"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"最优仓位(凯利): <span class="var">{kelly*100:.1f}</span>%"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"建议仓位(半凯利): <span class="var">{half_kelly*100:.1f}</span>%"</span>)
+
+    <span class="keyword">if</span> kelly <= <span class="num">0</span>:
+        <span class="func">print</span>(<span class="string">"⚠️ 凯利值为负，不应交易此策略"</span>)
+
+    <span class="keyword">return</span> kelly, half_kelly
+
+<span class="comment"># 示例</span>
+kelly, half_kelly = <span class="func">kelly_criterion</span>(win_rate=<span class="num">0.55</span>, avg_win=<span class="num">3000</span>, avg_loss=<span class="num">2000</span>)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODULE 6: 期权定价模型 ============ -->
+<div class="module" data-category="model">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#f39c12,#e67e22);">📐</div>
+    <div>
+      <div class="module-title">模块六：期权定价与希腊字母</div>
+      <div class="module-subtitle">Black-Scholes、二叉树、波动率曲面</div>
+    </div>
+    <span class="module-badge badge-adv">进阶</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>6.1 Black-Scholes 模型</h3>
+      <div class="model-card">
+        <h4>BSM期权定价公式</h4>
+        <span class="tag-level level-adv">高级</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">Black-Scholes-Merton模型是期权定价的基石。期货分析师需理解BS公式的推导逻辑和各参数（S, K, T, r, σ）的影响。</div>
+        <div class="model-formula">
+看涨期权: C = S × N(d₁) - K × e^(-rT) × N(d₂)
+<br>看跌期权: P = K × e^(-rT) × N(-d₂) - S × N(-d₁)
+<br>d₁ = [ln(S/K) + (r + σ²/2)T] / (σ√T)
+<br>d₂ = d₁ - σ√T
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="bs_r"><span class="comment"># Black-Scholes 期权定价 - R实现</span>
+<span class="keyword">library</span>(fOptions)
+
+<span class="func">bs_pricing</span> <span class="keyword">&lt;-</span> <span class="keyword">function</span>(S, K, T, r, sigma, type <span class="var">=</span> <span class="string">"call"</span>) {
+  d1 <span class="keyword">&lt;-</span> (<span class="func">log</span>(S/K) <span class="keyword">+</span> (r <span class="keyword">+</span> sigma<span class="keyword">^</span><span class="num">2</span>/<span class="num">2</span>) <span class="keyword">*</span> T) / (sigma <span class="keyword">*</span> <span class="func">sqrt</span>(T))
+  d2 <span class="keyword">&lt;-</span> d1 <span class="keyword">-</span> sigma <span class="keyword">*</span> <span class="func">sqrt</span>(T)
+
+  <span class="keyword">if</span> (type <span class="keyword">==</span> <span class="string">"call"</span>) {
+    price <span class="keyword">&lt;-</span> S <span class="keyword">*</span> <span class="func">pnorm</span>(d1) <span class="keyword">-</span> K <span class="keyword">*</span> <span class="func">exp</span>(<span class="keyword">-</span>r<span class="keyword">*</span>T) <span class="keyword">*</span> <span class="func">pnorm</span>(d2)
+  } <span class="keyword">else</span> {
+    price <span class="keyword">&lt;-</span> K <span class="keyword">*</span> <span class="func">exp</span>(<span class="keyword">-</span>r<span class="keyword">*</span>T) <span class="keyword">*</span> <span class="func">pnorm</span>(<span class="keyword">-</span>d2) <span class="keyword">-</span> S <span class="keyword">*</span> <span class="func">pnorm</span>(<span class="keyword">-</span>d1)
+  }
+
+  <span class="comment"># 希腊字母</span>
+  delta <span class="keyword">&lt;-</span> <span class="func">ifelse</span>(type<span class="keyword">==</span><span class="string">"call"</span>, <span class="func">pnorm</span>(d1), <span class="func">pnorm</span>(d1)<span class="keyword">-</span><span class="num">1</span>)
+  gamma <span class="keyword">&lt;-</span> <span class="func">dnorm</span>(d1) / (S <span class="keyword">*</span> sigma <span class="keyword">*</span> <span class="func">sqrt</span>(T))
+  vega  <span class="keyword">&lt;-</span> S <span class="keyword">*</span> <span class="func">dnorm</span>(d1) <span class="keyword">*</span> <span class="func">sqrt</span>(T) <span class="keyword">/</span> <span class="num">100</span>
+  theta <span class="keyword">&lt;-</span> <span class="keyword">-</span>(S <span class="keyword">*</span> <span class="func">dnorm</span>(d1) <span class="keyword">*</span> sigma) / (<span class="num">2</span> <span class="keyword">*</span> <span class="func">sqrt</span>(T)) / <span class="num">365</span>
+  rho   <span class="keyword">&lt;-</span> <span class="keyword">if</span>(type<span class="keyword">==</span><span class="string">"call"</span>) K<span class="keyword">*</span>T<span class="keyword">*</span><span class="func">exp</span>(<span class="keyword">-</span>r<span class="keyword">*</span>T)<span class="keyword">*</span><span class="func">pnorm</span>(d2)<span class="keyword">/</span><span class="num">100</span>
+            <span class="keyword">else</span> <span class="keyword">-</span>K<span class="keyword">*</span>T<span class="keyword">*</span><span class="func">exp</span>(<span class="keyword">-</span>r<span class="keyword">*</span>T)<span class="keyword">*</span><span class="func">pnorm</span>(<span class="keyword">-</span>d2)<span class="keyword">/</span><span class="num">100</span>
+
+  <span class="func">cat</span>(<span class="string">"═══ Black-Scholes定价 ═══\n"</span>)
+  <span class="func">cat</span>(<span class="string">"期权价格:"</span>, <span class="func">round</span>(price, <span class="num">2</span>), <span class="string">"\n"</span>)
+  <span class="func">cat</span>(<span class="string">"Delta:"</span>, <span class="func">round</span>(delta, <span class="num">4</span>), <span class="string">"\n"</span>)
+  <span class="func">cat</span>(<span class="string">"Gamma:"</span>, <span class="func">round</span>(gamma, <span class="num">6</span>), <span class="string">"\n"</span>)
+  <span class="func">cat</span>(<span class="string">"Vega:"</span>, <span class="func">round</span>(vega, <span class="num">4</span>), <span class="string">"\n"</span>)
+  <span class="func">cat</span>(<span class="string">"Theta:"</span>, <span class="func">round</span>(theta, <span class="num">4</span>), <span class="string">"\n"</span>)
+  <span class="func">cat</span>(<span class="string">"Rho:"</span>, <span class="func">round</span>(rho, <span class="num">4</span>), <span class="string">"\n"</span>)
+
+  <span class="keyword">return</span>(<span class="func">list</span>(price<span class="var">=</span>price, delta<span class="var">=</span>delta, gamma<span class="var">=</span>gamma,
+              vega<span class="var">=</span>vega, theta<span class="var">=</span>theta, rho<span class="var">=</span>rho))
+}
+
+<span class="comment"># 示例：沪铜看涨期权</span>
+result <span class="keyword">&lt;-</span> <span class="func">bs_pricing</span>(
+  S <span class="var">=</span> <span class="num">72000</span>,     <span class="comment"># 标的价</span>
+  K <span class="var">=</span> <span class="num">74000</span>,     <span class="comment"># 行权价</span>
+  T <span class="var">=</span> <span class="num">90</span>/<span class="num">365</span>,  <span class="comment"># 90天</span>
+  r <span class="var">=</span> <span class="num">0.025</span>,    <span class="comment"># 无风险利率</span>
+  sigma <span class="var">=</span> <span class="num">0.25</span>,   <span class="comment"># 年化波动率25%</span>
+  type <span class="var">=</span> <span class="string">"call"</span>
+)</div>
+        <div class="code-block" id="bs_py"><span class="comment"># Black-Scholes 期权定价 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> scipy.stats <span class="keyword">import</span> norm
+
+<span class="keyword">def</span> <span class="func">bs_pricing</span>(S, K, T, r, sigma, option_type=<span class="string">'call'</span>):
+    <span class="string">"""
+    Black-Scholes期权定价与希腊字母
+    """</span>
+    d1 = (np.<span class="func">log</span>(S/K) + (r + sigma<span class="keyword">**</span><span class="num">2</span>/<span class="num">2</span>)<span class="keyword">*</span>T) / (sigma<span class="keyword">*</span>np.<span class="func">sqrt</span>(T))
+    d2 = d1 - sigma<span class="keyword">*</span>np.<span class="func">sqrt</span>(T)
+
+    <span class="keyword">if</span> option_type == <span class="string">'call'</span>:
+        price = S<span class="keyword">*</span>norm.<span class="func">cdf</span>(d1) - K<span class="keyword">*</span>np.<span class="func">exp</span>(<span class="keyword">-</span>r<span class="keyword">*</span>T)<span class="keyword">*</span>norm.<span class="func">cdf</span>(d2)
+    <span class="keyword">else</span>:
+        price = K<span class="keyword">*</span>np.<span class="func">exp</span>(<span class="keyword">-</span>r<span class="keyword">*</span>T)<span class="keyword">*</span>norm.<span class="func">cdf</span>(<span class="keyword">-</span>d2) - S<span class="keyword">*</span>norm.<span class="func">cdf</span>(<span class="keyword">-</span>d1)
+
+    delta = norm.<span class="func">cdf</span>(d1) <span class="keyword">if</span> option_type==<span class="string">'call'</span> <span class="keyword">else</span> norm.<span class="func">cdf</span>(d1)<span class="keyword">-</span><span class="num">1</span>
+    gamma = norm.<span class="func">pdf</span>(d1) / (S<span class="keyword">*</span>sigma<span class="keyword">*</span>np.<span class="func">sqrt</span>(T))
+    vega = S<span class="keyword">*</span>norm.<span class="func">pdf</span>(d1)<span class="keyword">*</span>np.<span class="func">sqrt</span>(T) / <span class="num">100</span>
+    theta = <span class="keyword">-</span>(S<span class="keyword">*</span>norm.<span class="func">pdf</span>(d1)<span class="keyword">*</span>sigma) / (2<span class="keyword">*</span>np.<span class="func">sqrt</span>(T)) / <span class="num">365</span>
+
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"═══ Black-Scholes定价 ═══"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"期权价格: <span class="var">{price:.2f}</span>"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"Delta: <span class="var">{delta:.4f}</span>"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"Gamma: <span class="var">{gamma:.6f}</span>"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"Vega: <span class="var">{vega:.4f}</span>"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"Theta: <span class="var">{theta:.4f}</span>"</span>)
+
+    <span class="keyword">return</span> {<span class="string">'price'</span>: price, <span class="string">'delta'</span>: delta, <span class="string">'gamma'</span>: gamma,
+            <span class="string">'vega'</span>: vega, <span class="string">'theta'</span>: theta}
+
+<span class="comment"># 示例：沪铜看涨期权</span>
+result = <span class="func">bs_pricing</span>(S=<span class="num">72000</span>, K=<span class="num">74000</span>, T=<span class="num">90</span>/<span class="num">365</span>,
+                   r=<span class="num">0.025</span>, sigma=<span class="num">0.25</span>, option_type=<span class="string">'call'</span>)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODULE 7: 套利策略 ============ -->
+<div class="module" data-category="advanced">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#16a085,#1abc9c);">⚖️</div>
+    <div>
+      <div class="module-title">模块七：套利交易策略</div>
+      <div class="module-subtitle">期现套利、跨期套利、跨品种套利</div>
+    </div>
+    <span class="module-badge badge-adv">进阶</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>7.1 套利类型总览</h3>
+      <div class="model-card">
+        <h4>期货套利分类体系</h4>
+        <span class="tag-level level-mid">中级</span>
+        <table class="model-table">
+          <tr><th>套利类型</th><th>原理</th><th>适用品种</th><th>风险等级</th></tr>
+          <tr><td>期现套利</td><td>期货与现货价差偏离理论值</td><td>有现货渠道的品种</td><td>低</td></tr>
+          <tr><td>跨期套利</td><td>同一品种不同合约月份价差异常</td><td>所有品种</td><td>低</td></tr>
+          <tr><td>跨品种套利</td><td>高度相关品种间价差偏离</td><td>螺纹/热卷、豆/粕等</td><td>中</td></tr>
+          <tr><td>跨市场套利</td><td>同一品种在不同市场的价差</td><td>SHFE/LME铜、DCE/CBOT大豆</td><td>中高</td></tr>
+          <tr><td>统计套利</td><td>基于统计模型的配对交易</td><td>配对品种/ETF</td><td>中</td></tr>
+        </table>
+      </div>
+      <div class="model-card">
+        <h4>跨期套利策略回测</h4>
+        <span class="tag-level level-adv">高级</span>
+        <span class="tag tag-r">R</span>
+        <span class="tag tag-py">Python</span>
+        <div class="model-desc">蝶式套利、牛市/熊市套利的经典策略实现，包括信号生成、仓位计算和绩效评估。</div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="spread_r"><span class="comment"># 跨期套利回测 - R实现</span>
+<span class="keyword">library</span>(quantmod)
+<span class="keyword">library</span>(PerformanceAnalytics)
+
+<span class="comment"># 模拟近月和远月合约价格</span>
+<span class="func">set.seed</span>(<span class="num">42</span>)
+n <span class="keyword">&lt;-</span> <span class="num">250</span>
+near_month <span class="keyword">&lt;-</span> <span class="func">cumsum</span>(<span class="func">rnorm</span>(n, <span class="num">2</span>, <span class="num">40</span>)) + <span class="num">3800</span>
+far_month  <span class="keyword">&lt;-</span> near_month + <span class="func">rnorm</span>(n, <span class="num">80</span>, <span class="num">20</span>) <span class="comment"># 远月升水</span>
+
+<span class="comment"># 计算价差</span>
+spread <span class="keyword">&lt;-</span> far_month <span class="keyword">-</span> near_month
+spread_mean <span class="keyword">&lt;-</span> <span class="func">mean</span>(spread)
+spread_std  <span class="keyword">&lt;-</span> <span class="func">sd</span>(spread)
+
+<span class="comment"># 均值回归信号</span>
+z <span class="keyword">&lt;-</span> (spread <span class="keyword">-</span> spread_mean) / spread_std
+<span class="func">cat</span>(<span class="string">"价差均值:"</span>, <span class="func">round</span>(spread_mean, <span class="num">2</span>), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"价差标准差:"</span>, <span class="func">round</span>(spread_std, <span class="num">2</span>), <span class="string">"\n"</span>)
+
+<span class="comment"># 交易信号：z &gt; 1.5 做空价差（空远多近），z &lt; -1.5 做多价差</span>
+position <span class="keyword">&lt;-</span> <span class="func">ifelse</span>(z <span class="keyword">&gt;</span> <span class="num">1.5</span>, <span class="num">-1</span>,
+            <span class="func">ifelse</span>(z <span class="keyword">&lt;</span> <span class="num">-1.5</span>, <span class="num">1</span>, <span class="num">0</span>))
+
+<span class="comment"># 计算收益</span>
+spread_return <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="num">0</span>, <span class="func">diff</span>(spread))
+strategy_return <span class="keyword">&lt;-</span> <span class="func">Lag</span>(position) <span class="keyword">*</span> spread_return
+
+<span class="comment"># 绩效评估</span>
+<span class="func">cat</span>(<span class="string">"\n═══ 策略绩效 ═══\n"</span>)
+<span class="func">cat</span>(<span class="string">"总收益:"</span>, <span class="func">round</span>(<span class="func">sum</span>(strategy_return), <span class="num">2</span>), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"夏普比率:"</span>, <span class="func">round</span>(<span class="func">mean</span>(strategy_return)/<span class="func">sd</span>(strategy_return)*<span class="func">sqrt</span>(<span class="num">252</span>), <span class="num">2</span>), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"最大回撤:"</span>, <span class="func">round</span>(<span class="func">maxDrawdown</span>(<span class="func">cumsum</span>(strategy_return)), <span class="num">2</span>), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"胜率:"</span>, <span class="func">paste0</span>(<span class="func">mean</span>(strategy_return<span class="keyword">&gt;</span><span class="num">0</span>, na.rm<span class="var">=</span><span class="keyword">TRUE</span>)<span class="keyword">*</span><span class="num">100</span>, <span class="string">"%"</span>), <span class="string">"\n"</span>)</div>
+        <div class="code-block" id="spread_py"><span class="comment"># 跨期套利回测 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+
+<span class="comment"># 模拟近月和远月合约</span>
+np.random.<span class="func">seed</span>(<span class="num">42</span>)
+n = <span class="num">250</span>
+near = np.<span class="func">cumsum</span>(np.random.<span class="func">normal</span>(<span class="num">2</span>, <span class="num">40</span>, n)) + <span class="num">3800</span>
+far  = near + np.random.<span class="func">normal</span>(<span class="num">80</span>, <span class="num">20</span>, n)
+
+spread = far - near
+z = (spread - spread.<span class="func">mean</span>()) / spread.<span class="func">std</span>()
+
+<span class="comment"># 交易信号</span>
+position = np.<span class="func">where</span>(z > <span class="num">1.5</span>, <span class="keyword">-1</span>, np.<span class="func">where</span>(z < <span class="keyword">-</span><span class="num">1.5</span>, <span class="num">1</span>, <span class="num">0</span>))
+spread_ret = np.<span class="func">diff</span>(spread, prepend=spread[<span class="num">0</span>])
+strategy_ret = np.<span class="func">roll</span>(position, <span class="num">1</span>) <span class="keyword">*</span> spread_ret
+strategy_ret[<span class="num">0</span>] = <span class="num">0</span>
+
+<span class="comment"># 绩效</span>
+total = strategy_ret.<span class="func">sum</span>()
+sharpe = (strategy_ret.<span class="func">mean</span>() / strategy_ret.<span class="func">std</span>()) <span class="keyword">*</span> np.<span class="func">sqrt</span>(<span class="num">252</span>)
+cumret = np.<span class="func">cumsum</span>(strategy_ret)
+max_dd = np.<span class="func">max</span>(np.<span class="func">maximum</span>.<span class="func">accumulate</span>(cumret) - cumret)
+win_rate = (strategy_ret > <span class="num">0</span>).<span class="func">mean</span>()
+
+<span class="func">print</span>(<span class="func">f</span><span class="string">"═══ 策略绩效 ═══"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"总收益: <span class="var">{total:.2f}</span>"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"夏普比率: <span class="var">{sharpe:.2f}</span>"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"最大回撤: <span class="var">{max_dd:.2f}</span>"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"胜率: <span class="var">{win_rate*100:.1f}</span>%"</span>)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODULE 8: 进阶专题 ============ -->
+<div class="module" data-category="advanced">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#2c3e50,#34495e);">🚀</div>
+    <div>
+      <div class="module-title">模块八：前沿技术与进阶专题</div>
+      <div class="module-subtitle">深度学习、NLP情绪分析、高频交易</div>
+    </div>
+    <span class="module-badge badge-adv">进阶</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>8.1 NLP新闻情绪分析</h3>
+      <div class="model-card">
+        <h4>文本情绪驱动的交易信号</h4>
+        <span class="tag-level level-adv">高级</span>
+        <div class="model-desc">通过自然语言处理技术分析新闻、研报和社交媒体文本，提取市场情绪信号。情绪分数可作为策略的辅助因子。</div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="nlp_r"><span class="comment"># NLP新闻情绪分析 - R实现</span>
+<span class="keyword">library</span>(jiebaR)
+<span class="keyword">library</span>(tidytext)
+<span class="keyword">library</span>(dplyr)
+<span class="keyword">library</span>(stringr)
+
+<span class="comment"># 情绪词典（简化版）</span>
+positive_words <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="string">"上涨"</span>, <span class="string">"利好"</span>, <span class="string">"突破"</span>, <span class="string">"支撑"</span>, <span class="string">"反弹"</span>,
+                    <span class="string">"增长"</span>, <span class="string">"需求旺盛"</span>, <span class="string">"供应紧张"</span>, <span class="string">"超预期"</span>)
+negative_words <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="string">"下跌"</span>, <span class="string">"利空"</span>, <span class="string">"跌破"</span>, <span class="string">"压力"</span>, <span class="string">"回调"</span>,
+                    <span class="string">"收缩"</span>, <span class="string">"需求疲弱"</span>, <span class="string">"库存高企"</span>, <span class="string">"不及预期"</span>)
+
+<span class="comment"># 分析新闻文本情绪</span>
+<span class="func">analyze_sentiment</span> <span class="keyword">&lt;-</span> <span class="keyword">function</span>(text) {
+  pos_count <span class="keyword">&lt;-</span> <span class="func">sum</span>(<span class="func">str_detect</span>(text, positive_words))
+  neg_count <span class="keyword">&lt;-</span> <span class="func">sum</span>(<span class="func">str_detect</span>(text, negative_words))
+  total <span class="keyword">&lt;-</span> pos_count + neg_count
+
+  <span class="keyword">if</span> (total == <span class="num">0</span>) <span class="func">return</span>(<span class="func">list</span>(score<span class="var">=</span><span class="num">0</span>, label<span class="var">=</span><span class="string">"中性"</span>))
+
+  score <span class="keyword">&lt;-</span> (pos_count <span class="keyword">-</span> neg_count) / total
+  label <span class="keyword">&lt;-</span> <span class="func">ifelse</span>(score <span class="keyword">&gt;</span> <span class="num">0.3</span>, <span class="string">"看多"</span>,
+             <span class="func">ifelse</span>(score <span class="keyword">&lt;</span> <span class="num">-0.3</span>, <span class="string">"看空"</span>, <span class="string">"中性"</span>))
+
+  <span class="keyword">return</span>(<span class="func">list</span>(score<span class="var">=</span>score, label<span class="var">=</span>label,
+              pos<span class="var">=</span>pos_count, neg<span class="var">=</span>neg_count))
+}
+
+<span class="comment"># 示例新闻</span>
+news <span class="keyword">&lt;-</span> <span class="func">c</span>(
+  <span class="string">"铜价突破关键阻力位，需求旺盛支撑上涨"</span>,
+  <span class="string">"库存高企叠加需求疲弱，螺纹钢承压下跌"</span>,
+  <span class="string">"原油供应紧张，市场预期OPEC将延长减产"</span>
+)
+
+<span class="keyword">for</span> (n <span class="keyword">in</span> news) {
+  result <span class="keyword">&lt;-</span> <span class="func">analyze_sentiment</span>(n)
+  <span class="func">cat</span>(<span class="string">"\n新闻:"</span>, n, <span class="string">"\n"</span>)
+  <span class="func">cat</span>(<span class="string">"情绪:"</span>, result$label,
+      <span class="string">" 分数:"</span>, <span class="func">round</span>(result$score, <span class="num">2</span>), <span class="string">"\n"</span>)
+}</div>
+        <div class="code-block" id="nlp_py"><span class="comment"># NLP新闻情绪分析 - Python实现</span>
+<span class="keyword">import</span> re
+
+<span class="comment"># 情绪词典</span>
+POSITIVE = [<span class="string">"上涨"</span>, <span class="string">"利好"</span>, <span class="string">"突破"</span>, <span class="string">"支撑"</span>, <span class="string">"反弹"</span>,
+            <span class="string">"增长"</span>, <span class="string">"需求旺盛"</span>, <span class="string">"供应紧张"</span>, <span class="string">"超预期"</span>]
+NEGATIVE = [<span class="string">"下跌"</span>, <span class="string">"利空"</span>, <span class="string">"跌破"</span>, <span class="string">"压力"</span>, <span class="string">"回调"</span>,
+            <span class="string">"收缩"</span>, <span class="string">"需求疲弱"</span>, <span class="string">"库存高企"</span>, <span class="string">"不及预期"</span>]
+
+<span class="keyword">def</span> <span class="func">analyze_sentiment</span>(text):
+    <span class="string">"""分析文本情绪分数"""</span>
+    pos = <span class="func">sum</span>(<span class="num">1</span> <span class="keyword">for</span> w <span class="keyword">in</span> POSITIVE <span class="keyword">if</span> w <span class="keyword">in</span> text)
+    neg = <span class="func">sum</span>(<span class="num">1</span> <span class="keyword">for</span> w <span class="keyword">in</span> NEGATIVE <span class="keyword">if</span> w <span class="keyword">in</span> text)
+    total = pos + neg
+    <span class="keyword">if</span> total == <span class="num">0</span>:
+        <span class="keyword">return</span> <span class="num">0</span>, <span class="string">"中性"</span>
+    score = (pos - neg) / total
+    label = <span class="string">"看多"</span> <span class="keyword">if</span> score > <span class="num">0.3</span> <span class="keyword">else</span> (<span class="string">"看空"</span> <span class="keyword">if</span> score < <span class="keyword">-</span><span class="num">0.3</span> <span class="keyword">else</span> <span class="string">"中性"</span>)
+    <span class="keyword">return</span> <span class="func">round</span>(score, <span class="num">2</span>), label
+
+<span class="comment"># 示例</span>
+news_list = [
+    <span class="string">"铜价突破关键阻力位，需求旺盛支撑上涨"</span>,
+    <span class="string">"库存高企叠加需求疲弱，螺纹钢承压下跌"</span>,
+    <span class="string">"原油供应紧张，市场预期OPEC将延长减产"</span>
+]
+<span class="keyword">for</span> news <span class="keyword">in</span> news_list:
+    score, label = <span class="func">analyze_sentiment</span>(news)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"新闻: <span class="var">{news}</span>"</span>)
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"情绪: <span class="var">{label}</span> (分数: <span class="var">{score}</span>)\n"</span>)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>8.2 LSTM 深度学习价格预测</h3>
+      <div class="model-card">
+        <h4>长短期记忆网络 (LSTM)</h4>
+        <span class="tag-level level-adv">高级</span>
+        <div class="model-desc">LSTM能捕捉时间序列中的长期依赖关系，适合处理期货价格的非线性特征。通过构建多特征输入（技术指标+基本面数据），可以进行多步预测。</div>
+        <div class="model-formula">
+遗忘门: f_t = σ(W_f · [h_{t-1}, x_t] + b_f)
+<br>输入门: i_t = σ(W_i · [h_{t-1}, x_t] + b_i)
+<br>候选记忆: C̃_t = tanh(W_C · [h_{t-1}, x_t] + b_C)
+<br>更新记忆: C_t = f_t ⊙ C_{t-1} + i_t ⊙ C̃_t
+<br>输出: h_t = o_t ⊙ tanh(C_t)
+        </div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>8.3 强化学习在交易中的应用</h3>
+      <div class="model-card">
+        <h4>DQN / PPO 交易智能体</h4>
+        <span class="tag-level level-adv">高级</span>
+        <div class="model-desc">将期货交易建模为马尔可夫决策过程(MDP)，使用深度强化学习训练智能体自动学习交易策略。状态空间包括市场状态、持仓信息；动作空间为买入/卖出/持有；奖励函数为风险调整收益。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LEARNING ROADMAP ============ -->
+<div class="roadmap">
+  <h2 style="color:var(--gold); text-align:center; margin-bottom:30px; font-size:1.5em;">学习进阶路线图</h2>
+  <div class="roadmap-line">
+    <div class="roadmap-stage">
+      <div class="stage-num">1</div>
+      <h4>入门阶段<br><small style="color:var(--text-dim);">0-6个月</small></h4>
+      <ul>
+        <li>期货市场基础机制</li>
+        <li>K线与图表分析</li>
+        <li>基础技术指标(MA/RSI/MACD)</li>
+        <li>R/Python编程基础</li>
+        <li>数据获取与处理</li>
+      </ul>
+    </div>
+    <div class="roadmap-stage">
+      <div class="stage-num">2</div>
+      <h4>进阶阶段<br><small style="color:var(--text-dim);">6-12个月</small></h4>
+      <ul>
+        <li>基本面分析框架</li>
+        <li>供需平衡表构建</li>
+        <li>波动率建模(GARCH)</li>
+        <li>统计分析(回归/协整)</li>
+        <li>风险管理体系</li>
+      </ul>
+    </div>
+    <div class="roadmap-stage">
+      <div class="stage-num">3</div>
+      <h4>高级阶段<br><small style="color:var(--text-dim);">12-24个月</small></h4>
+      <ul>
+        <li>期权定价模型</li>
+        <li>机器学习策略开发</li>
+        <li>套利策略设计</li>
+        <li>回测框架搭建</li>
+        <li>投资组合优化</li>
+      </ul>
+    </div>
+    <div class="roadmap-stage">
+      <div class="stage-num">4</div>
+      <h4>专家阶段<br><small style="color:var(--text-dim);">24个月+</small></h4>
+      <ul>
+        <li>深度学习(LSTM/Transformer)</li>
+        <li>强化学习交易系统</li>
+        <li>NLP情绪分析</li>
+        <li>高频交易策略</li>
+        <li>系统化交易架构</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="no-result" id="no-result"><span>🔍</span>未找到匹配的内容，换个关键词试试吧</div>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <p>顶级期货分析师知识体系 &mdash; R & Python 双语实现</p>
+  <p style="margin-top:8px; color:var(--text-dim);">涵盖 8 大核心模块 / 30+ 模型算法 / 60+ 代码实现</p>
+</footer>
+
+<script>
+// 模块折叠/展开
+function toggle(header) {
+  const content = header.nextElementSibling;
+  content.classList.toggle('show');
+}
+
+// 导航筛选
+function filter(category) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  document.querySelectorAll('.module').forEach(m => {
+    if (category === 'all') {
+      m.style.display = 'block';
+    } else {
+      m.style.display = m.dataset.category === category ? 'block' : 'none';
+    }
+  });
+}
+
+// 代码切换
+function switchCode(tab, lang) {
+  const container = tab.closest('.model-card');
+  container.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  container.querySelectorAll('.code-block').forEach(b => b.classList.remove('show'));
+  tab.classList.add('active');
+
+  const blocks = container.querySelectorAll('.code-block');
+  blocks.forEach(b => {
+    if (b.id.endsWith('_' + lang)) b.classList.add('show');
+  });
+}
+
+// ============ 增强功能 ============
+// 阅读进度条 + 返回顶部显隐
+window.addEventListener('scroll', function(){
+  var doc = document.documentElement;
+  var h = doc.scrollHeight - window.innerHeight;
+  var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+  var bar = document.getElementById('progress-bar');
+  if(bar) bar.style.width = pct + '%';
+  var btt = document.getElementById('back-to-top');
+  if(btt) btt.classList.toggle('show', window.scrollY > 400);
+});
+
+// 返回顶部
+(function(){
+  var btt = document.getElementById('back-to-top');
+  if(btt) btt.addEventListener('click', function(){
+    window.scrollTo({ top:0, behavior:'smooth' });
+  });
+})();
+
+// 搜索过滤
+(function(){
+  var box = document.getElementById('search-box');
+  if(!box) return;
+  box.addEventListener('input', function(){
+    var q = this.value.trim().toLowerCase();
+    var modules = document.querySelectorAll('.module');
+    var totalVisible = 0;
+    modules.forEach(function(m){
+      var content = m.querySelector('.module-content');
+      var cards = m.querySelectorAll('.model-card');
+      var anyVisible = false;
+      cards.forEach(function(c){
+        var match = q === '' ? true : c.textContent.toLowerCase().indexOf(q) > -1;
+        c.style.display = match ? '' : 'none';
+        if(match) anyVisible = true;
+      });
+      if(q !== ''){ content.classList.add('show'); } else { content.classList.remove('show'); }
+      m.style.display = (q === '' || anyVisible) ? '' : 'none';
+      if(anyVisible) totalVisible++;
+    });
+    document.querySelectorAll('.roadmap, .roadmap-cards').forEach(function(el){
+      el.style.display = q === '' ? '' : 'none';
+    });
+    var nr = document.getElementById('no-result');
+    if(nr) nr.classList.toggle('show', q !== '' && totalVisible === 0);
+  });
+})();
+</script>
+
+<button id="back-to-top" title="返回顶部">↑</button>
+
+</body>
+</html>

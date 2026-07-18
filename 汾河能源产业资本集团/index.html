@@ -1,201 +1,342 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>汾河能源产业资本集团</title>
+    <title>汾河能源产业资本集团 · FENHE ENERGY INDUSTRIAL CAPITAL</title>
+    <meta name="description" content="以经济机器为纲，以数据科学为器。宏观·产业·微观·区域·周期五维共振的现代化产业资本投研平台。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="scripts.js" defer></script>
 </head>
 <body>
-    <header>
-        <div class="header-banner">
-            <div class="logo">
-                <img src="https://www.facaishur.com/uploads/allimg/210712/14-210G212452TC.jpg" alt="FlyingFox Logo">
-            </div>
-            <div class="slogan">
-                <p>致力于打造国内一流产业资本运营平台</p>
-            </div>
-            <div class="contact-info">
-                <p>电话：17688934312</p>
-            </div>
+    <!-- 顶部滚动行情条 -->
+    <div class="ticker" aria-hidden="true">
+        <div class="ticker-track" id="tickerTrack">
+            <span class="tk"><b>沪深300</b> 3,812.4 <i class="up">+0.82%</i></span>
+            <span class="tk"><b>中证500</b> 5,640.1 <i class="up">+1.14%</i></span>
+            <span class="tk"><b>科创50</b> 1,028.7 <i class="down">-0.36%</i></span>
+            <span class="tk"><b>能源</b> 2,441.9 <i class="up">+1.93%</i></span>
+            <span class="tk"><b>新材料</b> 3,118.5 <i class="up">+0.57%</i></span>
+            <span class="tk"><b>高端制造</b> 4,902.3 <i class="up">+0.41%</i></span>
+            <span class="tk"><b>数字经济</b> 1,766.0 <i class="down">-0.22%</i></span>
+            <span class="tk"><b>长债利率</b> 2.31% <i class="down">-3bp</i></span>
+            <span class="tk"><b>CRB商品</b> 548.2 <i class="up">+0.68%</i></span>
+            <span class="tk"><b>美元指数</b> 102.4 <i class="down">-0.19%</i></span>
         </div>
-        <nav class="main-nav">
-            <ul>
-                <li><a href="#about">关于我们</a></li>
-                <li><a href="#research">投研体系</a></li>
-                <li><a href="#data">共享大数据</a></li>
-                <li><a href="#reports">自动化报告</a></li>
-                <li><a href="#innovation">理论创新</a></li>
-                <li><a href="#media">自媒体矩阵</a></li>
-                <li><a href="#contact">联系我们</a></li>
-            </ul>
-        </nav>
+    </div>
+
+    <!-- 导航 -->
+    <header class="nav" id="nav">
+        <div class="nav-inner">
+            <a href="#top" class="brand" aria-label="汾河能源产业资本集团">
+                <svg class="brand-mark" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#2dd4bf"/>
+                            <stop offset="1" stop-color="#38bdf8"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M20 2 L36 11 V29 L20 38 L4 29 V11 Z" fill="none" stroke="url(#bg1)" stroke-width="2"/>
+                    <circle cx="20" cy="20" r="4.5" fill="url(#bg1)"/>
+                    <path d="M20 20 L20 6 M20 20 L33 28 M20 20 L7 28" stroke="url(#bg1)" stroke-width="1.4" opacity="0.7"/>
+                </svg>
+                <span class="brand-text">
+                    <strong>汾河能源</strong>
+                    <em>FENHE ENERGY</em>
+                </span>
+            </a>
+            <nav class="nav-links" id="navLinks">
+                <a href="#philosophy">投资哲学</a>
+                <a href="#research">投研体系</a>
+                <a href="#engine">数字中台</a>
+                <a href="#data">共享大数据</a>
+                <a href="#reports">自动化报告</a>
+                <a href="#innovation">理论创新</a>
+                <a href="#media">自媒体矩阵</a>
+                <a href="#contact">联系我们</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
     </header>
 
-    <main>
-        <!-- Hero Section -->
+    <main id="top">
+        <!-- 英雄区 -->
         <section class="hero">
-            <div class="hero-text">
-                <h1>汾河能源产业资本集团</h1>
-                <p>致力于挖掘未来世界的世界第一，明日中国的中国最大，打造国内一流产业资本运营平台！</p>
+            <canvas id="heroCanvas"></canvas>
+            <div class="hero-grid" aria-hidden="true"></div>
+            <div class="hero-glow" aria-hidden="true"></div>
+            <div class="hero-content">
+                <div class="eyebrow"><span class="dot"></span>INDUSTRIAL CAPITAL · RESEARCH-DRIVEN · SINCE 2020</div>
+                <h1 class="hero-title" data-text="汾河能源产业资本集团">汾河能源产业资本集团</h1>
+                <p class="hero-sub">以<strong>经济机器</strong>为纲，以<strong>数据科学</strong>为器。<br>
+                在宏观、产业、微观、区域与周期的共振中，寻找确定性。</p>
+                <div class="hero-cta">
+                    <a href="#philosophy" class="btn btn-primary">理解我们的哲学</a>
+                    <a href="#research" class="btn btn-ghost">查看投研体系</a>
+                </div>
+                <div class="hero-metrics">
+                    <div class="hm"><span class="hm-num" data-target="5" data-suffix="">0</span><span class="hm-label">维投研框架</span></div>
+                    <div class="hm"><span class="hm-num" data-target="200" data-suffix="+">0</span><span class="hm-label">数据维度</span></div>
+                    <div class="hm"><span class="hm-num" data-target="50" data-suffix="+">0</span><span class="hm-label">因子模型</span></div>
+                    <div class="hm"><span class="hm-num" data-target="5000" data-suffix="+">0</span><span class="hm-label">覆盖A股标的</span></div>
+                </div>
             </div>
+            <a href="#philosophy" class="scroll-hint" aria-label="向下滚动">
+                <span></span>
+            </a>
         </section>
 
-        <!-- About Section -->
-        <section id="about" class="section">
-            <h2>关于我们</h2>
-            <div class="content">
-                <p><strong>FlyingFox简介：</strong>FlyingFox成立于2020年，拥有强大的金融数据库，个股标签画像系统，量化投研系统，实现大数据算法驱动投资。</p>
-                <p><strong>创始人简介：</strong>拥有多年投资研究经验，构建了一套独具特色的科学投研体系。</p>
-                <p><strong>团队简介：</strong>凭借持续稳定优秀的团队决策系统。</p>
-                <div class="team-details">
-                    <div class="detail-item">
-                        <span class="detail-title">我们的模式：</span>
-                        <span class="detail-content">顶级研究员+白纸型操盘手</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-title">我们的理念：</span>
-                        <span class="detail-content">首战即决战 一战定乾坤 干大战定天下</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-title">我们的口号：</span>
-                        <span class="detail-content">今天赚钱不重要，明天赚钱不重要，一直赚钱最重要，一直赚大钱最重要</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-title">我们的策略：</span>
-                        <span class="detail-content">羊群战略+黄金坑战法+龟壳战术！</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-title">我们的追求：</span>
-                        <span class="detail-content">致力于帮助投资者 养成一直赚钱的 投资习惯！锁定一定持有周期内的绝对超额收益！</span>
-                    </div>
-                </div>
+        <!-- 投资哲学 -->
+        <section id="philosophy" class="section">
+            <div class="sec-head reveal">
+                <span class="kicker">INVESTMENT PHILOSOPHY</span>
+                <h2>投资哲学：理解这台“经济机器”</h2>
+                <p class="sec-lead">经济像一台简单的机器，由<strong>生产率</strong>、<strong>短期债务周期</strong>与<strong>长期债务周期</strong>三股力量驱动；
+                真正的超额收益，来自对“我们处在周期的哪一段”的清醒认知，以及与之匹配的结构化配置。</p>
             </div>
-            <div class="headLineLB" id="newestList">
-                <div class="picMarquee-left">
-                    <div class="hd">
-                        <a class="next"></a>
-                        <a class="prev"></a>
-                    </div>
-                    <div class="bd">
-                        <ul class="picList nlist">
-                            <li>
-                                <marquee><a href="#"><em style="color:red;font-size:24px;">严正声明:</em>投资有风险，投资需要谨慎，良好的沟通是成功的一半！</marquee>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Research Section -->
-        <section id="research" class="section">
-            <h2>投研体系</h2>
-            <div class="cards">
-                <div class="card">
-                    <img src="https://n.sinaimg.cn/sinakd202078s/336/w700h436/20200708/17a3-iwasyei3157823.jpg" alt="经济学思维架构">
-                    <h3>经济学思维架构</h3>
-                    <div class="card-content">
-                        <p>宏观经济学把握战略方向</p>
-                        <p>中观经济学把握选择赛道</p>
-                        <p>微观经济学精准锁定个体</p>
+            <div class="philo-grid">
+                <!-- 经济机器三力 -->
+                <div class="philo-card reveal">
+                    <div class="philo-icon">⚙</div>
+                    <h3>经济机器 · 三力驱动</h3>
+                    <p class="philo-desc">借鉴桥水“Economic Machine”框架，把宏观拆解为可计算的因果变量。</p>
+                    <ul class="force-list">
+                        <li><span class="f-name">生产率增长</span><span class="f-bar"><i style="--w:92%"></i></span><span class="f-tag">长期 · 慢变量</span></li>
+                        <li><span class="f-name">长期债务周期</span><span class="f-bar"><i style="--w:64%"></i></span><span class="f-tag">50–75 年</span></li>
+                        <li><span class="f-name">短期债务周期</span><span class="f-bar"><i style="--w:40%"></i></span><span class="f-tag">5–8 年</span></li>
+                    </ul>
+                </div>
+
+                <!-- 全天候四象限 -->
+                <div class="philo-card reveal cycle-card">
+                    <div class="philo-icon">◑</div>
+                    <h3>全天候 · 四象限配置</h3>
+                    <p class="philo-desc">以“增长↑/↓ × 通胀↑/↓”构造不依赖预测的稳健组合——风险平价思维。</p>
+                    <div class="quad" id="quad">
+                        <div class="quad-cell q1" data-label="增长↑ 通胀↑"><span>股票 · 商品</span></div>
+                        <div class="quad-cell q2" data-label="增长↑ 通胀↓"><span>股票 · 信用</span></div>
+                        <div class="quad-cell q3" data-label="增长↓ 通胀↓"><span>长期国债</span></div>
+                        <div class="quad-cell q4" data-label="增长↓ 通胀↑"><span>黄金 · 抗通胀</span></div>
+                        <div class="quad-core">全天候</div>
                     </div>
                 </div>
-                <div class="card">
-                    <img src="http://n.sinaimg.cn/sinacn/w640h309/20171225/6039-fypyuva8133388.jpg" alt="军事作战思维架构">
-                    <h3>军事作战思维架构</h3>
-                    <div class="card-content">
-                        <p>小资金充分发挥游击战争思维</p>
-                        <p>大资金充分发挥兵团战争思维</p>
-                        <p>伏击战充分把握战略机会窗口</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <img src="https://founder-rc-product.oss-cn-zhangjiakou.aliyuncs.com/drawImage/202601/29/13/81521818/54fbb86f-9cf9-4acc-a93a-fe7b853c61de_m.jpg?response-content-type=image%2Fjpeg" alt="大数据算法思维框架">
-                    <h3>大数据算法思维框架</h3>
-                    <div class="card-content">
-                        <p>非监督机器学习聚类算法把握群体特征</p>
-                        <p>监督性机器学习反欺诈算法把握异常个体</p>
-                        <p>文本数据投资情绪指标信号数据可视化</p>
-                        <p>探索性EFA,验证性CFA,结构性因子分析SEM</p>
+
+                <!-- 原则 -->
+                <div class="philo-card reveal">
+                    <div class="philo-icon">◎</div>
+                    <h3>系统化 · 可信度加权</h3>
+                    <p class="philo-desc">把判断交给流程，把流程交给数据。极度透明、可追溯、可复盘。</p>
+                    <div class="principle-rows">
+                        <div class="pr"><b>Pain + Reflection = Progress</b><span>痛苦 + 反思 = 进化</span></div>
+                        <div class="pr"><b>Radical Transparency</b><span>决策可回溯，模型可审计</span></div>
+                        <div class="pr"><b>Diversify Uncorrelated Bets</b><span>分散不相关收益来源</span></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Media Section -->
-        <section id="media" class="section">
-            <h2>自媒体矩阵</h2>
-            <div class="media-grid">
-                <div class="media-card">
-                    <i class="fab fa-tiktok"></i>
-                    <h3>抖音</h3>
-                    <p>关注我们的抖音账号，获取最新投资见解</p>
-                    <a href="#" class="media-link">立即关注</a>
+        <!-- 五维投研体系 -->
+        <section id="research" class="section section-alt">
+            <div class="sec-head reveal">
+                <span class="kicker">RESEARCH ARCHITECTURE</span>
+                <h2>五维投研体系：宏观 · 产业 · 微观 · 区域 · 周期</h2>
+                <p class="sec-lead">从天空到地面，从总量到个体。五重视角彼此印证，构成一张可穿越牛熊的认知地图。</p>
+            </div>
+
+            <div class="pillars">
+                <article class="pillar reveal">
+                    <div class="pillar-no">01</div>
+                    <div class="pillar-head"><i class="pi">🌐</i><h3>宏观 Macro</h3></div>
+                    <p>把握战略方向。以货币-信贷-债务周期为主轴，研判利率、流动性与大类资产风向。</p>
+                    <ul>
+                        <li>货币与信用周期定位</li>
+                        <li>利率 · 汇率 · 通胀走廊</li>
+                        <li>大类资产配置方向</li>
+                    </ul>
+                </article>
+                <article class="pillar reveal">
+                    <div class="pillar-no">02</div>
+                    <div class="pillar-head"><i class="pi">🏭</i><h3>产业 Industry</h3></div>
+                    <p>选择黄金赛道。沿产业链上下游与生命周期，识别供需错配与结构性景气。</p>
+                    <ul>
+                        <li>产业链图谱与景气跟踪</li>
+                        <li>供需格局 · 产能周期</li>
+                        <li>技术变革与替代曲线</li>
+                    </ul>
+                </article>
+                <article class="pillar reveal">
+                    <div class="pillar-no">03</div>
+                    <div class="pillar-head"><i class="pi">🔬</i><h3>微观 Micro</h3></div>
+                    <p>精准锁定个体。用财务质量、治理结构与市场预期三维，筛选价值与成长的交集。</p>
+                    <ul>
+                        <li>财务质量与护城河</li>
+                        <li>治理与激励结构</li>
+                        <li>预期差 · 定价偏差</li>
+                    </ul>
+                </article>
+                <article class="pillar reveal">
+                    <div class="pillar-no">04</div>
+                    <div class="pillar-head"><i class="pi">🗺</i><h3>区域 Regional</h3></div>
+                    <p>读懂空间变量。能源版图、产业集群与政策试验区，是超额收益的地理坐标。</p>
+                    <ul>
+                        <li>能源基地与资源禀赋</li>
+                        <li>产业集群 · 园区经济</li>
+                        <li>区域政策与试验区</li>
+                    </ul>
+                </article>
+                <article class="pillar reveal">
+                    <div class="pillar-no">05</div>
+                    <div class="pillar-head"><i class="pi">♾</i><h3>周期 Cycle</h3></div>
+                    <p>定位时间坐标。康波、产能、库存、情绪多周期嵌套，决定仓位与久期的节奏。</p>
+                    <ul>
+                        <li>康波 · 产能 · 库存周期</li>
+                        <li>情绪与估值钟摆</li>
+                        <li>仓位 · 久期 · 择时</li>
+                    </ul>
+                </article>
+                <article class="pillar pillar-core reveal">
+                    <div class="pillar-no">∑</div>
+                    <div class="pillar-head"><i class="pi">⚡</i><h3>技术流 Tech</h3></div>
+                    <p>五维之上，是统一的数据与算法中台——把主观洞见沉淀为可复制、可放大的系统能力。</p>
+                    <ul>
+                        <li>标签画像 · 知识图谱</li>
+                        <li>聚类 · 反欺诈 · 因子</li>
+                        <li>自动化报告生成</li>
+                    </ul>
+                </article>
+            </div>
+        </section>
+
+        <!-- 数字投研中台 -->
+        <section id="engine" class="section">
+            <div class="sec-head reveal">
+                <span class="kicker">QUANT ENGINE · 我们的“阿拉丁”</span>
+                <h2>数字投研中台：一个系统，一种数据语言</h2>
+                <p class="sec-lead">借鉴贝莱德 Aladdin 的理念——<em>“一个系统、一个数据库、一套模型”</em>。
+                我们把投研全流程收敛到统一平台：数据采集、风险度量、因子工厂、情景压力测试与报告生成，在同一套数据语言下闭环运行。</p>
+            </div>
+
+            <div class="engine-grid">
+                <div class="engine-card reveal">
+                    <span class="ec-tag">DATA</span>
+                    <h3>统一数据中台</h3>
+                    <p>打通行情、财务、公告、产业链与另类数据，清洗归一为同一套数据语言，消除口径割裂。</p>
                 </div>
-                <div class="media-card">
-                    <i class="fas fa-video"></i>
-                    <h3>快手</h3>
-                    <p>在快手上观看我们的投资分析视频</p>
-                    <a href="#" class="media-link">立即关注</a>
+                <div class="engine-card reveal">
+                    <span class="ec-tag">RISK</span>
+                    <h3>风险引擎</h3>
+                    <p>每日监测数千项风险因子，实时计算组合敞口、回撤与尾部风险，让风险可见、可控。</p>
                 </div>
-                <div class="media-card">
-                    <i class="fab fa-weixin"></i>
-                    <h3>微信公众号</h3>
-                    <p>订阅我们的公众号，获取深度分析文章</p>
-                    <a href="#" class="media-link">立即关注</a>
+                <div class="engine-card reveal">
+                    <span class="ec-tag">ALPHA</span>
+                    <h3>因子工厂</h3>
+                    <p>价值、质量、动量、成长、低波等多因子体系，叠加自研特色因子，持续迭代收益来源。</p>
                 </div>
-                <div class="media-card">
-                    <i class="fab fa-tencent-weibo"></i>
-                    <h3>腾讯视频</h3>
-                    <p>在腾讯视频上观看我们的专业分析</p>
-                    <a href="#" class="media-link">立即关注</a>
+                <div class="engine-card reveal">
+                    <span class="ec-tag">ML</span>
+                    <h3>机器学习模型</h3>
+                    <p>非监督聚类刻画群体画像，监督模型识别异常个体，文本情绪量化信号辅助决策。</p>
                 </div>
-                <div class="media-card">
-                    <i class="fab fa-github"></i>
-                    <h3>GitHub</h3>
-                    <p>访问我们的代码仓库，了解技术实现</p>
-                    <a href="#" class="media-link">立即关注</a>
+                <div class="engine-card reveal">
+                    <span class="ec-tag">SIM</span>
+                    <h3>蒙特卡洛情景</h3>
+                    <p>海量随机情景模拟，对“黑天鹅”与政策冲击做压力测试，量化组合在极端下的表现。</p>
+                </div>
+                <div class="engine-card reveal">
+                    <span class="ec-tag">AUTO</span>
+                    <h3>自动化报告</h3>
+                    <p>从数据到洞见一键生成，板块分析与个股预测报告自动产出，把人力释放给判断。</p>
                 </div>
             </div>
         </section>
 
-        <!-- Data Section -->
-        <section id="data" class="section">
-            <h2>共享大数据</h2>
-            <ul>
-                <li>反欺诈算法数据</li>
-                <li>聚类算法数据</li>
-                <li>相关系数算法数据</li>
-                <li>个股标签画像系统</li>
-            </ul>
+        <!-- 共享大数据 -->
+        <section id="data" class="section section-alt">
+            <div class="sec-head reveal">
+                <span class="kicker">SHARED BIG DATA</span>
+                <h2>共享大数据能力</h2>
+                <p class="sec-lead">把机构级数据能力开放出来，与外部研究者与产业伙伴共建认知网络。</p>
+            </div>
+            <div class="data-grid">
+                <div class="data-item reveal"><i class="di">🛡</i><h3>反欺诈算法数据</h3><p>异常交易与财务造假识别，守护标的真实性。</p></div>
+                <div class="data-item reveal"><i class="di">🧩</i><h3>聚类算法数据</h3><p>非监督学习刻画群体特征，发现隐形结构。</p></div>
+                <div class="data-item reveal"><i class="di">🔗</i><h3>相关系数算法数据</h3><p>资产间联动与传染路径，优化分散配置。</p></div>
+                <div class="data-item reveal"><i class="di">🏷</i><h3>个股标签画像系统</h3><p>多维标签体系，秒级定位目标公司与主题。</p></div>
+            </div>
         </section>
 
-        <!-- Reports Section -->
+        <!-- 自动化报告 -->
         <section id="reports" class="section">
-            <h2>自动化报告</h2>
-            <ul>
-                <li>板块分析报告</li>
-                <li>个股预测报告</li>
-            </ul>
+            <div class="sec-head reveal">
+                <span class="kicker">AUTOMATED REPORTS</span>
+                <h2>自动化研究报告</h2>
+                <p class="sec-lead">数据驱动、结构统一、可追溯。让研究从“手工作坊”走向“工业化流水线”。</p>
+            </div>
+            <div class="report-list">
+                <a class="report-row reveal" href="#contact">
+                    <span class="rr-idx">01</span>
+                    <span class="rr-title">板块分析报告</span>
+                    <span class="rr-desc">景气、估值、资金与催化因素的自动扫描与评级。</span>
+                    <span class="rr-go">→</span>
+                </a>
+                <a class="report-row reveal" href="#contact">
+                    <span class="rr-idx">02</span>
+                    <span class="rr-title">个股预测报告</span>
+                    <span class="rr-desc">基于因子与情绪模型的预期差与定价偏离诊断。</span>
+                    <span class="rr-go">→</span>
+                </a>
+            </div>
         </section>
 
-        <!-- Innovation Section -->
-        <section id="innovation" class="section">
-            <h2>理论创新</h2>
-            <ul>
-                <li>城市建设理论与资本市场未来十年</li>
-                <li>期望理论与历史首发超预期政策事件</li>
-            </ul>
+        <!-- 理论创新 -->
+        <section id="innovation" class="section section-alt">
+            <div class="sec-head reveal">
+                <span class="kicker">THEORETICAL INNOVATION</span>
+                <h2>理论创新</h2>
+                <p class="sec-lead">把实践经验上升为可传播、可验证的理论框架。</p>
+            </div>
+            <div class="innov-grid">
+                <article class="innov-card reveal">
+                    <h3>城市建设理论与资本市场未来十年</h3>
+                    <p>从城市群、产业集群与基础设施投资的演化，推演资本长期流向与结构性机会。</p>
+                </article>
+                <article class="innov-card reveal">
+                    <h3>期望理论与历史首发超预期政策事件</h3>
+                    <p>以“预期差”为核心，研究政策超预期事件的定价机制与可交易信号。</p>
+                </article>
+            </div>
         </section>
 
-        <!-- Contact Section -->
-        <section id="contact" class="section contact-section">
-            <h2>联系我们</h2>
+        <!-- 自媒体矩阵 -->
+        <section id="media" class="section">
+            <div class="sec-head reveal">
+                <span class="kicker">MEDIA MATRIX</span>
+                <h2>自媒体矩阵</h2>
+                <p class="sec-lead">在多个平台持续输出投研观点，把专业认知讲给更多人听。</p>
+            </div>
+            <div class="media-grid">
+                <a class="media-card reveal" href="#"><i class="fab fa-tiktok"></i><h3>抖音</h3><p>短视频解读投资框架</p><span class="m-go">关注 →</span></a>
+                <a class="media-card reveal" href="#"><i class="fas fa-video"></i><h3>快手</h3><p>直播拆解市场逻辑</p><span class="m-go">关注 →</span></a>
+                <a class="media-card reveal" href="#"><i class="fab fa-weixin"></i><h3>微信公众号</h3><p>深度长文与体系文章</p><span class="m-go">关注 →</span></a>
+                <a class="media-card reveal" href="#"><i class="fab fa-tencent-weibo"></i><h3>腾讯视频</h3><p>专业分析节目</p><span class="m-go">关注 →</span></a>
+                <a class="media-card reveal" href="#"><i class="fab fa-github"></i><h3>GitHub</h3><p>投研代码与模型开源</p><span class="m-go">关注 →</span></a>
+            </div>
+        </section>
+
+        <!-- 联系我们 -->
+        <section id="contact" class="section section-alt contact-section">
+            <div class="sec-head reveal">
+                <span class="kicker">CONTACT</span>
+                <h2>联系我们</h2>
+                <p class="sec-lead">良好的沟通是成功的一半。欢迎机构伙伴、产业方与研究者建立连接。</p>
+            </div>
             <div class="contact-container">
-                <div class="contact-info-card">
+                <div class="contact-info-card reveal">
                     <div class="contact-method">
                         <i class="fas fa-envelope"></i>
                         <h3>邮箱</h3>
@@ -205,32 +346,21 @@
                         <i class="fab fa-weixin"></i>
                         <h3>微信</h3>
                         <p>FlyingFox_Official</p>
-                        <div class="qr-code">
-                            <img src="Wechat4.jpg" alt="WeChat QR Code">
-                        </div>
+                        <div class="qr-code"><img src="Wechat4.jpg" alt="微信二维码"></div>
                     </div>
                     <div class="contact-method">
                         <i class="fas fa-phone"></i>
                         <h3>电话</h3>
-                        <p>7800010</p>
+                        <p>17688934312</p>
                     </div>
                 </div>
-
-                <div class="message-form">
+                <div class="message-form reveal">
                     <h3>给我们留言</h3>
                     <form id="contactForm">
-                        <div class="form-group">
-                            <input type="text" id="name" name="name" required placeholder="您的姓名">
-                        </div>
-                        <div class="form-group">
-                            <input type="email" id="email" name="email" required placeholder="您的邮箱">
-                        </div>
-                        <div class="form-group">
-                            <input type="tel" id="phone" name="phone" placeholder="您的电话">
-                        </div>
-                        <div class="form-group">
-                            <textarea id="message" name="message" required placeholder="请输入您的留言"></textarea>
-                        </div>
+                        <div class="form-group"><input type="text" id="name" name="name" required placeholder="您的姓名"></div>
+                        <div class="form-group"><input type="email" id="email" name="email" required placeholder="您的邮箱"></div>
+                        <div class="form-group"><input type="tel" id="phone" name="phone" placeholder="您的电话"></div>
+                        <div class="form-group"><textarea id="message" name="message" required placeholder="请输入您的留言"></textarea></div>
                         <button type="submit" class="submit-btn">发送留言</button>
                     </form>
                 </div>
@@ -238,18 +368,29 @@
         </section>
     </main>
 
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h4>关注我们</h4>
-                <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-weixin"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-weibo"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <svg class="brand-mark" viewBox="0 0 40 40" width="30" height="30" aria-hidden="true">
+                    <path d="M20 2 L36 11 V29 L20 38 L4 29 V11 Z" fill="none" stroke="#2dd4bf" stroke-width="2"/>
+                    <circle cx="20" cy="20" r="4.5" fill="#2dd4bf"/>
+                </svg>
+                <div>
+                    <strong>汾河能源产业资本集团</strong>
+                    <p>致力于打造国内一流的产业资本运营平台</p>
                 </div>
             </div>
-            <p>© 2023 飞狐投资 | 投资有风险，投资需要谨慎</p>
+            <div class="footer-links">
+                <a href="#philosophy">投资哲学</a>
+                <a href="#research">投研体系</a>
+                <a href="#engine">数字中台</a>
+                <a href="#contact">联系我们</a>
+            </div>
+            <p class="footer-note">© 2020–2026 汾河能源产业资本集团（FlyingFox）· 投资有风险，入市需谨慎</p>
         </div>
     </footer>
+
+    <div class="scroll-progress" id="scrollProgress"></div>
+    <script src="scripts.js" defer></script>
 </body>
 </html>

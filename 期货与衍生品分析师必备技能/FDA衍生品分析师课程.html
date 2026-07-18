@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FDA衍生品分析师技能课程体系</title>
+<style>
+  :root {
+    --primary: #0a1628;
+    --secondary: #12243d;
+    --accent: #00d4aa;
+    --accent2: #ff6b35;
+    --gold: #ffc857;
+    --text: #e8eef4;
+    --text-dim: #7a8ba3;
+    --card-bg: #1a304d;
+    --border: rgba(0,212,170,0.2);
+    --code-bg: #0d1117;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+    background: var(--primary);
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, #1a3a5c 100%);
+    padding: 60px 30px;
+    text-align: center;
+    position: relative;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(0,212,170,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255,107,53,0.08) 0%, transparent 50%);
+  }
+  .hero h1 {
+    font-size: 2.4em; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    position: relative; margin-bottom: 12px;
+  }
+  .hero p { color: var(--text-dim); font-size: 1.05em; max-width: 700px; margin: 0 auto; position: relative; }
+  .stats { display: flex; justify-content: center; gap: 40px; margin-top: 30px; position: relative; flex-wrap: wrap; }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 2em; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 0.8em; color: var(--text-dim); }
+
+  .nav-bar {
+    background: var(--secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 30px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .nav-btn {
+    padding: 6px 18px; border-radius: 18px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--text-dim);
+    cursor: pointer; font-size: 0.85em;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover, .nav-btn.active { background: var(--accent); color: var(--primary); border-color: var(--accent); }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+
+  .module {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: transform 0.3s;
+  }
+  .module:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(0,212,170,0.08); }
+  .module-header {
+    padding: 20px 26px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .module-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3em; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+  }
+  .module-title { font-size: 1.15em; font-weight: 700; }
+  .module-subtitle { font-size: 0.8em; color: var(--text-dim); margin-top: 3px; }
+  .module-content { padding: 0 26px 24px; display: none; }
+  .module-content.show { display: block; }
+
+  .level-badge {
+    margin-left: auto; padding: 4px 12px; border-radius: 10px;
+    font-size: 0.7em; font-weight: 600; flex-shrink: 0;
+  }
+  .badge-fda1 { background: rgba(0,212,170,0.2); color: var(--accent); }
+  .badge-fda2 { background: rgba(255,107,53,0.2); color: var(--accent2); }
+  .badge-fda3 { background: rgba(255,200,87,0.2); color: var(--gold); }
+  .badge-base { background: rgba(122,139,163,0.2); color: var(--text-dim); }
+
+  .section { margin-top: 20px; }
+  .section h3 {
+    font-size: 1em; color: var(--accent);
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .model-card {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px; margin-bottom: 14px;
+  }
+  .model-card h4 { font-size: 1em; color: #fff; margin-bottom: 8px; }
+  .model-desc { color: var(--text-dim); font-size: 0.85em; }
+  .model-formula {
+    background: var(--code-bg); padding: 10px 14px; border-radius: 6px;
+    font-family: 'Courier New', monospace; font-size: 0.82em;
+    color: #a8e6cf; margin: 10px 0; overflow-x: auto;
+    border-left: 3px solid var(--accent);
+  }
+  .model-table {
+    width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.85em;
+  }
+  .model-table th {
+    background: rgba(0,212,170,0.12); color: var(--accent);
+    padding: 8px 12px; text-align: left; font-weight: 600;
+  }
+  .model-table td {
+    padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text-dim);
+  }
+
+  .code-tabs { display: flex; gap: 4px; margin: 10px 0 0; }
+  .code-tab {
+    padding: 5px 14px; border-radius: 6px 6px 0 0;
+    background: rgba(255,255,255,0.05); color: var(--text-dim);
+    cursor: pointer; border: 1px solid var(--border); border-bottom: none;
+    font-size: 0.8em;
+  }
+  .code-tab.active { background: var(--code-bg); color: var(--accent); }
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 0 6px 6px 6px; padding: 14px;
+    overflow-x: auto; font-family: 'Courier New', monospace;
+    font-size: 0.78em; line-height: 1.5; color: #b0c4de;
+    display: none; max-height: 350px; overflow-y: auto;
+  }
+  .code-block.show { display: block; }
+  .code-block .comment { color: #6a737d; }
+  .code-block .keyword { color: #ff7b72; }
+  .code-block .string { color: #a5d6ff; }
+  .code-block .func { color: #d2a8ff; }
+  .code-block .num { color: #79c0ff; }
+  .code-block .var { color: #ffa657; }
+
+  .roadmap-cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; margin-top: 30px;
+  }
+  .roadmap-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; text-align: center;
+  }
+  .roadmap-card h4 { color: var(--accent); margin-bottom: 12px; font-size: 1.1em; }
+  .roadmap-card ul { list-style: none; text-align: left; font-size: 0.85em; color: var(--text-dim); }
+  .roadmap-card li { padding: 4px 0; border-bottom: 1px dashed var(--border); }
+  .roadmap-card li:last-child { border-bottom: none; }
+  .roadmap-card li::before { content: '▸ '; color: var(--accent2); }
+
+  footer {
+    text-align: center; padding: 30px;
+    color: var(--text-dim); font-size: 0.8em;
+    border-top: 1px solid var(--border); margin-top: 30px;
+  }
+
+  @media(max-width: 700px) {
+    .hero h1 { font-size: 1.8em; }
+    .stats { gap: 20px; }
+    .nav-bar { flex-wrap: wrap; }
+    .nav-search { margin-left: 0; order: 5; width: 100%; }
+    .nav-search input { width: 100%; }
+  }
+
+  /* ============ 增强功能 ============ */
+  #progress-bar{
+    position:fixed;top:0;left:0;height:4px;width:0;z-index:300;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    box-shadow:0 0 12px var(--accent);transition:width .12s ease-out;
+  }
+  .nav-search{display:flex;align-items:center;position:relative;}
+  .nav-search input{
+    background:rgba(0,0,0,0.25);border:1px solid var(--border);color:var(--text);
+    border-radius:20px;padding:7px 16px;font-size:0.85em;outline:none;width:190px;
+    transition:all .3s;font-family:inherit;
+  }
+  .nav-search input:focus{width:240px;border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,170,0.15);}
+  .nav-search input::placeholder{color:var(--text-dim);}
+  #back-to-top{
+    position:fixed;right:28px;bottom:28px;width:48px;height:48px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;
+    cursor:pointer;font-size:1.4em;z-index:200;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 24px rgba(0,0,0,0.45);opacity:0;visibility:hidden;transform:translateY(12px);transition:all .3s;
+  }
+  #back-to-top.show{opacity:1;visibility:visible;transform:translateY(0);}
+  #back-to-top:hover{transform:translateY(-3px) scale(1.06);}
+  .module{animation:fadeInUp .7s cubic-bezier(.25,.46,.45,.94) both;}
+  .module:nth-child(1){animation-delay:.03s}
+  .module:nth-child(2){animation-delay:.09s}
+  .module:nth-child(3){animation-delay:.15s}
+  .module:nth-child(4){animation-delay:.21s}
+  .module:nth-child(5){animation-delay:.27s}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  .no-result{display:none;text-align:center;color:var(--text-dim);padding:40px 20px;font-size:1em;}
+  .no-result.show{display:block;}
+  .no-result span{font-size:2em;display:block;margin-bottom:10px;}
+  .series-badge{
+    display:inline-block;margin-bottom:18px;padding:6px 18px;border-radius:24px;
+    font-size:0.8em;font-weight:600;letter-spacing:1px;
+    background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--accent);
+  }
+</style>
+</head>
+<body>
+
+<!-- 阅读进度条 -->
+<div id="progress-bar"></div>
+
+<div class="hero">
+  <div class="series-badge">金融分析师专业技能系列 · 02 / 03</div>
+  <h1>FDA衍生品分析师技能课程体系</h1>
+  <p>基于中国期货业协会FDA衍生品分析师I/II/III级培训课程体系，系统梳理核心知识模型与R/Python双语言实现。知不足而奋进，望远方而前行！</p>
+  <div class="stats">
+    <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">级别体系</div></div>
+    <div class="stat-item"><div class="stat-num">18</div><div class="stat-label">课程章节</div></div>
+    <div class="stat-item"><div class="stat-num">60+</div><div class="stat-label">模型算法</div></div>
+    <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">编程语言</div></div>
+  </div>
+</div>
+
+<div class="nav-bar">
+  <button class="nav-btn active" onclick="filter('all')">全部模块</button>
+  <button class="nav-btn" onclick="filter('fda1')">FDA I级</button>
+  <button class="nav-btn" onclick="filter('fda2')">FDA II级</button>
+  <button class="nav-btn" onclick="filter('fda3')">FDA III级</button>
+  <button class="nav-btn" onclick="filter('base')">法律法规</button>
+  <div class="nav-search"><input id="search-box" type="text" placeholder="搜索模型 / 关键词…"></div>
+</div>
+
+<div class="container">
+
+<!-- ==================== FDA I 级 ==================== -->
+<div class="module" data-category="fda1">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon">📚</div>
+    <div>
+      <div class="module-title">FDA I级 基础课程体系</div>
+      <div class="module-subtitle">微观经济学、金融市场与工具、期货基础、统计入门</div>
+    </div>
+    <span class="level-badge badge-fda1">I级</span>
+  </div>
+  <div class="module-content">
+    <div class="section">
+      <h3>I-1 微观经济学基础</h3>
+      <div class="model-card">
+        <h4>需求、供给与均衡价格决定</h4>
+        <div class="model-desc">价格理论是微观经济学的核心，研究市场如何通过供求实现资源配置。</div>
+        <div class="model-formula">
+需求函数: Q_d = a - bP (b>0)
+供给函数: Q_s = c + dP (d>0)
+均衡: Q_d = Q_s → P* = (a-c)/(b+d)
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>消费者行为理论</h4>
+        <div class="model-desc">消费者如何在预算约束下实现效用最大化。</div>
+        <div class="model-formula">
+效用函数: U = U(X, Y)
+预算约束: P_x·X + P_y·Y = M
+一阶条件: MU_x/P_x = MU_y/P_y
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>生产者行为理论</h4>
+        <div class="model-desc">厂商如何在成本约束下实现利润最大化。</div>
+        <div class="model-formula">
+生产函数: Q = f(L, K)
+成本函数: C = w·L + r·K
+利润: π = P·Q - C
+一阶条件: MP_L/w = MP_K/r
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>I-2 金融市场与金融工具</h3>
+      <div class="model-card">
+        <h4>货币市场工具</h4>
+        <div class="model-desc">国库券、大额可转让存单、商业票据等短期融资工具。</div>
+        <table class="model-table">
+          <tr><th>工具</th><th>期限</th><th>特点</th></tr>
+          <tr><td>国库券</td><td>3-12月</td><td>政府信用、高流动性</td></tr>
+          <tr><td>CD存单</td><td>1周-1年</td><td>可转让、利率市场化</td></tr>
+          <tr><td>商业票据</td><td>1-270天</td><td>无担保、信用级别要求</td></tr>
+        </table>
+      </div>
+      <div class="model-card">
+        <h4>资本市场估值模型</h4>
+        <div class="model-desc">股票和债券的估值定价方法。</div>
+        <div class="model-formula">
+DDM: P = D₁/(r-g)  (股息折现模型)
+DCF: V = ΣCF_t/(1+r)ᵗ (现金流折现)
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="ddm_r"><span class="comment"># 股息折现模型(DDM) - R实现</span>
+ddm_valuation <span class="keyword">&lt;-</span> <span class="keyword">function</span>(D1, r, g, years<span class="var">=</span><span class="num">5</span>) {
+  dividends <span class="keyword">&lt;-</span> D1 <span class="keyword">*</span> (<span class="num">1</span><span class="keyword">+</span>g)<span class="keyword">^</span>(<span class="num">0</span>:(years<span class="keyword">-</span><span class="num">1</span>))
+  pv <span class="keyword">&lt;-</span> dividends / (<span class="num">1</span><span class="keyword">+</span>r)<span class="keyword">^</span>(<span class="num">1</span>:years)
+  terminal <span class="keyword">&lt;-</span> D1<span class="keyword">*</span>(<span class="num">1</span><span class="keyword">+</span>g)<span class="keyword">^</span>years / (r <span class="keyword">-</span> g)
+  pv_terminal <span class="keyword">&lt;-</span> terminal / (<span class="num">1</span><span class="keyword">+</span>r)<span class="keyword">^</span>years
+  intrinsic_value <span class="keyword">&lt;-</span> <span class="func">sum</span>(pv) <span class="keyword">+</span> pv_terminal
+  <span class="func">cat</span>(<span class="string">"DDM估值:"</span>, <span class="func">round</span>(intrinsic_value, <span class="num">2</span>), <span class="string">"\n"</span>)
+  <span class="keyword">return</span>(intrinsic_value)
+}
+<span class="func">ddm_valuation</span>(D1<span class="var">=</span><span class="num">2</span>, r<span class="var">=</span><span class="num">0.08</span>, g<span class="var">=</span><span class="num">0.03</span>)</div>
+        <div class="code-block" id="ddm_py"><span class="comment"># 股息折现模型(DDM) - Python实现</span>
+<span class="keyword">def</span> <span class="func">ddm_valuation</span>(D1, r, g, years<span class="var">=</span><span class="num">5</span>):
+    <span class="string">"""DDM股息折现模型"""</span>
+    dividends = [D1 <span class="keyword">*</span> (<span class="num">1</span><span class="keyword">+</span>g)<span class="keyword">**</span>i <span class="keyword">for</span> i <span class="keyword">in</span> <span class="func">range</span>(years)]
+    pv = [d / (<span class="num">1</span><span class="keyword">+</span>r)<span class="keyword">**</span>(i<span class="keyword">+</span><span class="num">1</span>) <span class="keyword">for</span> i, d <span class="keyword">in</span> <span class="func">enumerate</span>(divisors)]
+    terminal = D1 <span class="keyword">*</span> (<span class="num">1</span><span class="keyword">+</span>g)<span class="keyword">**</span>years / (r <span class="keyword">-</span> g)
+    pv_terminal = terminal / (<span class="num">1</span><span class="keyword">+</span>r)<span class="keyword">**</span>years
+    <span class="func">print</span>(<span class="func">f</span><span class="string">"DDM估值: <span class="var">{sum(pv) + pv_terminal:.2f}</span>"</span>)
+    <span class="keyword">return</span> sum(pv) + pv_terminal
+
+<span class="func">ddm_valuation</span>(D1=<span class="num">2</span>, r=<span class="num">0.08</span>, g=<span class="num">0.03</span>)</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>I-3 期货及其他金融衍生品</h3>
+      <div class="model-card">
+        <h4>四种基本衍生品</h4>
+        <div class="model-desc">远期、期货、期权、互换是金融衍生品的四大基石。</div>
+        <table class="model-table">
+          <tr><th>类型</th><th>定义</th><th>现金流特征</th></tr>
+          <tr><td>远期</td><td>未来特定时间交割</td><td>线性（固定）</td></tr>
+          <tr><td>期货</td><td>标准化场内合约</td><td>线性（盯市）</td></tr>
+          <tr><td>期权</td><td>选择权合约</td><td>非线性（买方有限风险）</td></tr>
+          <tr><td>互换</td><td>现金流交换</td><td>线性（多期）</td></tr>
+        </table>
+      </div>
+      <div class="model-card">
+        <h4>期权价格构成</h4>
+        <div class="model-desc">期权价格 = 内在价值 + 时间价值</div>
+        <div class="model-formula">
+看涨期权: C = max(S - K, 0) + Time_Value
+看跌期权: P = max(K - S, 0) + Time_Value
+时间价值 = 剩余期限 × 隐含波动率 × 期权Gamma
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>I-4 统计基础</h3>
+      <div class="model-card">
+        <h4>弹性分析与相关系数</h4>
+        <div class="model-desc">经济学中常用的弹性概念和统计量。</div>
+        <div class="model-formula">
+需求价格弹性: ε = (ΔQ/Q)/(ΔP/P) = (ΔQ/ΔP)·(P/Q)
+点弹性: ε = (dQ/dP)·(P/Q)
+相关系数: ρ = Cov(X,Y)/(σ_X·σ_Y)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== FDA II 级 ==================== -->
+<div class="module" data-category="fda2">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon">📊</div>
+    <div>
+      <div class="module-title">FDA II级 进阶课程体系</div>
+      <div class="module-subtitle">宏观经济学、统计计量、衍生品定价、四类衍生品</div>
+    </div>
+    <span class="level-badge badge-fda2">II级</span>
+  </div>
+  <div class="module-content">
+    <div class="section">
+      <h3>II-1 宏观经济学</h3>
+      <div class="model-card">
+        <h4>AD-AS模型</h4>
+        <div class="model-desc">总需求-总供给模型是宏观经济的核心分析框架。</div>
+        <div class="model-formula">
+AD曲线: Y = C + I + G + X - M (IS-LM推导)
+AS曲线: Y* = f(实际工资, 技术, 预期)
+短期: P向上倾斜  长期: 垂直于自然产出
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>IS-LM模型</h4>
+        <div class="model-desc">商品市场与货币市场同时均衡的经典模型。</div>
+        <div class="model-formula">
+IS: Y = α(Ä - bT) + β(Ä - π) + γG - γP + δi + ε
+LM: M/P = kY - hi
+IS-LM均衡: 联立求解Y*和i*
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>蒙代尔-弗莱明模型</h4>
+        <div class="model-desc">开放经济条件下的宏观政策分析框架。</div>
+        <table class="model-table">
+          <tr><th>政策</th><th>固定汇率</th><th>浮动汇率</th></tr>
+          <tr><td>扩张财政</td><td>↑Y, 无效果</td><td>↑Y, 本币贬值</td></tr>
+          <tr><td>扩张货币</td><td>↑Y, 资本流出</td><td>↑Y, 本币贬值</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>II-2 统计与计量方法</h3>
+      <div class="model-card">
+        <h4>回归模型</h4>
+        <div class="model-desc">一元和多元线性回归是计量分析的基础。</div>
+        <div class="model-formula">
+一元: Y = α + βX + ε
+多元: Y = α + β₁X₁ + β₂X₂ + ... + ε
+OLS: β̂ = (X'X)⁻¹X'Y
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="ols_r"><span class="comment"># OLS回归 - R实现</span>
+<span class="keyword">library</span>(stats)
+
+<span class="comment"># 生成示例数据</span>
+<span class="func">set.seed</span>(<span class="num">42</span>)
+n <span class="keyword">&lt;-</span> <span class="num">200</span>
+X1 <span class="keyword">&lt;-</span> <span class="func">rnorm</span>(n, <span class="num">50</span>, <span class="num">15</span>)
+X2 <span class="keyword">&lt;-</span> <span class="func">rnorm</span>(n, <span class="num">30</span>, <span class="num">10</span>)
+Y <span class="keyword">&lt;-</span> <span class="num">10</span> <span class="keyword">+</span> <span class="num">1.5</span><span class="keyword">*</span>X1 <span class="keyword">+</span> <span class="num">0.8</span><span class="keyword">*</span>X2 <span class="keyword">+</span> <span class="func">rnorm</span>(n, <span class="num">0</span>, <span class="num">5</span>)
+
+<span class="comment"># OLS回归</span>
+model <span class="keyword">&lt;-</span> <span class="func">lm</span>(Y <span class="keyword">~</span> X1 <span class="keyword">+</span> X2)
+<span class="func">summary</span>(model)
+
+<span class="comment"># 预测</span>
+new_data <span class="keyword">&lt;-</span> <span class="func">data.frame</span>(X1<span class="var">=</span><span class="num">55</span>, X2<span class="var">=</span><span class="num">32</span>)
+pred <span class="keyword">&lt;-</span> <span class="func">predict</span>(model, new_data, interval<span class="var">=</span><span class="string">"prediction"</span>)
+<span class="func">cat</span>(<span class="string">"预测值:"</span>, pred[, <span class="num">1</span>], <span class="string">"\n"</span>)</div>
+        <div class="code-block" id="ols_py"><span class="comment"># OLS回归 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LinearRegression
+
+np.random.<span class="func">seed</span>(<span class="num">42</span>)
+n = <span class="num">200</span>
+X1 = np.random.<span class="func">normal</span>(<span class="num">50</span>, <span class="num">15</span>, n)
+X2 = np.random.<span class="func">normal</span>(<span class="num">30</span>, <span class="num">10</span>, n)
+Y = <span class="num">10</span> + <span class="num">1.5</span><span class="keyword">*</span>X1 + <span class="num">0.8</span><span class="keyword">*</span>X2 + np.random.<span class="func">normal</span>(<span class="num">0</span>, <span class="num">5</span>, n)
+
+X = np.column_stack([X1, X2])
+model = <span class="func">LinearRegression</span>()
+model.<span class="func">fit</span>(X, Y)
+
+<span class="func">print</span>(<span class="string">"截距:"</span>, model.intercept_)
+<span class="func">print</span>(<span class="string">"系数:"</span>, model.coef_)
+
+<span class="comment"># 预测</span>
+new_X = np.array([[<span class="num">55</span>, <span class="num">32</span>]])
+pred = model.<span class="func">predict</span>(new_X)
+<span class="func">print</span>(<span class="string">"预测值:"</span>, pred[<span class="num">0</span>])</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>II-3 衍生品定价</h3>
+      <div class="model-card">
+        <h4>无套利定价 & 风险中性定价</h4>
+        <div class="model-desc">衍生品定价的两大核心方法。</div>
+        <div class="model-formula">
+无套利: F = S·e^(rT) (远期价格)
+风险中性: E[Payoff] = r折现 (期权定价基础)
+复制组合: Δ×标的 + B×债券 = 期权Payoff
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>Black-Scholes-Merton模型</h4>
+        <div class="model-desc">期权定价的里程碑公式。</div>
+        <div class="model-formula">
+d₁ = [ln(S/K)+(r+σ²/2)T] / (σ√T)
+d₂ = d₁ - σ√T
+C = S·N(d₁) - K·e^(-rT)·N(d₂)
+P = K·e^(-rT)·N(-d₂) - S·N(-d₁)
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>希腊字母套期保值</h4>
+        <div class="model-desc">Delta、Gamma、Theta、Vega、Rho是期权风险管理的核心。</div>
+        <div class="model-formula">
+Delta: ∂V/∂S (标的价格敏感度)
+Gamma: ∂²V/∂S² (Delta变化率)
+Theta: ∂V/∂T (时间衰减)
+Vega: ∂V/∂σ (波动率敏感度)
+Rho: ∂V/∂r (利率敏感度)
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>II-4 商品类衍生品</h3>
+      <div class="model-card">
+        <h4>商品期货定价因子</h4>
+        <div class="model-desc">商品价格受仓储成本、便利收益等因素影响。</div>
+        <div class="model-formula">
+F = S×e^((r+u-c)×T)
+其中: r=融资成本, u=仓储费, c=便利收益
+基差 = 现货 - 期货
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>商品期权策略</h4>
+        <div class="model-desc">Covered Call、保护性看跌、价差策略等。</div>
+        <table class="model-table">
+          <tr><th>策略</th><th>构建方式</th><th>适用场���</th></tr>
+          <tr><td>Covered Call</td><td>持有现货+卖出看涨</td><td>温和上涨</td></tr>
+          <tr><td>保护性看跌</td><td>持有现货+买入看跌</td><td>下跌保护</td></tr>
+          <tr><td>牛市价差</td><td>买入低行权+卖出高行权</td><td>温和上涨</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>II-5 利率类衍生品</h3>
+      <div class="model-card">
+        <h4>利率期限结构</h4>
+        <div class="model-desc">零息利率曲线是利率衍生品定价的基础。</div>
+        <div class="model-formula">
+即期利率: r(0,t) = -ln(P(0,t))/t
+远期利率: f(t₁,t₂) = [ln(P(0,t₁))-ln(P(0,t₂))]/(t₂-t₁)
+收益率曲线类型: 正常、反转、水平
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>利率互换定价</h4>
+        <div class="model-desc">利率互换的公允价值计算。</div>
+        <div class="model-formula">
+固定利率: Σc×B(t_i) + B(T) = Σr_float×B(t_i) + 1
+或: c = [1 - B(T)] / ΣB(t_i)
+其中B(t)为贴现因子
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>II-6 外汇类衍生品</h3>
+      <div class="model-card">
+        <h4>外汇远期定价</h4>
+        <div class="model-desc">利率平价是外汇远期定价的理论基础。</div>
+        <div class="model-formula">
+F = S × (1+r_d)/(1+r_f)^T
+抛物法则: 远期升水/贴水 ≈ 利差
+套利边界: |F - S| ≤ 2σ
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>II-7 权益类衍生品</h3>
+      <div class="model-card">
+        <h4>股指期货套期保值</h4>
+        <div class="model-desc">β系数法是最常用的套保方法。</div>
+        <div class="model-formula">
+最优套保比: h* = ρ × (σ_S/σ_F)
+期货手数: N = (β×V_P)/(合约价值×h*)
+套保效率: R² = ρ²
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== FDA III 级 ==================== -->
+<div class="module" data-category="fda3">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon">🎓</div>
+    <div>
+      <div class="module-title">FDA III级 高级课程体系</div>
+      <div class="module-subtitle">宏观拓展、信用衍生品、结构化产品、波动率、随机模型</div>
+    </div>
+    <span class="level-badge badge-fda3">III级</span>
+  </div>
+  <div class="module-content">
+    <div class="section">
+      <h3>III-1 宏观经济学拓展</h3>
+      <div class="model-card">
+        <h4>经济周期与波动</h4>
+        <div class="model-desc">经济周期的四个阶段及政策应对。</div>
+        <table class="model-table">
+          <tr><th>阶段</th><th>特征</th><th>政策</th></tr>
+          <tr><td>复苏</td><td>GDP↑, 就业↑</td><td>扩张财政+货币</td></tr>
+          <tr><td>繁荣</td><td>GDP高位, 通胀↑</td><td>紧缩财政+货币</td></tr>
+          <tr><td>衰退</td><td>GDP↓, 失业↑</td><td>扩张财政+货币</td></tr>
+          <tr><td>萧条</td><td>GDP低谷</td><td>大规模刺激</td></tr>
+        </table>
+      </div>
+      <div class="model-card">
+        <h4>菲利普斯曲线</h4>
+        <div class="model-desc">通胀与失业的短期权衡关系。</div>
+        <div class="model-formula">
+π = πᵗ - α(u - u*) + ε
+短期: 负相关  长期: 垂直
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>III-2 信用类衍生品</h3>
+      <div class="model-card">
+        <h4>信用违约互换(CDS)</h4>
+        <div class="model-desc">CDS是信用风险管理的核心工具。</div>
+        <div class="model-formula">
+CDS定价: Premium = Σq_i×D_i×v_i
+违约概率: Q(t) = 1 - e^(-λt)
+CDS利差: s = λ*(1-R)/(1-R+λ×Σv_i)
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>信用风险度量模型</h4>
+        <div class="model-desc">结构化模型与简约化模型。</div>
+        <div class="model-formula">
+结构化(KMV): 违约由资产价值触发
+P(违约) = N(-d₂), d₂ = (lnV + ΓT)/(σ√T)
+简约化(JCIR): 违约是外生泊松过程
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>抵押债务凭证(CDO)</h4>
+        <div class="model-desc">CDO的分层结构与现金流分配。</div>
+        <table class="model-table">
+          <tr><th>层级</th><th>优先级</th><th>风险特征</th></tr>
+          <tr><td>优先层(Senior)</td><td>1st</td><td>低风险, 低收益</td></tr>
+          <tr><td>中级(Mezzanine)</td><td>2nd</td><td>中等风险</td></tr>
+          <tr><td>股权层(Equity)</td><td>Last</td><td>高风险, 高收益</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>III-3 结构化产品</h3>
+      <div class="model-card">
+        <h4>结构化产品定价</h4>
+        <div class="model-desc">内嵌期权的结构性存款定价。</div>
+        <div class="model-formula">
+保本产品: V = 债券部分 + 期权部分
+债券价值 = N×e^(-rT)
+期权价值 = BS_Option_Price
+参与率 = (V - 债券价值)/S
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>雪球结构(Autocall)</h4>
+        <div class="model-desc">内嵌敲出期权的结构化产品。</div>
+        <div class="model-formula">
+票息 = 固定票息 - 期权费
+敲出条件: S ≥ K → 终止支付
+敲入条件: S < K → 损失可能
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>III-4 波动率衍生品</h3>
+      <div class="model-card">
+        <h4>方差互换</h4>
+        <div class="model-desc">方差互换是波动率交易的基础。</div>
+        <div class="model-formula">
+方差支付: σ²_realized × N
+方差固定: σ²_strike × N
+方差互换价值 = N×(σ²_r - σ²_s)×T
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>VIX指数</h4>
+        <div class="model-desc">VIX是市场恐慌指数。</div>
+        <div class="model-formula">
+VIX = 100×√[Σw_i×K_i×r_i²]
+其中: K_i=行权价, w_i=权重, r_i=波动率
+VIX期货: 反映未来30天波动率预期
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>III-5 金融随机模型</h3>
+      <div class="model-card">
+        <h4>利率随机模型</h4>
+        <div class="model-desc">Ho-Lee、Vasicek、CIR等利率模型。</div>
+        <div class="model-formula">
+Vasicek: dr = a(b-r)dt + σdW
+CIR: dr = a(b-r)dt + σ√r dW
+HW: dr = (θ(t)-a)dt + σdW
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>Heston随机波动率模型</h4>
+        <div class="model-desc">双因素随机波动率模型。</div>
+        <div class="model-formula">
+dS = μSdt + √vSdW₁
+dv = κ(θ-v)dt + σ√vdW₂
+dW₁dW₂ = ρ dt
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>Copula相关性与违约</h4>
+        <div class="model-desc">Copula函数刻画尾部相关性。</div>
+        <div class="model-formula">
+Gaussian Copula: C_ρ(u,v) = Φ_ρ(Φ⁻¹(u),Φ⁻¹(v))
+t-Copula: 厚尾部更高
+Tail Dependence: 下尾相关系数
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 法律法规 ==================== -->
+<div class="module" data-category="base">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon">⚖️</div>
+    <div>
+      <div class="module-title">法律法规与职业道德</div>
+      <div class="module-subtitle">6个部分的法规体系</div>
+    </div>
+    <span class="level-badge badge-base">基础</span>
+  </div>
+  <div class="module-content">
+    <div class="section">
+      <h3>核心法规要点</h3>
+      <div class="model-card">
+        <h4>关键法规</h4>
+        <table class="model-table">
+          <tr><th>类别</th><th>法规名称</th><th>核心要点</th></tr>
+          <tr><td>期货公司</td><td>期货交易管理条例</td><td>业务许可、风险控制</td></tr>
+          <tr><td>从业人员</td><td>期货从业人员执业行为准则</td><td>职业道德、禁止行为</td></tr>
+          <tr><td>投资者</td><td>适当性管理办法</td><td>风险匹配、告知义务</td></tr>
+          <tr><td>交易</td><td>期货交易所管理办法</td><td>交易规则、结算制度</td></tr>
+          <tr><td>监控</td><td>期货监控中心管理办法</td><td>保证金监控、异常监控</td></tr>
+          <tr><td>协会</td><td>中国期货业协会自律规则</td><td>行业自律、行业标准</td></tr>
+        </table>
+      </div>
+      <div class="model-card">
+        <h4>从业人员禁止行为</h4>
+        <div class="model-desc">期货从业人员执业红线。</div>
+        <div class="model-formula">
+1. 代理客户交易
+2. 挪用客户保证金
+3. 私下对赌
+4. 虚假宣传/承诺收益
+5. 泄露商业秘密
+6. 利益输送
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 学习路线图 ==================== -->
+<div class="roadmap-cards">
+  <div class="roadmap-card">
+    <h4>FDA I级 · 入门</h4>
+    <ul>
+      <li>微观经济学基础</li>
+      <li>金融市场与工具</li>
+      <li>期货基本概念</li>
+      <li>统计入门</li>
+      <li>法律法规基础</li>
+    </ul>
+  </div>
+  <div class="roadmap-card">
+    <h4>FDA II级 · 进阶</h4>
+    <ul>
+      <li>宏观经济学(AD-AS, IS-LM)</li>
+      <li>计量方法(回归, ARIMA)</li>
+      <li>衍生品定价(BS, 二叉树)</li>
+      <li>商品/利率/外汇/权益衍生品</li>
+    </ul>
+  </div>
+  <div class="roadmap-card">
+    <h4>FDA III级 · 高级</h4>
+    <ul>
+      <li>宏观经济学拓展(政策传导)</li>
+      <li>信用衍生品(CDS, CDO)</li>
+      <li>结构化产品设计</li>
+      <li>波动率衍生品(VIX, 方差互换)</li>
+      <li>随机利率模型(Heston, Copula)</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<div class="no-result" id="no-result"><span>🔍</span>未找到匹配的内容，换个关键词试试吧</div>
+
+<footer>
+  <p>FDA衍生品分析师技能课程体系</p>
+  <p style="margin-top:8px;">Keep Learning · Deep Learning · Lifelong Learning</p>
+</footer>
+
+<script>
+function toggle(header) {
+  header.nextElementSibling.classList.toggle('show');
+}
+
+function filter(category) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.module').forEach(m => {
+    if (category === 'all') m.style.display = 'block';
+    else m.style.display = m.dataset.category === category ? 'block' : 'none';
+  });
+}
+
+function switchCode(tab, lang) {
+  const card = tab.closest('.model-card');
+  card.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  card.querySelectorAll('.code-block').forEach(b => b.classList.remove('show'));
+  tab.classList.add('active');
+  const blocks = card.querySelectorAll('.code-block');
+  blocks.forEach(b => { if (b.id.endsWith('_' + lang)) b.classList.add('show'); });
+}
+
+// ============ 增强功能 ============
+window.addEventListener('scroll', function(){
+  var doc = document.documentElement;
+  var h = doc.scrollHeight - window.innerHeight;
+  var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+  var bar = document.getElementById('progress-bar');
+  if(bar) bar.style.width = pct + '%';
+  var btt = document.getElementById('back-to-top');
+  if(btt) btt.classList.toggle('show', window.scrollY > 400);
+});
+
+(function(){
+  var btt = document.getElementById('back-to-top');
+  if(btt) btt.addEventListener('click', function(){
+    window.scrollTo({ top:0, behavior:'smooth' });
+  });
+})();
+
+(function(){
+  var box = document.getElementById('search-box');
+  if(!box) return;
+  box.addEventListener('input', function(){
+    var q = this.value.trim().toLowerCase();
+    var modules = document.querySelectorAll('.module');
+    var totalVisible = 0;
+    modules.forEach(function(m){
+      var content = m.querySelector('.module-content');
+      var cards = m.querySelectorAll('.model-card');
+      var anyVisible = false;
+      cards.forEach(function(c){
+        var match = q === '' ? true : c.textContent.toLowerCase().indexOf(q) > -1;
+        c.style.display = match ? '' : 'none';
+        if(match) anyVisible = true;
+      });
+      if(q !== ''){ content.classList.add('show'); } else { content.classList.remove('show'); }
+      m.style.display = (q === '' || anyVisible) ? '' : 'none';
+      if(anyVisible) totalVisible++;
+    });
+    document.querySelectorAll('.roadmap, .roadmap-cards').forEach(function(el){
+      el.style.display = q === '' ? '' : 'none';
+    });
+    var nr = document.getElementById('no-result');
+    if(nr) nr.classList.toggle('show', q !== '' && totalVisible === 0);
+  });
+})();
+</script>
+
+<button id="back-to-top" title="返回顶部">↑</button>
+
+</body>
+</html>

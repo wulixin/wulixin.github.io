@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETF策略师成长之路</title>
+<style>
+  :root {
+    --primary: #07131f;
+    --secondary: #0c2030;
+    --accent: #22c55e;
+    --accent2: #38bdf8;
+    --gold: #fbbf24;
+    --text: #e8eef4;
+    --text-dim: #8aa0b4;
+    --card-bg: #102b3e;
+    --border: rgba(56,189,248,0.18);
+    --code-bg: #0a1622;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: var(--primary);
+    color: var(--text);
+    line-height: 1.8;
+    overflow-x: hidden;
+  }
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 55%, #0e2e44 100%);
+    padding: 80px 40px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content:''; position:absolute; top:0; left:0; right:0; bottom:0;
+    background: radial-gradient(circle at 50% 120%, rgba(34,197,94,0.12) 0%, transparent 60%),
+                radial-gradient(circle at 15% 0%, rgba(56,189,248,0.10) 0%, transparent 45%);
+  }
+  .hero h1 {
+    font-size: 3em; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    position: relative; margin-bottom: 16px;
+  }
+  .hero p { font-size: 1.15em; color: var(--text-dim); max-width: 720px; margin: 0 auto; position: relative; }
+  .hero .stats {
+    display:flex; justify-content:center; gap:50px; margin-top:40px; position:relative; flex-wrap:wrap;
+  }
+  .hero .stat-item { text-align:center; }
+  .hero .stat-num { font-size:2.5em; font-weight:800; color:var(--accent); }
+  .hero .stat-label { font-size:0.9em; color:var(--text-dim); }
+
+  /* series badge */
+  .series-badge{
+    display:inline-block;margin-bottom:18px;padding:6px 18px;border-radius:24px;
+    font-size:0.8em;font-weight:600;letter-spacing:1px;position:relative;
+    background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--accent);
+  }
+
+  /* Nav */
+  .nav-bar {
+    background: var(--secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 40px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .nav-btn {
+    padding: 8px 18px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--text-dim);
+    cursor: pointer; font-size: 0.88em;
+    transition: all 0.3s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--accent); color: #04210f; border-color: var(--accent); font-weight:600;
+  }
+
+  /* Main */
+  .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+  /* Module Card */
+  .module {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .module:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(34,197,94,0.10);
+  }
+  .module-header {
+    padding: 24px 30px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .module-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5em; flex-shrink: 0;
+  }
+  .module-title { font-size: 1.3em; font-weight: 700; }
+  .module-subtitle { font-size: 0.85em; color: var(--text-dim); margin-top: 4px; }
+  .module-badge {
+    margin-left: auto; padding: 4px 14px; border-radius: 12px;
+    font-size: 0.75em; font-weight: 600; flex-shrink: 0;
+  }
+  .badge-step { background: rgba(34,197,94,0.18); color: var(--accent); }
+  .module-content { padding: 0 30px 30px; display: none; }
+  .module-content.show { display: block; }
+
+  /* Sections */
+  .knowledge-section { margin-top: 24px; }
+  .knowledge-section h3 {
+    font-size: 1.1em; color: var(--accent2);
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .model-card {
+    background: rgba(0,0,0,0.22);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px; margin-bottom: 14px;
+    transition: border-color 0.3s;
+  }
+  .model-card:hover { border-color: var(--accent); }
+  .model-card h4 { font-size: 1.05em; color: #fff; margin-bottom: 8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .model-desc { color: var(--text-dim); font-size: 0.9em; }
+  .model-desc b { color: var(--text); font-weight:600; }
+  .model-formula {
+    background: var(--code-bg); padding: 12px 16px; border-radius: 8px;
+    font-family: 'Courier New', monospace; font-size: 0.88em;
+    color: #b6f0cf; margin: 10px 0; overflow-x: auto;
+    border-left: 3px solid var(--accent);
+  }
+  .model-table {
+    width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.86em;
+  }
+  .model-table th {
+    background: rgba(34,197,94,0.14); color: var(--accent);
+    padding: 8px 12px; text-align: left; font-weight: 600;
+  }
+  .model-table td {
+    padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text-dim);
+  }
+  .model-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+  /* tags */
+  .tag {
+    display: inline-block; padding: 2px 9px; border-radius: 6px;
+    font-size: 0.68em; font-weight: 600;
+  }
+  .tag-wide { background: rgba(56,189,248,0.18); color: var(--accent2); }
+  .tag-theme { background: rgba(167,139,250,0.18); color: #c4b5fd; }
+  .tag-cross { background: rgba(251,191,36,0.18); color: var(--gold); }
+  .tag-comm { background: rgba(34,197,94,0.18); color: var(--accent); }
+
+  /* Code Block */
+  .code-tabs { display: flex; gap: 4px; margin: 12px 0 0; }
+  .code-tab {
+    padding: 6px 16px; border-radius: 8px 8px 0 0;
+    background: rgba(255,255,255,0.05); color: var(--text-dim);
+    cursor: pointer; border: 1px solid var(--border); border-bottom: none;
+    font-size: 0.85em; font-weight: 600;
+  }
+  .code-tab.active { background: var(--code-bg); color: var(--accent); }
+  .code-block {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 0 8px 8px 8px; padding: 16px;
+    overflow-x: auto; font-family: 'Courier New', monospace;
+    font-size: 0.82em; line-height: 1.6; color: #c9d1d9;
+    display: none; max-height: 480px; overflow-y: auto;
+  }
+  .code-block.show { display: block; }
+  .code-block .comment { color: #6a8a7a; }
+  .code-block .keyword { color: #ff7b72; }
+  .code-block .string { color: #a5d6ff; }
+  .code-block .func { color: #d2a8ff; }
+  .code-block .num { color: #79c0ff; }
+
+  /* product grid */
+  .product-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap:14px; }
+  .product-grid .model-card { margin-bottom:0; }
+
+  /* Roadmap */
+  .roadmap { margin-top: 40px; }
+  .roadmap-line { display: flex; gap: 0; }
+  .roadmap-stage {
+    flex: 1; padding: 20px 18px; text-align: center;
+    border-right: 2px solid var(--border); position: relative;
+  }
+  .roadmap-stage:last-child { border-right: none; }
+  .roadmap-stage h4 { color: var(--accent); margin-bottom: 8px; }
+  .roadmap-stage ul { list-style: none; font-size: 0.84em; color: var(--text-dim); text-align: left; }
+  .roadmap-stage ul li::before { content: '▸ '; color: var(--accent); }
+  .stage-num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #04210f;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; margin-bottom: 12px;
+  }
+
+  footer {
+    text-align: center; padding: 40px;
+    color: var(--text-dim); font-size: 0.85em;
+    border-top: 1px solid var(--border); margin-top: 40px;
+  }
+
+  /* ============ 增强功能 ============ */
+  #progress-bar{
+    position:fixed;top:0;left:0;height:4px;width:0;z-index:300;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    box-shadow:0 0 12px var(--accent);transition:width .12s ease-out;
+  }
+  .nav-search{display:flex;align-items:center;position:relative;}
+  .nav-search input{
+    background:rgba(0,0,0,0.25);border:1px solid var(--border);color:var(--text);
+    border-radius:20px;padding:7px 16px;font-size:0.85em;outline:none;width:190px;
+    transition:all .3s;font-family:inherit;
+  }
+  .nav-search input:focus{width:240px;border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,197,94,0.15);}
+  .nav-search input::placeholder{color:var(--text-dim);}
+  #back-to-top{
+    position:fixed;right:28px;bottom:28px;width:48px;height:48px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04210f;border:none;
+    cursor:pointer;font-size:1.4em;z-index:200;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 24px rgba(0,0,0,0.45);opacity:0;visibility:hidden;transform:translateY(12px);transition:all .3s;
+  }
+  #back-to-top.show{opacity:1;visibility:visible;transform:translateY(0);}
+  #back-to-top:hover{transform:translateY(-3px) scale(1.06);}
+  .module{animation:fadeInUp .7s cubic-bezier(.25,.46,.45,.94) both;}
+  .module:nth-child(1){animation-delay:.03s}
+  .module:nth-child(2){animation-delay:.09s}
+  .module:nth-child(3){animation-delay:.15s}
+  .module:nth-child(4){animation-delay:.21s}
+  .module:nth-child(5){animation-delay:.27s}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  .no-result{display:none;text-align:center;color:var(--text-dim);padding:40px 20px;font-size:1em;}
+  .no-result.show{display:block;}
+  .no-result span{font-size:2em;display:block;margin-bottom:10px;}
+
+  @media(max-width:768px) {
+    .hero h1 { font-size: 2em; }
+    .hero .stats { gap: 20px; }
+    .roadmap-line { flex-direction: column; }
+    .roadmap-stage { border-right: none; border-bottom: 2px solid var(--border); }
+    .nav-bar { padding: 8px 12px; flex-wrap: wrap; }
+    .nav-search { margin-left: 0; order: 5; width: 100%; }
+    .nav-search input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 阅读进度条 -->
+<div id="progress-bar"></div>
+
+<!-- ==================== HERO ==================== -->
+<div class="hero">
+  <div class="series-badge">金融分析师专业技能系列 · 03 / 03</div>
+  <h1>ETF策略师成长之路</h1>
+  <p>从理解指数到精通ETF产品与策略，再到基金投顾展业实务。一套面向指数化投资时代的完整能力进阶地图，助力从入门到专业ETF策略师。</p>
+  <div class="stats">
+    <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">成长阶段</div></div>
+    <div class="stat-item"><div class="stat-num">26</div><div class="stat-label">重点ETF产品</div></div>
+    <div class="stat-item"><div class="stat-num">9</div><div class="stat-label">核心策略</div></div>
+    <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">展业实务</div></div>
+  </div>
+</div>
+
+<!-- ==================== NAV ==================== -->
+<div class="nav-bar">
+  <button class="nav-btn active" onclick="filter('all')">全部模块</button>
+  <button class="nav-btn" onclick="filter('idx')">指数认知</button>
+  <button class="nav-btn" onclick="filter('etf')">走进ETF</button>
+  <button class="nav-btn" onclick="filter('product')">产品图谱</button>
+  <button class="nav-btn" onclick="filter('strategy')">策略体系</button>
+  <button class="nav-btn" onclick="filter('practice')">展业实务</button>
+  <div class="nav-search"><input id="search-box" type="text" placeholder="搜索产品 / 策略 / 关键词…"></div>
+</div>
+
+<!-- ==================== CONTENT ==================== -->
+<div class="container">
+
+<!-- ============ 模块一：了解指数与指数投资 ============ -->
+<div class="module" data-category="idx">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#22c55e,#16a34a);">📐</div>
+    <div>
+      <div class="module-title">一、了解指数，了解指数投资</div>
+      <div class="module-subtitle">指数的本质、编制方法与指数化投资逻辑</div>
+    </div>
+    <span class="module-badge badge-step">STEP 1</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>1.1 什么是指数</h3>
+      <div class="model-card">
+        <h4>指数的定义与功能</h4>
+        <div class="model-desc">指数是按照既定规则，选取一篮子证券并加权计算形成的价格指标，用以表征特定市场、行业或策略的整体表现。它是ETF的"跟踪标的"与"业绩基准"。理解指数，是一切ETF投资的起点。</div>
+        <div class="model-formula">
+指数点位: I_t = I_(t-1) × Σ(w_i × (P_i,t / P_i,t-1))
+其中 w_i 为个股权重，P_i 为价格
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>常见指数类型</h4>
+        <div class="model-desc">按选样空间与风格，指数可分为宽基指数、行业/主题指数、风格指数与策略指数（如红利、低波）。不同类型对应不同的风险收益特征与配置场景。</div>
+        <table class="model-table">
+          <tr><th>类型</th><th>代表指数</th><th>特征</th></tr>
+          <tr><td>宽基</td><td>沪深300 / 中证500 / 中证1000</td><td>代表市场整体，分散度高</td></tr>
+          <tr><td>行业/主题</td><td>芯片 / 创新药 / 碳中和</td><td>高弹性，景气驱动</td></tr>
+          <tr><td>跨境</td><td>恒生 / MSCI A50</td><td>跨市场配置</td></tr>
+          <tr><td>商品</td><td>黄金 / 豆粕</td><td>抗通胀、低相关</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>1.2 指数投资的核心逻辑</h3>
+      <div class="model-card">
+        <h4>为什么选择指数化投资</h4>
+        <div class="model-desc">指数投资以"获取市场平均收益、降低个股踩雷风险、费率低廉、透明可预期"为核心优势。长期看，多数主动管理难以持续战胜基准，指数化成为居民财富配置的主航道。</div>
+      </div>
+      <div class="model-card">
+        <h4>复制方式：完全复制 vs 抽样复制</h4>
+        <div class="model-desc">完全复制按指数权重买入全部成分股，跟踪误差最小；抽样复制（优化抽样）在成分股过多或流动性不足时，选取代表性样本以控制成本与误差。</div>
+        <div class="model-formula">
+跟踪误差 TE = std(R_portfolio − R_index)
+目标: min(TE)  s.t. 成本控制、流动性约束
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 模块二：走进ETF世界 ============ -->
+<div class="module" data-category="etf">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#38bdf8,#0ea5e9);">🛰️</div>
+    <div>
+      <div class="module-title">二、走进ETF世界</div>
+      <div class="module-subtitle">优势、历史、开发流程、IOPV与交易机制</div>
+    </div>
+    <span class="module-badge badge-step">STEP 2</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>2.1 了解ETF的优势</h3>
+      <div class="model-card">
+        <h4>ETF的六大核心优势</h4>
+        <div class="model-desc">分散投资、交易灵活（T+0/日内可交易）、费率低廉、持仓透明、门槛低（百元起投）、工具丰富（可融资融券、期现套利）。它把"一篮子股票"变成了像股票一样买卖的标的。</div>
+        <table class="model-table">
+          <tr><th>优势</th><th>说明</th></tr>
+          <tr><td>分散风险</td><td>一键配置一篮子证券，规避个股黑天鹅</td></tr>
+          <tr><td>费率低</td><td>管理费率常为主动基金的 1/3 ~ 1/5</td></tr>
+          <tr><td>高透明</td><td>每日公布PCF清单，持仓实时可查</td></tr>
+          <tr><td>交易便捷</td><td>场内实时买卖，部分品种T+0</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>2.2 了解ETF发展历史</h3>
+      <div class="model-card">
+        <h4>从海外到国内的演进</h4>
+        <div class="model-desc">1990年全球首只ETF（SPDR S&amp;P 500，代码SPY）在美股问世；2004年国内首只ETF——华夏上证50ETF成立，开启A股指数化时代；此后宽基、行业、跨境、商品、策略ETF百花齐放，ETF规模与数量持续爆发式增长。</div>
+        <div class="model-formula">
+关键里程碑:
+1990  SPY (美国, 首只ETF)
+2004  上证50ETF (国内, 首只ETF)
+2012+ 跨市场/跨境/行业ETF扩容
+2020+ 万亿级ETF市场, 策略/中证A系列兴起
+        </div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>2.3 了解ETF产品开发全过程</h3>
+      <div class="model-card">
+        <h4>从指数到上市的全流程</h4>
+        <div class="model-desc">ETF开发包含：指数编制/授权 → 产品方案设计 → 证监会注册/募集申请 → 成分股与PCF清单准备 → 网下股票认购与现金认购 → 上市交易与做市商引入 → 日常申购赎回与IOPV发布。</div>
+        <table class="model-table">
+          <tr><th>阶段</th><th>关键动作</th></tr>
+          <tr><td>设计</td><td>选定标的指数、确定申赎模式（实物/现金）</td></tr>
+          <tr><td>上报</td><td>提交产品募集申请，监管注册</td></tr>
+          <tr><td>发行</td><td>网下股票+现金认购，建仓</td></tr>
+          <tr><td>上市</td><td>交易所挂牌，做市商提供流动性</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>2.4 了解ETF的IOPV和重要公告</h3>
+      <div class="model-card">
+        <h4>IOPV：参考单位基金净值</h4>
+        <div class="model-desc">IOPV（Indicative Optimized Portfolio Value）由交易所按申赎清单与实时行情每15秒计算并发布，反映ETF的"公允净值"，是判断二级市场价格是否合理的关键锚。</div>
+        <div class="model-formula">
+IOPV ≈ (Σ 成分股实时价 × 权重 × 折算比例) / 基金份额
+折溢价 = 二级市场价格 − IOPV
+溢价&gt;0: 价格偏高;  折价&lt;0: 价格偏低
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>重要公告与披露</h4>
+        <div class="model-desc">包括每日PCF清单（申赎篮子）、定期报告、份额折算/拆分、成分股调整公告、做市商变更、暂停申购赎回风险提示等。策略师需关注公告以评估跟踪偏离与流动性风险。</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>2.5 了解ETF交易</h3>
+      <div class="model-card">
+        <h4>一级市场与二级市场</h4>
+        <div class="model-desc"><b>二级市场</b>：投资者之间像股票一样买卖份额，价格由供需决定，门槛低。<b>一级市场</b>：授权参与人（AP）以"实物申赎"或"现金申赎"与基金管理人交换篮子，是连接一二级、平抑折溢价的套利通道。</div>
+        <div class="model-formula">
+套利机制:
+价格 &gt; IOPV + 成本  →  申购并卖出 (溢价收敛)
+价格 &lt; IOPV − 成本  →  买入并赎回 (折价收敛)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 模块三：认识ETF产品 ============ -->
+<div class="module" data-category="product">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);">🗺️</div>
+    <div>
+      <div class="module-title">三、认识ETF产品 · 重点产品图谱</div>
+      <div class="module-subtitle">26只核心ETF的投资价值速览</div>
+    </div>
+    <span class="module-badge badge-step">STEP 3</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>3.1 宽基与跨境 ETF</h3>
+      <div class="product-grid">
+        <div class="model-card">
+          <h4>创业板ETF <span class="tag tag-wide">宽基</span></h4>
+          <div class="model-desc"><b>跟踪：</b>创业板指数<br><b>价值：</b>汇聚创业板高成长创新企业，弹性大、长期成长属性突出，是把握新经济的核心宽基工具。</div>
+        </div>
+        <div class="model-card">
+          <h4>创业板50ETF <span class="tag tag-wide">宽基</span></h4>
+          <div class="model-desc"><b>跟踪：</b>创业板50指数<br><b>价值：</b>在创业板中优中选优，聚焦流动性好、战略新兴产业龙头，进攻性更强。</div>
+        </div>
+        <div class="model-card">
+          <h4>深100ETF <span class="tag tag-wide">宽基</span></h4>
+          <div class="model-desc"><b>跟踪：</b>深证100指数<br><b>价值：</b>深市核心蓝筹与成长兼备，行业均衡，是配置深市优质龙头的标尺。</div>
+        </div>
+        <div class="model-card">
+          <h4>国证2000ETF <span class="tag tag-wide">宽基</span></h4>
+          <div class="model-desc"><b>跟踪：</b>国证2000指数<br><b>价值：</b>代表A股小微盘风格，与沪深300低相关，是风格分散与量化策略的优质标的。</div>
+        </div>
+        <div class="model-card">
+          <h4>沪深300ETF <span class="tag tag-wide">宽基</span></h4>
+          <div class="model-desc"><b>跟踪：</b>沪深300指数<br><b>价值：</b>A股核心宽基标杆，大盘蓝筹集合，是长期底仓与期指/期权对冲的首选。</div>
+        </div>
+        <div class="model-card">
+          <h4>中证500ETF <span class="tag tag-wide">宽基</span></h4>
+          <div class="model-desc"><b>跟踪：</b>中证500指数<br><b>价值：</b>中盘成长代表，介于沪深300与中证1000之间，行业分布均衡。</div>
+        </div>
+        <div class="model-card">
+          <h4>中证1000ETF <span class="tag tag-wide">宽基</span></h4>
+          <div class="model-desc"><b>跟踪：</b>中证1000指数<br><b>价值：</b>小盘股代表，对应1000股指期货/期权，是中小盘策略与对冲工具。</div>
+        </div>
+        <div class="model-card">
+          <h4>双创ETF <span class="tag tag-wide">宽基</span></h4>
+          <div class="model-desc"><b>跟踪：</b>科创创业50指数<br><b>价值：</b>科创板+创业板硬科技龙头集合，集新能源、医药、电子等高景气赛道。</div>
+        </div>
+        <div class="model-card">
+          <h4>MSCI A50 ETF <span class="tag tag-wide">宽基</span></h4>
+          <div class="model-desc"><b>跟踪：</b>MSCI中国A50互联互通<br><b>价值：</b>外资视角下的A股核心资产，"行业中性"选样，便于境内外资金配置。</div>
+        </div>
+        <div class="model-card">
+          <h4>恒生ETF <span class="tag tag-cross">跨境</span></h4>
+          <div class="model-desc"><b>跟踪：</b>恒生指数<br><b>价值：</b>一键配置港股核心资产，估值常低于A股，提供跨市场分散与折价修复机会。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>3.2 行业与主题 ETF</h3>
+      <div class="product-grid">
+        <div class="model-card">
+          <h4>碳中和ETF <span class="tag tag-theme">主题</span></h4>
+          <div class="model-desc"><b>跟踪：</b>碳中和相关指数<br><b>价值：</b>聚焦清洁能源、节能环保等低碳转型方向，把握"双碳"长期政策红利。</div>
+        </div>
+        <div class="model-card">
+          <h4>芯片ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>芯片/半导体指数<br><b>价值：</b>国产替代与科技自立主线，高成长高波动，是科技行情的"矛"。</div>
+        </div>
+        <div class="model-card">
+          <h4>家电ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>家用电器指数<br><b>价值：</b>消费白马+出海逻辑，分红稳定、盈利质量高，防御与成长兼具。</div>
+        </div>
+        <div class="model-card">
+          <h4>农业ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>农业指数<br><b>价值：</b>粮食安全战略+猪周期弹性，与大盘低相关，具备配置价值。</div>
+        </div>
+        <div class="model-card">
+          <h4>央企ETF <span class="tag tag-theme">主题</span></h4>
+          <div class="model-desc"><b>跟踪：</b>央企/国企指数<br><b>价值：</b>估值重塑+高股息+中特估逻辑，低估值高分红，适合底仓配置。</div>
+        </div>
+        <div class="model-card">
+          <h4>VR ETF <span class="tag tag-theme">主题</span></h4>
+          <div class="model-desc"><b>跟踪：</b>虚拟现实指数<br><b>价值：</b>元宇宙硬件入口，产业早期高弹性，适合主题趋势交易。</div>
+        </div>
+        <div class="model-card">
+          <h4>创新药ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>创新药指数<br><b>价值：</b>医药研发与出海主线，长坡厚雪，受政策与临床进展驱动。</div>
+        </div>
+        <div class="model-card">
+          <h4>电池ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>电池指数<br><b>价值：</b>新能源中游核心，受益储能与电动车放量，高景气高波动。</div>
+        </div>
+        <div class="model-card">
+          <h4>信息技术ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>信息技术指数<br><b>价值：</b>TMT核心赛道，涵盖软件、硬件、半导体，数字经济的直接映射。</div>
+        </div>
+        <div class="model-card">
+          <h4>高端装备ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>高端装备指数<br><b>价值：</b>制造升级与军工科技主线，受益国产替代与装备出海。</div>
+        </div>
+        <div class="model-card">
+          <h4>证券ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>证券公司指数<br><b>价值：</b>"牛市旗手"，高贝塔弹性，常用于行情β博弈与抄底。</div>
+        </div>
+        <div class="model-card">
+          <h4>消费ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>主要消费指数<br><b>价值：</b>长牛赛道，盈利稳定、护城河深，是穿越周期的核心资产。</div>
+        </div>
+        <div class="model-card">
+          <h4>医药卫生ETF <span class="tag tag-theme">行业</span></h4>
+          <div class="model-desc"><b>跟踪：</b>医药卫生指数<br><b>价值：</b>刚需防御属性，老龄化长期利好，与科技、消费互补。</div>
+        </div>
+        <div class="model-card">
+          <h4>中概互联网ETF <span class="tag tag-cross">跨境</span></h4>
+          <div class="model-desc"><b>跟踪：</b>中概互联网指数<br><b>价值：</b>平台经济龙头集合，估值波动大，适合逆向布局与跨境配置。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>3.3 商品 ETF</h3>
+      <div class="product-grid">
+        <div class="model-card">
+          <h4>黄金ETF <span class="tag tag-comm">商品</span></h4>
+          <div class="model-desc"><b>跟踪：</b>黄金现货价格<br><b>价值：</b>避险与抗通胀利器，与股债低相关，是资产配置的"压舱石"。</div>
+        </div>
+        <div class="model-card">
+          <h4>豆粕ETF <span class="tag tag-comm">商品</span></h4>
+          <div class="model-desc"><b>跟踪：</b>豆粕期货指数<br><b>价值：</b>稀缺的农产品商品ETF，与股债商品低相关，丰富配置维度。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 模块四：掌握ETF策略 ============ -->
+<div class="module" data-category="strategy">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#34d399,#10b981);">🎯</div>
+    <div>
+      <div class="module-title">四、掌握ETF策略</div>
+      <div class="module-subtitle">持有 / 定投 / 轮动 / 期现联动 / 网格 / 组合配置</div>
+    </div>
+    <span class="module-badge badge-step">STEP 4</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>4.1 买入持有策略：长期持有</h3>
+      <div class="model-card">
+        <h4>长期持有宽基ETF</h4>
+        <div class="model-desc">买入并长期持有宽基ETF（如沪深300ETF），赚取经济增长与企业盈利的长期Beta。操作简单、成本低，是普通投资者的最优解之一。关键在于"忽略短期波动、控制仓位、长期不动"。</div>
+        <div class="model-formula">
+长期收益 ≈ 指数盈利增长 + 股息率 + 估值变化
+持有期越长，择时错误的影响越小
+        </div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.2 买入持有策略：定投策略</h3>
+      <div class="model-card">
+        <h4>定期定额（DCA）</h4>
+        <div class="model-desc">在固定周期以固定金额买入，价格低时多买份额、高时少买，自动摊薄成本、克服择时焦虑。适合工薪族与震荡市，微笑曲线在下跌后回升时兑现收益。</div>
+        <div class="model-formula">
+单位成本 = 总投入金额 / 累计获得总份额
+累计份额 = Σ(每期金额 / 每期净值)
+当净值回升至 &gt; 单位成本 即开始盈利
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="dca_r"><span class="comment"># ETF定投成本摊薄 - R实现</span>
+nav <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="num">1.00</span>, <span class="num">0.90</span>, <span class="num">0.80</span>, <span class="num">0.95</span>, <span class="num">1.10</span>)  <span class="comment"># 各期净值</span>
+amt <span class="keyword">&lt;-</span> <span class="num">1000</span>  <span class="comment"># 每期定投金额</span>
+shares <span class="keyword">&lt;-</span> <span class="func">sum</span>(amt / nav)
+total  <span class="keyword">&lt;-</span> <span class="func">length</span>(nav) * amt
+avg_cost <span class="keyword">&lt;-</span> total / shares
+<span class="func">cat</span>(<span class="string">"累计份额:"</span>, <span class="func">round</span>(shares,<span class="num">2</span>),
+    <span class="string">" 单位成本:"</span>, <span class="func">round</span>(avg_cost,<span class="num">4</span>), <span class="string">"\n"</span>)
+<span class="func">cat</span>(<span class="string">"期末资产:"</span>, <span class="func">round</span>(shares*nav[<span class="func">length</span>(nav)],<span class="num">2</span>),
+    <span class="string">" 收益:"</span>, <span class="func">round</span>(shares*nav[<span class="func">length</span>(nav)]-total,<span class="num">2</span>), <span class="string">"\n"</span>)</div>
+        <div class="code-block" id="dca_py"><span class="comment"># ETF定投成本摊薄 - Python实现</span>
+nav = [<span class="num">1.00</span>, <span class="num">0.90</span>, <span class="num">0.80</span>, <span class="num">0.95</span>, <span class="num">1.10</span>]
+amt = <span class="num">1000</span>
+shares = <span class="func">sum</span>(amt / n <span class="keyword">for</span> n <span class="keyword">in</span> nav)
+total  = <span class="func">len</span>(nav) * amt
+avg_cost = total / shares
+<span class="func">print</span>(<span class="func">f</span><span class="string">"累计份额: {shares:.2f}  单位成本: {avg_cost:.4f}"</span>)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"期末资产: {shares*nav[-1]:.2f}  收益: {shares*nav[-1]-total:.2f}"</span>)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.3 轮动投资策略：指数择时</h3>
+      <div class="model-card">
+        <h4>基于动量的宽基择时</h4>
+        <div class="model-desc">利用均线或动量信号，在沪深300、中证500、中证1000等宽基间动态切换，争取"涨得多时持有、转弱时减仓"。本质是趋势跟随，需注意换手成本与假突破。</div>
+        <div class="model-formula">
+动量信号: M = R_(t-1M) − R_(t-12M)
+若 M &gt; 0 持有; 否则切换至货币基金/债券ETF
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="rot_r"><span class="comment"># 双ETF动量轮动 - R实现</span>
+<span class="comment"># priceA/priceB 为两只ETF净值序列</span>
+momentum <span class="keyword">&lt;-</span> <span class="keyword">function</span>(p, win=<span class="num">20</span>) p[<span class="func">length</span>(p)] / p[<span class="func">length</span>(p)-win] - <span class="num">1</span>
+mA <span class="keyword">&lt;-</span> <span class="func">momentum</span>(priceA); mB <span class="keyword">&lt;-</span> <span class="func">momentum</span>(priceB)
+<span class="keyword">if</span> (mA &gt; mB &amp;&amp; mA &gt; <span class="num">0</span>) hold <span class="keyword">&lt;-</span> <span class="string">"ETF_A"</span>
+<span class="keyword">else if</span> (mB &gt; <span class="num">0</span>) hold <span class="keyword">&lt;-</span> <span class="string">"ETF_B"</span>
+<span class="keyword">else</span> hold <span class="keyword">&lt;-</span> <span class="string">"Cash"</span>
+<span class="func">cat</span>(<span class="string">"本期持仓:"</span>, hold, <span class="string">"\n"</span>)</div>
+        <div class="code-block" id="rot_py"><span class="comment"># 双ETF动量轮动 - Python实现</span>
+<span class="keyword">def</span> <span class="func">momentum</span>(p, win=<span class="num">20</span>):
+    <span class="keyword">return</span> p[-<span class="num">1</span>] / p[-win] - <span class="num">1</span>
+
+mA, mB = <span class="func">momentum</span>(priceA), <span class="func">momentum</span>(priceB)
+<span class="keyword">if</span> mA &gt; mB <span class="keyword">and</span> mA &gt; <span class="num">0</span>:  hold = <span class="string">"ETF_A"</span>
+<span class="keyword">elif</span> mB &gt; <span class="num">0</span>:              hold = <span class="string">"ETF_B"</span>
+<span class="keyword">else</span>:                    hold = <span class="string">"Cash"</span>
+<span class="func">print</span>(<span class="string">"本期持仓:"</span>, hold)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.4 轮动投资策略：风格配置</h3>
+      <div class="model-card">
+        <h4>大小盘风格轮动</h4>
+        <div class="model-desc">依据经济周期与流动性在沪深300（大盘）与中证1000（小盘）间轮动：流动性宽松、风险偏好高时偏中小盘；盈利驱动、防御期偏大盘。可用相对强弱比率作为信号。</div>
+        <div class="model-formula">
+风格比率 = 中证1000 / 沪深300
+比率上行 → 超配小盘; 比率下行 → 超配大盘
+        </div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.5 轮动投资策略：行业配置</h3>
+      <div class="model-card">
+        <h4>行业ETF轮动</h4>
+        <div class="model-desc">在芯片、证券、消费、医药等行业ETF间，按景气度、估值与动量进行轮动。适合对宏观与产业链有研究的投资者，弹性大但需严格控制回撤与拥挤度。</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.6 ETF期现联动策略</h3>
+      <div class="model-card">
+        <h4>① 保险策略：持有现货 + 买入认沽</h4>
+        <div class="model-desc">持有ETF现货的同时买入认沽期权，付出权利金为下行风险"买保险"，锁定最大亏损，上涨仍可享受收益。适合中长期持有的防御场景。</div>
+        <div class="model-formula">
+组合收益 = 现货收益 − 权利金
+最大亏损 = (建仓价 − 行权价) + 权利金
+到期损益 = max(行权价 − S_T, 0) + (S_T − S_0) − 权利金
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>② 备兑开仓：持有现货 + 卖出认购</h4>
+        <div class="model-desc">持有ETF并卖出虚值认购期权，赚取权利金增强收益；代价是上涨超过行权价后收益被"封顶"。适合震荡或温和上涨市，降低持仓成本。</div>
+        <div class="model-formula">
+组合收益 = 现货收益 + 权利金
+上行封顶价 = 行权价 + 建仓价 − 权利金
+到期损益 = min(S_T, K) − S_0 + 权利金
+        </div>
+      </div>
+      <div class="model-card">
+        <h4>③ 领口期权：现货 + 买认沽 + 卖认购</h4>
+        <div class="model-desc">同时买入认沽（保险）与卖出认购（抵消保费），将收益与亏损都限制在区间内，以较低成本实现保护。常用于机构持有的指数底仓管理。</div>
+        <div class="model-formula">
+下行保护价 = 认沽行权价
+上行封顶价 = 认购行权价
+净成本 ≈ 认沽权利金 − 认购权利金
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="collar_r"><span class="comment"># 领口策略到期损益 - R实现</span>
+S0 <span class="keyword">&lt;-</span> <span class="num">3.0</span>; Kp <span class="keyword">&lt;-</span> <span class="num">2.8</span>; Kc <span class="keyword">&lt;-</span> <span class="num">3.3</span>
+pc <span class="keyword">&lt;-</span> <span class="num">0.10</span>; cc <span class="keyword">&lt;-</span> <span class="num">0.08</span>
+ST <span class="keyword">&lt;-</span> <span class="func">seq</span>(<span class="num">2.2</span>, <span class="num">3.8</span>, <span class="num">0.05</span>)
+payoff <span class="keyword">&lt;-</span> <span class="func">pmin</span>(<span class="func">pmax</span>(ST, Kp), Kc) - S0 + (cc - pc)
+<span class="func">plot</span>(ST, payoff, type=<span class="string">"l"</span>, col=<span class="num">2</span>, xlab=<span class="string">"到期价"</span>, ylab=<span class="string">"损益"</span>,
+     main=<span class="string">"领口策略到期损益"</span>)</div>
+        <div class="code-block" id="collar_py"><span class="comment"># 领口策略到期损益 - Python实现</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np, matplotlib.pyplot <span class="keyword">as</span> plt
+S0, Kp, Kc = <span class="num">3.0</span>, <span class="num">2.8</span>, <span class="num">3.3</span>
+pc, cc = <span class="num">0.10</span>, <span class="num">0.08</span>
+ST = np.<span class="func">arange</span>(<span class="num">2.2</span>, <span class="num">3.8</span>, <span class="num">0.05</span>)
+payoff = np.<span class="func">minimum</span>(np.<span class="func">maximum</span>(ST, Kp), Kc) - S0 + (cc - pc)
+plt.<span class="func">plot</span>(ST, payoff, color=<span class="string">"green"</span>); plt.axhline(<span class="num">0</span>, color=<span class="string">"grey"</span>, lw=<span class="num">0.8</span>)
+plt.xlabel(<span class="string">"到期价"</span>); plt.ylabel(<span class="string">"损益"</span>); plt.title(<span class="string">"领口策略到期损益"</span>)
+plt.<span class="func">show</span>()</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.7 ETF的网格交易策略</h3>
+      <div class="model-card">
+        <h4>区间网格低买高卖</h4>
+        <div class="model-desc">在震荡区间内设定基准价与等距网格，价格下跌一格买入、上涨一格卖出，反复赚取波动收益。适合波动大、无明确趋势的ETF（如证券、芯片）。需防范单边破位风险。</div>
+        <div class="model-formula">
+网格价: P_i = P_base × (1 ± i × step)
+下跌触发买入, 上涨触发卖出, 每格固定份额
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="grid_r"><span class="comment"># 网格交易回测 - R实现</span>
+price <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="num">1.00</span>,<span class="num">0.95</span>,<span class="num">1.02</span>,<span class="num">0.98</span>,<span class="num">1.05</span>,<span class="num">1.00</span>)
+base <span class="keyword">&lt;-</span> <span class="num">1.0</span>; step <span class="keyword">&lt;-</span> <span class="num">0.05</span>; lot <span class="keyword">&lt;-</span> <span class="num">1000</span>
+pos <span class="keyword">&lt;-</span> <span class="num">0</span>; cash <span class="keyword">&lt;-</span> <span class="num">0</span>
+<span class="keyword">for</span> (p <span class="keyword">in</span> price) {
+  grid <span class="keyword">&lt;-</span> <span class="func">round</span>((p - base)/step)
+  <span class="keyword">if</span> (grid &lt;= <span class="num">0</span>) { pos <span class="keyword">&lt;-</span> pos + lot; cash <span class="keyword">&lt;-</span> cash - p*lot }
+  <span class="keyword">else</span> { sell <span class="keyword">&lt;-</span> <span class="func">min</span>(pos, lot); pos <span class="keyword">&lt;-</span> pos - sell; cash <span class="keyword">&lt;-</span> cash + p*sell }
+}
+<span class="func">cat</span>(<span class="string">"剩余持仓:"</span>, pos, <span class="string">" 现金:"</span>, <span class="func">round</span>(cash,<span class="num">2</span>), <span class="string">"\n"</span>)</div>
+        <div class="code-block" id="grid_py"><span class="comment"># 网格交易回测 - Python实现</span>
+price = [<span class="num">1.00</span>,<span class="num">0.95</span>,<span class="num">1.02</span>,<span class="num">0.98</span>,<span class="num">1.05</span>,<span class="num">1.00</span>]
+base, step, lot = <span class="num">1.0</span>, <span class="num">0.05</span>, <span class="num">1000</span>
+pos, cash = <span class="num">0</span>, <span class="num">0</span>
+<span class="keyword">for</span> p <span class="keyword">in</span> price:
+    grid = <span class="func">round</span>((p - base) / step)
+    <span class="keyword">if</span> grid &lt;= <span class="num">0</span>:
+        pos += lot; cash -= p * lot
+    <span class="keyword">else</span>:
+        sell = <span class="func">min</span>(pos, lot); pos -= sell; cash += p * sell
+<span class="func">print</span>(<span class="func">f</span><span class="string">"剩余持仓: {pos}  现金: {cash:.2f}"</span>)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.8 组合投资策略：大类资产</h3>
+      <div class="model-card">
+        <h4>股债商品多元配置</h4>
+        <div class="model-desc">用股票ETF、债券ETF、黄金ETF等构建多资产组合，利用低相关性降低波动。经典如"60/40"（股60、债40），或加入黄金/商品提升夏普比率。</div>
+        <div class="model-formula">
+组合收益 = Σ w_i × R_i
+组合波动 = √(w' Σ w)   (Σ为协方差矩阵)
+目标: 在给定风险下最大化收益 (有效前沿)
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="alloc_r"><span class="comment"># 等权大类资产配置 - R实现</span>
+w <span class="keyword">&lt;-</span> <span class="func">c</span>(股ETF=<span class="num">0.5</span>, 债ETF=<span class="num">0.3</span>, 黄金ETF=<span class="num">0.2</span>)
+ret <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="num">0.10</span>, <span class="num">0.04</span>, <span class="num">0.06</span>)
+vol <span class="keyword">&lt;-</span> <span class="func">c</span>(<span class="num">0.18</span>, <span class="num">0.05</span>, <span class="num">0.15</span>)
+<span class="func">cat</span>(<span class="string">"组合预期收益:"</span>, <span class="func">round</span>(<span class="func">sum</span>(w*ret),<span class="num">4</span>), <span class="string">"\n"</span>)</div>
+        <div class="code-block" id="alloc_py"><span class="comment"># 等权大类资产配置 - Python实现</span>
+w   = {<span class="string">"股ETF"</span>:<span class="num">0.5</span>, <span class="string">"债ETF"</span>:<span class="num">0.3</span>, <span class="string">"黄金ETF"</span>:<span class="num">0.2</span>}
+ret = {<span class="string">"股ETF"</span>:<span class="num">0.10</span>, <span class="string">"债ETF"</span>:<span class="num">0.04</span>, <span class="string">"黄金ETF"</span>:<span class="num">0.06</span>}
+port_ret = <span class="func">sum</span>(w[k]*ret[k] <span class="keyword">for</span> k <span class="keyword">in</span> w)
+<span class="func">print</span>(<span class="func">f</span><span class="string">"组合预期收益: {port_ret:.4f}"</span>)</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>4.9 组合投资策略：核心卫星</h3>
+      <div class="model-card">
+        <h4>核心宽基 + 卫星主题</h4>
+        <div class="model-desc">以沪深300/中证A50等宽基ETF作为"核心"（70%~80%）获取稳健Beta，以行业/主题/跨境ETF作为"卫星"（20%~30%）博取超额收益。兼顾稳定与弹性，是机构与个人通用的配置框架。</div>
+        <div class="model-formula">
+核心(70~80%): 沪深300 / 中证A50 ETF
+卫星(20~30%): 芯片 / 证券 / 黄金 / 恒生 ETF
+再平衡: 偏离阈值(如±5%)触发调仓
+        </div>
+        <div class="code-tabs">
+          <button class="code-tab active" onclick="switchCode(this,'r')">R</button>
+          <button class="code-tab" onclick="switchCode(this,'py')">Python</button>
+        </div>
+        <div class="code-block show" id="core_r"><span class="comment"># 核心卫星配置与再平衡 - R实现</span>
+core_w <span class="keyword">&lt;-</span> <span class="num">0.75</span>; sat_w <span class="keyword">&lt;-</span> <span class="num">0.25</span>
+port <span class="keyword">&lt;-</span> <span class="func">c</span>(核心=core_w, 卫星=sat_w)
+<span class="comment"># 偏离超过5%则再平衡</span>
+cur <span class="keyword">&lt;-</span> <span class="func">c</span>(核心=<span class="num">0.82</span>, 卫星=<span class="num">0.18</span>)
+<span class="keyword">if</span> (<span class="func">abs</span>(cur[<span class="string">"核心"</span>]-core_w) &gt; <span class="num">0.05</span>) <span class="func">cat</span>(<span class="string">"触发再平衡\n"</span>)
+<span class="keyword">else</span> <span class="func">cat</span>(<span class="string">"维持当前权重\n"</span>)</div>
+        <div class="code-block" id="core_py"><span class="comment"># 核心卫星配置与再平衡 - Python实现</span>
+core_w, sat_w = <span class="num">0.75</span>, <span class="num">0.25</span>
+target = {<span class="string">"核心"</span>:core_w, <span class="string">"卫星"</span>:sat_w}
+cur    = {<span class="string">"核心"</span>:<span class="num">0.82</span>, <span class="string">"卫星"</span>:<span class="num">0.18</span>}
+<span class="keyword">if</span> <span class="func">abs</span>(cur[<span class="string">"核心"</span>] - core_w) &gt; <span class="num">0.05</span>:
+    <span class="func">print</span>(<span class="string">"触发再平衡"</span>)
+<span class="keyword">else</span>:
+    <span class="func">print</span>(<span class="string">"维持当前权重"</span>)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 模块五：展业实务 ============ -->
+<div class="module" data-category="practice">
+  <div class="module-header" onclick="toggle(this)">
+    <div class="module-icon" style="background:linear-gradient(135deg,#a78bfa,#8b5cf6);">🤝</div>
+    <div>
+      <div class="module-title">五、展业实务</div>
+      <div class="module-subtitle">基金投顾、ETF生态圈与客户服务</div>
+    </div>
+    <span class="module-badge badge-step">STEP 5</span>
+  </div>
+  <div class="module-content">
+    <div class="knowledge-section">
+      <h3>5.1 基金投顾 — 大变革 — 大机遇</h3>
+      <div class="model-card">
+        <h4>从卖方销售到买方投顾</h4>
+        <div class="model-desc">基金投顾试点推动行业从"赚申赎佣金"转向"以客户资产规模与收益为中心"的买方模式。ETF因费率低、透明、可配置，成为投顾组合的核心底层资产，为投顾机构带来巨大的产品化与个性化配置机遇。</div>
+        <table class="model-table">
+          <tr><th>维度</th><th>传统代销</th><th>基金投顾</th></tr>
+          <tr><td>收费</td><td>申赎/尾随佣金</td><td>按资产规模收取投顾费</td></tr>
+          <tr><td>立场</td><td>卖方（卖产品）</td><td>买方（管账户）</td></tr>
+          <tr><td>工具</td><td>单只基金</td><td>ETF组合+再平衡</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>5.2 投顾眼中的ETF生态圈</h3>
+      <div class="model-card">
+        <h4>多方共建的ETF生态</h4>
+        <div class="model-desc">ETF生态由发行人（基金公司）、做市商（提供流动性）、交易所（交易场所）、销售/投顾渠道（触达客户）、投资者（资金方）共同构成。优秀的ETF策略师需理解各角色诉求：发行人重规模与跟踪精度，做市商重价差与库存，投顾重客户体验与组合效果。</div>
+      </div>
+    </div>
+
+    <div class="knowledge-section">
+      <h3>5.3 做好客户的"翻译官"</h3>
+      <div class="model-card">
+        <h4>把专业翻译成需求</h4>
+        <div class="model-desc">展业的核心是"翻译"：将IOPV、折溢价、跟踪误差、久期、行业暴露等专业术语，转化为客户能理解的风险与收益语言；通过KYC（了解客户）匹配适当产品，用通俗类比解释策略逻辑，建立长期信任。技术能力 × 沟通能力的结合，才是专业的ETF策略师。</div>
+        <div class="model-formula">
+专业术语 → 客户语言:
+"跟踪误差0.3%" → "和指数走势几乎同步"
+"备兑开仓" → "拿分红、小涨更划算、大涨就少赚"
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 成长路线图 ============ -->
+<div class="roadmap">
+  <h2 style="color:var(--accent); text-align:center; margin-bottom:30px; font-size:1.5em;">ETF策略师 · 五阶成长路线图</h2>
+  <div class="roadmap-line">
+    <div class="roadmap-stage">
+      <div class="stage-num">1</div>
+      <h4>认知指数</h4>
+      <ul>
+        <li>理解指数编制</li>
+        <li>指数投资逻辑</li>
+        <li>完全/抽样复制</li>
+      </ul>
+    </div>
+    <div class="roadmap-stage">
+      <div class="stage-num">2</div>
+      <h4>走进ETF</h4>
+      <ul>
+        <li>ETF优势与历史</li>
+        <li>开发全流程</li>
+        <li>IOPV与一二级交易</li>
+      </ul>
+    </div>
+    <div class="roadmap-stage">
+      <div class="stage-num">3</div>
+      <h4>产品图谱</h4>
+      <ul>
+        <li>宽基/跨境</li>
+        <li>行业/主题</li>
+        <li>商品ETF</li>
+      </ul>
+    </div>
+    <div class="roadmap-stage">
+      <div class="stage-num">4</div>
+      <h4>策略体系</h4>
+      <ul>
+        <li>持有/定投/轮动</li>
+        <li>期现联动/网格</li>
+        <li>大类/核心卫星</li>
+      </ul>
+    </div>
+    <div class="roadmap-stage">
+      <div class="stage-num">5</div>
+      <h4>展业实务</h4>
+      <ul>
+        <li>基金投顾机遇</li>
+        <li>ETF生态圈</li>
+        <li>客户翻译官</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="no-result" id="no-result"><span>🔍</span>未找到匹配的内容，换个关键词试试吧</div>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+  <p>ETF策略师成长之路 &mdash; 指数化投资时代的能力地图</p>
+  <p style="margin-top:8px; color:var(--text-dim);">5 大成长阶段 / 26 只重点ETF / 9 类核心策略</p>
+</footer>
+
+<script>
+// 模块折叠/展开
+function toggle(header) {
+  const content = header.nextElementSibling;
+  content.classList.toggle('show');
+}
+
+// 导航筛选
+function filter(category) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.module').forEach(m => {
+    if (category === 'all') m.style.display = 'block';
+    else m.style.display = m.dataset.category === category ? 'block' : 'none';
+  });
+}
+
+// 代码切换
+function switchCode(tab, lang) {
+  const container = tab.closest('.model-card');
+  container.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  container.querySelectorAll('.code-block').forEach(b => b.classList.remove('show'));
+  tab.classList.add('active');
+  const blocks = container.querySelectorAll('.code-block');
+  blocks.forEach(b => { if (b.id.endsWith('_' + lang)) b.classList.add('show'); });
+}
+
+// ============ 增强功能 ============
+window.addEventListener('scroll', function(){
+  var doc = document.documentElement;
+  var h = doc.scrollHeight - window.innerHeight;
+  var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+  var bar = document.getElementById('progress-bar');
+  if(bar) bar.style.width = pct + '%';
+  var btt = document.getElementById('back-to-top');
+  if(btt) btt.classList.toggle('show', window.scrollY > 400);
+});
+
+(function(){
+  var btt = document.getElementById('back-to-top');
+  if(btt) btt.addEventListener('click', function(){
+    window.scrollTo({ top:0, behavior:'smooth' });
+  });
+})();
+
+(function(){
+  var box = document.getElementById('search-box');
+  if(!box) return;
+  box.addEventListener('input', function(){
+    var q = this.value.trim().toLowerCase();
+    var modules = document.querySelectorAll('.module');
+    var totalVisible = 0;
+    modules.forEach(function(m){
+      var content = m.querySelector('.module-content');
+      var cards = m.querySelectorAll('.model-card');
+      var anyVisible = false;
+      cards.forEach(function(c){
+        var match = q === '' ? true : c.textContent.toLowerCase().indexOf(q) > -1;
+        c.style.display = match ? '' : 'none';
+        if(match) anyVisible = true;
+      });
+      if(q !== ''){ content.classList.add('show'); } else { content.classList.remove('show'); }
+      m.style.display = (q === '' || anyVisible) ? '' : 'none';
+      if(anyVisible) totalVisible++;
+    });
+    document.querySelectorAll('.roadmap, .roadmap-cards').forEach(function(el){
+      el.style.display = q === '' ? '' : 'none';
+    });
+    var nr = document.getElementById('no-result');
+    if(nr) nr.classList.toggle('show', q !== '' && totalVisible === 0);
+  });
+})();
+</script>
+
+<button id="back-to-top" title="返回顶部">↑</button>
+
+</body>
+</html>
