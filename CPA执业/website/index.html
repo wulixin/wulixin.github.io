@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智衡注册会计师工作室 — 数智时代的财税管家</title>
+<meta name="description" content="智衡注册会计师工作室，依托智能财税系统，提供代理记账、税务筹划、审计鉴证、资本运作等全层级服务。金税四期时代的合规护航者。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%234F46E5'/><text x='50' y='70' font-size='54' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>智</text></svg>">
+<style>
+:root{
+  --primary:#4F46E5;--primary-dark:#3730A3;--primary-light:#EEF2FF;
+  --accent:#06B6D4;--accent-light:#ECFEFF;
+  --dark:#0F172A;--dark2:#1E1B4B;
+  --text:#1E293B;--text-gray:#64748B;--text-light:#94A3B8;
+  --bg:#F8FAFC;--bg2:#F1F5F9;--card:#FFFFFF;
+  --border:#E2E8F0;
+  --success:#10B981;--warning:#F59E0B;--danger:#EF4444;
+  --t1:#D97706;--t1-bg:#FFFBEB;--t2:#059669;--t2-bg:#ECFDF5;
+  --t3:#2563EB;--t3-bg:#EFF6FF;--t4:#7C3AED;--t4-bg:#F5F3FF;
+  --radius:16px;--radius-sm:10px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-lg:0 10px 40px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);
+  --maxw:1140px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%}
+.container{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+/* === NAV === */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:box-shadow .3s}
+.nav.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.06)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:700;color:var(--dark)}
+.logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700}
+.logo span{color:var(--primary)}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{font-size:14px;color:var(--text-gray);font-weight:500;transition:color .2s;position:relative}
+.nav-links a:hover,.nav-links a.active{color:var(--primary)}
+.nav-links a.active::after{content:'';position:absolute;bottom:-6px;left:0;right:0;height:2px;background:var(--primary);border-radius:2px}
+.nav-cta{padding:8px 20px;background:var(--primary);color:#fff;border-radius:8px;font-size:14px;font-weight:600;transition:all .2s}
+.nav-cta:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.menu-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px}
+.menu-toggle span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:.3s}
+.menu-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.menu-toggle.open span:nth-child(2){opacity:0}
+.menu-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* === HERO === */
+.hero{min-height:100vh;background:linear-gradient(135deg,var(--dark) 0%,var(--dark2) 50%,#1a1340 100%);display:flex;align-items:center;padding:100px 0 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+.hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(79,70,229,.25),transparent 65%);top:-100px;right:-100px;pointer-events:none}
+.hero-glow2{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(6,182,212,.15),transparent 65%);bottom:-50px;left:-50px;pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(79,70,229,.15);border:1px solid rgba(79,70,229,.3);border-radius:20px;font-size:13px;color:#A5B4FC;margin-bottom:24px}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+.hero h1{font-size:44px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:16px}
+.hero h1 .gradient{background:linear-gradient(135deg,#818CF8,#06B6D4);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:17px;color:rgba(255,255,255,.65);margin-bottom:32px;max-width:480px;line-height:1.8}
+.hero-cta{display:flex;gap:16px;margin-bottom:40px}
+.btn-primary{padding:14px 32px;background:linear-gradient(135deg,var(--primary),#6366F1);color:#fff;border-radius:10px;font-size:15px;font-weight:600;border:none;cursor:pointer;transition:all .25s;box-shadow:0 4px 20px rgba(79,70,229,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(79,70,229,.5)}
+.btn-secondary{padding:14px 32px;background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.2);border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s}
+.btn-secondary:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.35)}
+.hero-trust{display:flex;gap:28px;flex-wrap:wrap}
+.hero-trust-item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,.5)}
+.hero-trust-item svg{width:16px;height:16px;color:var(--accent)}
+
+/* === DASHBOARD MOCKUP === */
+.dashboard{background:#fff;border-radius:20px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;animation:float 6s ease-in-out infinite}
+.dashboard::before{content:'';position:absolute;inset:-30px;background:radial-gradient(circle,rgba(99,102,241,.2),transparent 60%);border-radius:30px;z-index:-1}
+.dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.dash-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--dark)}
+.dash-title svg{width:18px;height:18px;color:var(--primary)}
+.dash-live{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--success);background:#ECFDF5;padding:4px 10px;border-radius:20px;font-weight:600}
+.dash-live .dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
+.dash-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.dash-metric{background:var(--bg);border-radius:12px;padding:14px}
+.dash-metric .label{font-size:11px;color:var(--text-gray);margin-bottom:6px}
+.dash-metric .value{font-size:20px;font-weight:700;color:var(--dark)}
+.dash-metric .trend{font-size:11px;margin-top:4px;display:flex;align-items:center;gap:3px}
+.dash-metric .trend.up{color:var(--success)}
+.dash-metric .trend.down{color:var(--success)}
+.dash-metric .trend.neutral{color:var(--text-light)}
+.dash-chart{margin-bottom:16px}
+.dash-chart-title{font-size:12px;color:var(--text-gray);margin-bottom:10px}
+.dash-bars{display:flex;align-items:flex-end;gap:6px;height:80px}
+.dash-bar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--primary),#818CF8);opacity:.7;transition:opacity .3s}
+.dash-bar:last-child{opacity:1;background:linear-gradient(180deg,var(--accent),#67E8F9)}
+.dash-bars:hover .dash-bar{opacity:1}
+.dash-alerts{border-top:1px solid var(--border);padding-top:14px}
+.dash-alert{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:13px}
+.dash-alert-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.dash-alert-icon.warn{background:#FEF3C7;color:var(--warning)}
+.dash-alert-icon.info{background:var(--primary-light);color:var(--primary)}
+.dash-alert-icon.ok{background:#ECFDF5;color:var(--success)}
+.dash-alert-text{color:var(--text-gray)}
+.dash-alert-text strong{color:var(--text)}
+
+/* === SECTIONS === */
+.section{padding:80px 0}
+.section-head{text-align:center;max-width:680px;margin:0 auto 56px}
+.section-tag{display:inline-block;padding:4px 14px;background:var(--primary-light);color:var(--primary);border-radius:20px;font-size:13px;font-weight:600;margin-bottom:16px}
+.section-head h2{font-size:32px;font-weight:700;color:var(--dark);margin-bottom:12px;line-height:1.4}
+.section-head p{font-size:16px;color:var(--text-gray);line-height:1.7}
+
+/* === TRUST BAR === */
+.trust-bar{background:var(--card);border-bottom:1px solid var(--border);padding:24px 0}
+.trust-inner{display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:24px}
+.trust-item{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-gray)}
+.trust-item svg{width:20px;height:20px;color:var(--primary)}
+
+/* === SERVICES === */
+.services-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.service-card{background:var(--card);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
+.service-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.service-card.t1::before{background:var(--t1)}.service-card.t2::before{background:var(--t2)}
+.service-card.t3::before{background:var(--t3)}.service-card.t4::before{background:var(--t4)}
+.service-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.service-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.service-icon svg{width:24px;height:24px}
+.service-card.t1 .service-icon{background:var(--t1-bg);color:var(--t1)}
+.service-card.t2 .service-icon{background:var(--t2-bg);color:var(--t2)}
+.service-card.t3 .service-icon{background:var(--t3-bg);color:var(--t3)}
+.service-card.t4 .service-icon{background:var(--t4-bg);color:var(--t4)}
+.service-card h3{font-size:19px;font-weight:700;color:var(--dark);margin-bottom:8px}
+.service-card .tier-tag{font-size:12px;color:var(--text-light);margin-bottom:16px}
+.service-list{list-style:none;padding:0}
+.service-list li{font-size:14px;color:var(--text-gray);padding:5px 0;padding-left:22px;position:relative}
+.service-list li::before{content:'';position:absolute;left:0;top:12px;width:6px;height:6px;border-radius:50%;background:var(--primary);opacity:.5}
+.service-card.t1 .service-list li::before{background:var(--t1)}
+.service-card.t2 .service-list li::before{background:var(--t2)}
+.service-card.t3 .service-list li::before{background:var(--t3)}
+.service-card.t4 .service-list li::before{background:var(--t4)}
+.service-price{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-size:13px;color:var(--text-light)}
+.service-price strong{font-size:16px;color:var(--dark)}
+
+/* === SMART FEATURES === */
+.smart{background:var(--dark);position:relative;overflow:hidden}
+.smart::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:48px 48px}
+.smart .section-head h2{color:#fff}
+.smart .section-head p{color:rgba(255,255,255,.5)}
+.smart .section-tag{background:rgba(79,70,229,.2);color:#A5B4FC}
+.smart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative;z-index:1}
+.smart-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:28px;transition:all .3s;backdrop-filter:blur(10px)}
+.smart-card:hover{background:rgba(255,255,255,.08);border-color:rgba(79,70,229,.3);transform:translateY(-4px)}
+.smart-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(79,70,229,.3),rgba(6,182,212,.2));display:flex;align-items:center;justify-content:center;margin-bottom:18px}
+.smart-icon svg{width:22px;height:22px;color:#818CF8}
+.smart-card h3{font-size:17px;font-weight:600;color:#fff;margin-bottom:8px}
+.smart-card p{font-size:14px;color:rgba(255,255,255,.5);line-height:1.7}
+
+/* === WHY US === */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.why-card{background:var(--card);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s;text-align:center}
+.why-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.why-icon{width:52px;height:52px;border-radius:14px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.why-icon svg{width:26px;height:26px;color:var(--primary)}
+.why-card h3{font-size:17px;font-weight:700;color:var(--dark);margin-bottom:8px}
+.why-card p{font-size:14px;color:var(--text-gray);line-height:1.7}
+
+/* === PROCESS === */
+.process-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.process-bar::before{content:'';position:absolute;top:32px;left:12.5%;right:12.5%;height:2px;background:var(--border);z-index:0}
+.process-step{text-align:center;position:relative;z-index:1;padding:0 12px}
+.process-num{width:64px;height:64px;border-radius:50%;background:var(--card);border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:20px;font-weight:700;color:var(--primary);transition:all .3s}
+.process-step:hover .process-num{background:var(--primary);color:#fff;transform:scale(1.05)}
+.process-step h4{font-size:16px;font-weight:600;color:var(--dark);margin-bottom:6px}
+.process-step p{font-size:13px;color:var(--text-gray)}
+
+/* === PRICING === */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch}
+.price-card{background:var(--card);border-radius:var(--radius);padding:36px 32px;box-shadow:var(--shadow);border:1px solid var(--border);transition:all .3s;position:relative;display:flex;flex-direction:column}
+.price-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.price-card.featured{border:2px solid var(--primary);box-shadow:0 10px 40px rgba(79,70,229,.12)}
+.price-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:12px;font-weight:600;padding:4px 16px;border-radius:20px}
+.price-card h3{font-size:18px;font-weight:700;color:var(--dark);margin-bottom:6px}
+.price-card .price-desc{font-size:13px;color:var(--text-light);margin-bottom:20px}
+.price-amount{font-size:36px;font-weight:700;color:var(--dark);margin-bottom:4px}
+.price-amount .unit{font-size:14px;font-weight:400;color:var(--text-gray)}
+.price-period{font-size:13px;color:var(--text-light);margin-bottom:24px}
+.price-features{list-style:none;padding:0;margin-bottom:28px;flex:1}
+.price-features li{font-size:14px;color:var(--text-gray);padding:7px 0;padding-left:26px;position:relative}
+.price-features li::before{content:'';position:absolute;left:0;top:11px;width:16px;height:16px;border-radius:50%;background:var(--primary-light)}
+.price-features li::after{content:'';position:absolute;left:5px;top:15px;width:6px;height:3px;border-left:2px solid var(--primary);border-bottom:2px solid var(--primary);transform:rotate(-45deg)}
+.price-btn{display:block;text-align:center;padding:12px;border-radius:10px;font-size:15px;font-weight:600;transition:all .2s;cursor:pointer}
+.price-card:not(.featured) .price-btn{background:var(--bg2);color:var(--text)}
+.price-card:not(.featured) .price-btn:hover{background:var(--primary-light);color:var(--primary)}
+.price-card.featured .price-btn{background:var(--primary);color:#fff}
+.price-card.featured .price-btn:hover{background:var(--primary-dark)}
+
+/* === FAQ === */
+.faq-list{max-width:760px;margin:0 auto}
+.faq-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:12px;overflow:hidden;transition:all .2s}
+.faq-item:hover{border-color:var(--primary)}
+.faq-q{padding:20px 24px;font-size:15px;font-weight:600;color:var(--dark);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.faq-q::after{content:'+';font-size:22px;color:var(--primary);transition:transform .3s;font-weight:300}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-item.open .faq-a{max-height:300px}
+.faq-a-inner{padding:0 24px 20px;font-size:14px;color:var(--text-gray);line-height:1.8}
+
+/* === CONTACT === */
+.contact{background:linear-gradient(135deg,var(--dark),var(--dark2));position:relative;overflow:hidden}
+.contact::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:48px 48px}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;position:relative;z-index:1}
+.contact-info h2{font-size:30px;font-weight:700;color:#fff;margin-bottom:16px}
+.contact-info p{font-size:16px;color:rgba(255,255,255,.5);margin-bottom:32px;line-height:1.8}
+.contact-item{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.contact-item-icon{width:44px;height:44px;border-radius:12px;background:rgba(79,70,229,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-item-icon svg{width:20px;height:20px;color:#818CF8}
+.contact-item .label{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:2px}
+.contact-item .value{font-size:15px;color:#fff}
+.contact-form{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:32px;backdrop-filter:blur(10px)}
+.contact-form h3{font-size:20px;font-weight:600;color:#fff;margin-bottom:24px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;color:rgba(255,255,255,.6);margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;transition:all .2s}
+.form-group input::placeholder,.form-group textarea::placeholder{color:rgba(255,255,255,.3)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);background:rgba(255,255,255,.08)}
+.form-group select option{background:var(--dark)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-submit{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),#6366F1);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:8px}
+.form-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(79,70,229,.4)}
+.form-success{display:none;text-align:center;padding:20px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:10px;color:#6EE7B7;font-size:14px;margin-top:16px}
+.form-success.show{display:block}
+
+/* === FOOTER === */
+.footer{background:#080816;color:rgba(255,255,255,.4);padding:48px 0 24px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:32px}
+.footer-brand{font-size:18px;font-weight:700;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.footer-brand .logo-icon{width:32px;height:32px;border-radius:8px}
+.footer p{font-size:13px;line-height:1.8;margin-bottom:16px}
+.footer h4{font-size:14px;color:#fff;margin-bottom:16px;font-weight:600}
+.footer ul{list-style:none}
+.footer ul li{padding:4px 0}
+.footer ul li a{font-size:13px;color:rgba(255,255,255,.4);transition:color .2s}
+.footer ul li a:hover{color:var(--accent)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:20px;text-align:center;font-size:12px}
+
+/* === BACK TO TOP === */
+.back-top{position:fixed;bottom:32px;right:32px;width:44px;height:44px;border-radius:12px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;z-index:999;box-shadow:0 4px 20px rgba(79,70,229,.3)}
+.back-top.show{opacity:1;pointer-events:auto}
+.back-top:hover{background:var(--primary-dark);transform:translateY(-2px)}
+.back-top svg{width:20px;height:20px}
+
+/* === ANIMATIONS === */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* === RESPONSIVE === */
+@media(max-width:900px){
+  .hero-grid,.contact-grid{grid-template-columns:1fr;gap:40px}
+  .services-grid,.smart-grid,.why-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}
+  .process-bar{grid-template-columns:1fr 1fr;gap:32px 0}
+  .process-bar::before{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:24px}
+  .hero h1{font-size:32px}
+  .section-head h2{font-size:26px}
+  .nav-links{display:none;position:fixed;top:64px;left:0;right:0;background:#fff;flex-direction:column;padding:20px 24px;gap:16px;border-bottom:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.08)}
+  .nav-links.show{display:flex}
+  .menu-toggle{display:flex}
+  .nav-cta{display:none}
+  .form-row{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .smart-grid{grid-template-columns:1fr}
+  .process-bar{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .hero{padding:90px 0 40px}
+  .hero h1{font-size:26px}
+  .section{padding:60px 0}
+  .dash-metrics{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="logo">
+      <div class="logo-icon">智</div>
+      智衡<span>财税</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#services" class="nav-link">服务体系</a>
+      <a href="#smart" class="nav-link">数智能力</a>
+      <a href="#why" class="nav-link">核心优势</a>
+      <a href="#pricing" class="nav-link">定价方案</a>
+      <a href="#faq" class="nav-link">常见问题</a>
+      <a href="#contact" class="nav-link">联系我们</a>
+    </div>
+    <a href="#contact" class="nav-cta">免费咨询</a>
+    <div class="menu-toggle" id="menuToggle">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          金税四期 · 全电发票 · 数智财税
+        </div>
+        <h1>让财税成为<br><span class="gradient" id="typing">你的竞争力</span></h1>
+        <p class="hero-sub">智衡注册会计师工作室，依托智能财税系统，从基础合规到资本运作，为您提供四层全栈式财税服务。不止帮您报税，更帮您省钱、决策、增长。</p>
+        <div class="hero-cta">
+          <a href="#contact" class="btn-primary">免费财税诊断</a>
+          <a href="#services" class="btn-secondary">了解服务</a>
+        </div>
+        <div class="hero-trust">
+          <div class="hero-trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            CPA执业资质
+          </div>
+          <div class="hero-trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            数据加密保护
+          </div>
+          <div class="hero-trust-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            24小时响应
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="dashboard">
+          <div class="dash-header">
+            <div class="dash-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M9 17V9m4 8V5m4 12v-8"/></svg>
+              智能财税看板
+            </div>
+            <div class="dash-live"><span class="dot"></span>实时</div>
+          </div>
+          <div class="dash-metrics">
+            <div class="dash-metric">
+              <div class="label">本月营收</div>
+              <div class="value">128.5<span style="font-size:13px;color:var(--text-gray)">万</span></div>
+              <div class="trend up">↑ 12.3% 环比</div>
+            </div>
+            <div class="dash-metric">
+              <div class="label">综合税负率</div>
+              <div class="value">3.2<span style="font-size:13px;color:var(--text-gray)">%</span></div>
+              <div class="trend down">↓ 0.5% 优化</div>
+            </div>
+            <div class="dash-metric">
+              <div class="label">风险等级</div>
+              <div class="value" style="color:var(--success);font-size:16px">低风险</div>
+              <div class="trend neutral">通过 3 项检查</div>
+            </div>
+          </div>
+          <div class="dash-chart">
+            <div class="dash-chart-title">近6月营收趋势</div>
+            <div class="dash-bars">
+              <div class="dash-bar" style="height:45%"></div>
+              <div class="dash-bar" style="height:58%"></div>
+              <div class="dash-bar" style="height:50%"></div>
+              <div class="dash-bar" style="height:70%"></div>
+              <div class="dash-bar" style="height:82%"></div>
+              <div class="dash-bar" style="height:95%"></div>
+            </div>
+          </div>
+          <div class="dash-alerts">
+            <div class="dash-alert">
+              <div class="dash-alert-icon warn">!</div>
+              <div class="dash-alert-text"><strong>增值税申报</strong>截止还剩 3 天</div>
+            </div>
+            <div class="dash-alert">
+              <div class="dash-alert-icon info">★</div>
+              <div class="dash-alert-text">发现 <strong>2 项</strong>可享受的税收优惠</div>
+            </div>
+            <div class="dash-alert">
+              <div class="dash-alert-icon ok">✓</div>
+              <div class="dash-alert-text"><strong>3 张发票</strong>已完成智能认证</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="container">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        中国注册会计师协会会员
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        职业责任保险投保
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        金蝶/用友认证服务商
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+        全电发票系统对接
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="section-head fade-in">
+      <span class="section-tag">服务体系</span>
+      <h2>四层业务架构，覆盖企业全生命周期</h2>
+      <p>从创业第一天的工商注册，到上市前的财务规范，再到并购重组的战略支持 — 每个阶段都有对应的专业服务</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card t1 fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        </div>
+        <h3>基础合规服务</h3>
+        <div class="tier-tag">第一层 · 现金流引擎</div>
+        <ul class="service-list">
+          <li>代理记账（小规模 / 一般纳税人）</li>
+          <li>各税种申报与汇算清缴</li>
+          <li>工商注册、变更、注销代理</li>
+          <li>社保公积金代缴</li>
+          <li>发票管理与全电发票推广</li>
+          <li>出口退税代理</li>
+        </ul>
+        <div class="service-price">月费 <strong>200-2000 元</strong></div>
+      </div>
+      <div class="service-card t2 fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3>鉴证与审计服务</h3>
+        <div class="tier-tag">第二层 · 专业壁垒</div>
+        <ul class="service-list">
+          <li>年度财务报表审计</li>
+          <li>财务报表审阅（有限保证）</li>
+          <li>专项审计（研发费用、离任等）</li>
+          <li>验资报告</li>
+          <li>内部控制审计</li>
+          <li>财务尽职调查</li>
+          <li>高新技术企业认定审计</li>
+        </ul>
+        <div class="service-price">单次 <strong>3,000 - 500,000 元</strong></div>
+      </div>
+      <div class="service-card t3 fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6M3 3v18h18"/></svg>
+        </div>
+        <h3>财税咨询与筹划</h3>
+        <div class="tier-tag">第三层 · 利润创造者</div>
+        <ul class="service-list">
+          <li>税务筹划与合规优化</li>
+          <li>内控体系设计与搭建</li>
+          <li>财务管理咨询与流程优化</li>
+          <li>股权架构设计与ESOP</li>
+          <li>薪酬税务优化</li>
+          <li>全面预算管理体系</li>
+          <li>常年财税顾问服务</li>
+        </ul>
+        <div class="service-price">按价值定价 <strong>1 - 15 万元</strong></div>
+      </div>
+      <div class="service-card t4 fade-in">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        </div>
+        <h3>资本运作与战略</h3>
+        <div class="tier-tag">第四层 · 战略伙伴</div>
+        <ul class="service-list">
+          <li>并购重组财务顾问</li>
+          <li>IPO / 新三板挂牌辅导</li>
+          <li>投融资财务支持与模型搭建</li>
+          <li>企业估值服务</li>
+          <li>ESG报告鉴证</li>
+          <li>CFO外包服务</li>
+          <li>跨境税务咨询</li>
+        </ul>
+        <div class="service-price">项目报价 <strong>10 - 500 万元</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SMART FEATURES -->
+<section class="section smart" id="smart">
+  <div class="container">
+    <div class="section-head fade-in">
+      <span class="section-tag">数智化能力</span>
+      <h2>从数字化到数智化，重新定义财税服务</h2>
+      <p>不只是用软件做账，而是用智能技术帮你管账、控险、省钱、决策 — 让数据成为你的竞争优势</p>
+    </div>
+    <div class="smart-grid">
+      <div class="smart-card fade-in">
+        <div class="smart-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M9 17V9m4 8V5m4 12v-8"/></svg>
+        </div>
+        <h3>智能财税看板</h3>
+        <p>营收、成本、税负、现金流实时可视化。从"事后看账"升级为"实时管账"，老板随时随地掌握财务状况。</p>
+      </div>
+      <div class="smart-card fade-in">
+        <div class="smart-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <h3>AI 风险预警</h3>
+        <p>智能监控税负率波动、发票异常、申报遗漏等风险指标，在问题发生前主动预警。从"被动罚款"变"主动防范"。</p>
+      </div>
+      <div class="smart-card fade-in">
+        <div class="smart-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        </div>
+        <h3>政策智能匹配</h3>
+        <p>建立税收优惠数据库，自动匹配企业可享受的政策红利 — 研发加计扣除、留抵退税、六税两费减免，一分不漏。</p>
+      </div>
+      <div class="smart-card fade-in">
+        <div class="smart-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        <h3>数字票据管理</h3>
+        <p>OCR拍照识别、智能归类、电子归档。客户拍照即可上传票据，系统自动识别记账，大幅降低配合成本。</p>
+      </div>
+      <div class="smart-card fade-in">
+        <div class="smart-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+        </div>
+        <h3>移动端自助服务</h3>
+        <p>小程序/APP随时查看报表进度、下载财务数据、提交票据、在线咨询。7×24小时在线，不用等电话。</p>
+      </div>
+      <div class="smart-card fade-in">
+        <div class="smart-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+        </div>
+        <h3>行业对标分析</h3>
+        <p>利用脱敏行业数据，生成同行业财务指标对标报告。让企业知道自己在行业中处于什么水平，知己知彼。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="section" id="why">
+  <div class="container">
+    <div class="section-head fade-in">
+      <span class="section-tag">核心优势</span>
+      <h2>为什么选择智衡</h2>
+      <p>专业能力让你被需要，服务体验让你被信赖 — 双重锁定，不可替代</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card fade-in">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <h3>数智化服务体验</h3>
+        <p>智能看板、风险预警、政策匹配 — 用技术让服务可感知、可量化，告别"黑箱式"代账。</p>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3>24小时响应</h3>
+        <p>专属对接人 + 在线自助平台，问题不隔夜。紧急事项30分钟内响应，日常咨询2小时内回复。</p>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5"/></svg>
+        </div>
+        <h3>四层全栈服务</h3>
+        <p>从代账到IPO辅导，一个伙伴搞定所有财税需求。不需要换供应商，降低沟通成本和信任成本。</p>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3>透明化定价</h3>
+        <p>公开报价、套餐清晰、无隐形收费。每月发送服务清单，清楚知道每一分钱花在哪里。</p>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <h3>行业深耕</h3>
+        <p>按行业分组服务 — 制造业、科技、外贸、建安，懂你的业务模式，才能给出真正有用的建议。</p>
+      </div>
+      <div class="why-card fade-in">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
+        </div>
+        <h3>价值创造导向</h3>
+        <p>不只是帮你合规，更帮你省钱、赚钱。省下的税就是利润，发现的风险就是财富。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section" id="process" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-head fade-in">
+      <span class="section-tag">服务流程</span>
+      <h2>四步开启专业财税服务</h2>
+      <p>简单透明的合作流程，最快当天即可开始服务</p>
+    </div>
+    <div class="process-bar">
+      <div class="process-step fade-in">
+        <div class="process-num">1</div>
+        <h4>免费咨询</h4>
+        <p>了解需求，评估现状，初步沟通服务方案</p>
+      </div>
+      <div class="process-step fade-in">
+        <div class="process-num">2</div>
+        <h4>方案设计</h4>
+        <p>定制服务方案，明确范围、周期和报价</p>
+      </div>
+      <div class="process-step fade-in">
+        <div class="process-num">3</div>
+        <h4>签约执行</h4>
+        <p>签订协议，分配专属团队，立即开始服务</p>
+      </div>
+      <div class="process-step fade-in">
+        <div class="process-num">4</div>
+        <h4>持续优化</h4>
+        <p>定期复盘，主动预警，随业务发展升级服务</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-head fade-in">
+      <span class="section-tag">定价方案</span>
+      <h2>透明定价，按需选择</h2>
+      <p>三档套餐覆盖不同发展阶段，无隐形收费，年付更优惠</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card fade-in">
+        <h3>创业起步套餐</h3>
+        <div class="price-desc">适合个体户、新注册公司</div>
+        <div class="price-amount">3,600<span class="unit"> 元/年</span></div>
+        <div class="price-period">月付 360 元/月</div>
+        <ul class="price-features">
+          <li>代理记账（小规模）</li>
+          <li>税务申报（各税种）</li>
+          <li>工商年度报告公示</li>
+          <li>日常咨询（3次/月）</li>
+          <li>注册免费赠送</li>
+          <li>智能看板基础版</li>
+        </ul>
+        <a href="#contact" class="price-btn">选择此方案</a>
+      </div>
+      <div class="price-card featured fade-in">
+        <div class="price-badge">推荐</div>
+        <h3>成长护航套餐</h3>
+        <div class="price-desc">适合一般纳税人中小企业</div>
+        <div class="price-amount">12,000<span class="unit"> 元/年</span></div>
+        <div class="price-period">年付 85 折优惠</div>
+        <ul class="price-features">
+          <li>全套代理记账 + 税务申报</li>
+          <li>年度汇算清缴</li>
+          <li>审计报告 1 份</li>
+          <li>税务筹划建议书</li>
+          <li>日常咨询（不限次）</li>
+          <li>智能看板专业版</li>
+          <li>风险预警系统</li>
+          <li>政策优惠推送</li>
+        </ul>
+        <a href="#contact" class="price-btn">选择此方案</a>
+      </div>
+      <div class="price-card fade-in">
+        <h3>战略伙伴套餐</h3>
+        <div class="price-desc">适合年营收 5000 万+ 企业</div>
+        <div class="price-amount">5-20<span class="unit"> 万/年</span></div>
+        <div class="price-period">按企业规模定制</div>
+        <ul class="price-features">
+          <li>年度审计 + 内控评估</li>
+          <li>税务健康检查</li>
+          <li>常年财税顾问</li>
+          <li>季度管理层报告</li>
+          <li>专属对接人</li>
+          <li>智能看板企业版</li>
+          <li>行业对标分析</li>
+          <li>重大决策支持</li>
+        </ul>
+        <a href="#contact" class="price-btn">咨询定制</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-head fade-in">
+      <span class="section-tag">常见问题</span>
+      <h2>您可能关心的问题</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item fade-in">
+        <div class="faq-q">代账服务和传统代账公司有什么区别？</div>
+        <div class="faq-a"><div class="faq-a-inner">智衡不只是"帮你做账报税"，而是通过智能财税系统实现实时数据可视化、风险主动预警、政策自动匹配。您能随时看到财务状况，我们能在问题发生前提醒您。此外，随着您的业务成长，我们可以无缝升级到审计、筹划、资本运作等高阶服务，不需要更换服务商。</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <div class="faq-q">数据安全如何保障？</div>
+        <div class="faq-a"><div class="faq-a-inner">我们采用银行级数据加密标准，所有财务数据存储在加密云端，访问需要双重验证。同时购买了注册会计师职业责任保险，因我方过失造成的损失全额赔偿。所有员工签署保密协议，严格遵守注册会计师职业道德守则。</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <div class="faq-q">金税四期对企业有什么影响？</div>
+        <div class="faq-a"><div class="faq-a-inner">金税四期实现了税务、工商、银行、社保等多部门数据打通，企业财税信息更加透明。传统的"粗放式"税务处理方式风险大幅增加。我们通过智能风险预警系统，实时监控税负率、发票合规性等指标，帮您在金税四期时代主动合规、安心经营。</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <div class="faq-q">如果业务发展了，服务可以升级吗？</div>
+        <div class="faq-a"><div class="faq-a-inner">当然可以。我们的四层业务架构就是为企业全生命周期设计的。从代账客户到审计客户，从审计客户到咨询筹划客户，从咨询客户到资本运作客户 — 每一次升级都是无缝衔接，因为我们已经了解您的业务和财务状况，不需要重新沟通背景。</div></div>
+      </div>
+      <div class="faq-item fade-in">
+        <div class="faq-q">服务区域有限制吗？</div>
+        <div class="faq-a"><div class="faq-a-inner">基础代账和咨询服务通过云端系统远程开展，不受地域限制。审计业务需要现场工作，目前覆盖本省主要城市，其他区域可协调出差或推荐合作机构。具体可咨询沟通。</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section contact" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h2>开启您的数智财税之旅</h2>
+        <p>填写右侧表单或直接联系我们，获取免费的财税现状诊断报告。无论您是刚创业还是准备上市，我们都有对应的专业服务。</p>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          </div>
+          <div>
+            <div class="label">电话咨询</div>
+            <div class="value">400-888-XXXX</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <div class="label">电子邮箱</div>
+            <div class="value">service@zhiheng-cpa.com</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div>
+            <div class="label">工作室地址</div>
+            <div class="value">[城市] [区] [街道] [楼宇] [室]</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <div class="label">微信咨询</div>
+            <div class="value">zhiheng-cpa</div>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <h3>免费财税诊断申请</h3>
+        <form id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>姓名</label>
+              <input type="text" placeholder="您的姓名" required>
+            </div>
+            <div class="form-group">
+              <label>手机</label>
+              <input type="tel" placeholder="联系电话" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>企业名称</label>
+            <input type="text" placeholder="公司全称（选填）">
+          </div>
+          <div class="form-group">
+            <label>企业类型</label>
+            <select>
+              <option value="">请选择企业类型</option>
+              <option>个体工商户</option>
+              <option>小规模纳税人</option>
+              <option>一般纳税人</option>
+              <option>外贸企业</option>
+              <option>科技型企业</option>
+              <option>中大型企业</option>
+              <option>拟上市企业</option>
+              <option>其他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>需求描述</label>
+            <textarea rows="3" placeholder="简要描述您的需求或问题"></textarea>
+          </div>
+          <button type="submit" class="form-submit">提交申请，获取免费诊断</button>
+          <div class="form-success" id="formSuccess">
+            提交成功！我们将在 24 小时内与您联系，请保持电话畅通。
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <div class="logo-icon">智</div>
+          智衡财税
+        </div>
+        <p>智衡注册会计师工作室，依托智能财税系统，为中小企业提供从基础合规到资本运作的全栈式专业服务。唯有创造价值，才有生存价值。</p>
+      </div>
+      <div>
+        <h4>服务体系</h4>
+        <ul>
+          <li><a href="#services">基础合规服务</a></li>
+          <li><a href="#services">鉴证与审计</a></li>
+          <li><a href="#services">财税咨询筹划</a></li>
+          <li><a href="#services">资本运作战略</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>数智能力</h4>
+        <ul>
+          <li><a href="#smart">智能财税看板</a></li>
+          <li><a href="#smart">AI风险预警</a></li>
+          <li><a href="#smart">政策智能匹配</a></li>
+          <li><a href="#smart">数字票据管理</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>联系我们</h4>
+        <ul>
+          <li><a href="#contact">免费咨询</a></li>
+          <li><a href="#pricing">定价方案</a></li>
+          <li><a href="#faq">常见问题</a></li>
+          <li><a href="#contact">电话：400-888-XXXX</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>智衡注册会计师工作室 © 2026 | CPA执业资质 | 职业责任保险投保 | 唯有创造价值，才有生存价值</p>
+    </div>
+  </div>
+</footer>
+
+<!-- BACK TO TOP -->
+<div class="back-top" id="backTop">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+</div>
+
+<script>
+// Mobile menu
+var menuToggle=document.getElementById('menuToggle');
+var navLinks=document.getElementById('navLinks');
+menuToggle.addEventListener('click',function(){menuToggle.classList.toggle('open');navLinks.classList.toggle('show')});
+navLinks.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){menuToggle.classList.remove('open');navLinks.classList.remove('show')})});
+
+// Nav scroll effect
+var nav=document.getElementById('nav');
+var backTop=document.getElementById('backTop');
+window.addEventListener('scroll',function(){
+  if(window.scrollY>10){nav.classList.add('scrolled')}else{nav.classList.remove('scrolled')}
+  if(window.scrollY>400){backTop.classList.add('show')}else{backTop.classList.remove('show')}
+});
+backTop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+
+// Active nav link
+var sections=document.querySelectorAll('section[id]');
+var navItems=document.querySelectorAll('.nav-link');
+window.addEventListener('scroll',function(){
+  var cur='';
+  sections.forEach(function(s){if(window.scrollY>=s.offsetTop-100)cur=s.id});
+  navItems.forEach(function(a){a.classList.remove('active');if(a.getAttribute('href')==='#'+cur)a.classList.add('active')});
+});
+
+// Fade in on scroll
+var observer=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}});
+},{threshold:0.1,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.fade-in').forEach(function(el){observer.observe(el)});
+
+// FAQ toggle
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click',function(){
+    var item=q.parentElement;
+    var wasOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(i){i.classList.remove('open')});
+    if(!wasOpen)item.classList.add('open');
+  });
+});
+
+// Typing animation
+var phrases=['你的竞争力','你的护城河','你的决策力','你的增长引擎'];
+var typingEl=document.getElementById('typing');
+var phraseIdx=0,charIdx=0,deleting=false;
+function typeLoop(){
+  var phrase=phrases[phraseIdx];
+  if(!deleting){
+    typingEl.textContent=phrase.substring(0,charIdx+1);
+    charIdx++;
+    if(charIdx===phrase.length){deleting=true;setTimeout(typeLoop,2200);return}
+  }else{
+    typingEl.textContent=phrase.substring(0,charIdx-1);
+    charIdx--;
+    if(charIdx===0){deleting=false;phraseIdx=(phraseIdx+1)%phrases.length}
+  }
+  setTimeout(typeLoop,deleting?50:100);
+}
+if(typingEl)typeLoop();
+
+// Form submit
+var form=document.getElementById('contactForm');
+var success=document.getElementById('formSuccess');
+form.addEventListener('submit',function(e){
+  e.preventDefault();
+  form.querySelectorAll('input,select,textarea,button').forEach(function(el){el.style.opacity='0.5'});
+  success.classList.add('show');
+  setTimeout(function(){form.reset();form.querySelectorAll('input,select,textarea,button').forEach(function(el){el.style.opacity='1'});success.classList.remove('show')},5000);
+});
+</script>
+</body>
+</html>

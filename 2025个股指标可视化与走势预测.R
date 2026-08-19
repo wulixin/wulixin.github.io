@@ -69,7 +69,7 @@ pro <-pro_api(token ='fe8102bf83f5f83f6608aa46fa5e985c534c227786236a1192e5fd55')
 
 
 ###获取数据
-dat<-pro(api_name = 'daily', ts_code='300102.SZ',start_date= today-years(1))
+dat<-pro(api_name = 'daily', ts_code='002881.SZ',start_date= today-years(1))
 
 #####
 dat<-dat%>%
