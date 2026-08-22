@@ -6,337 +6,587 @@
 <title>武利鑫 LiXin WU | Data Science & Quantitative Finance</title>
 <style>
 /* ============================================================
-   RESET & BASE — Space Theme
+   RESET & BASE
    ============================================================ */
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --space-deep:#020510;
-  --glass-bg:rgba(8,12,30,0.55);
-  --glass-bg-hover:rgba(12,18,42,0.7);
-  --glass-border:rgba(255,255,255,0.07);
-  --glass-border-hover:rgba(255,255,255,0.14);
-  --core-blue:#4a6cf7;
-  --core-purple:#8b5cf6;
-  --arm-gold:#f59e0b;
-  --text-primary:#e2e8f4;
-  --text-secondary:#8892b0;
-  --text-muted:#5a6680;
-  --radius:18px;
-  --transition:all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  /* — Deep Space Palette — */
+  --bg-void:#060810;
+  --bg-deep:#0a0e1a;
+  --bg-surface:#0d1220;
+  --bg-elevated:#111727;
+
+  /* — Glass — */
+  --glass:rgba(15,20,35,0.6);
+  --glass-hover:rgba(20,26,45,0.8);
+  --glass-border:rgba(255,255,255,0.06);
+  --glass-border-hover:rgba(120,140,255,0.25);
+
+  /* — Core Accents — */
+  --c-blue:#5b8def;
+  --c-blue-bright:#3b82f6;
+  --c-purple:#a855f7;
+  --c-violet:#8b5cf6;
+  --c-gold:#f59e0b;
+  --c-cyan:#22d3ee;
+  --c-emerald:#10b981;
+  --c-rose:#f43f5e;
+
+  /* — Text — */
+  --t-primary:#f1f5f9;
+  --t-secondary:#94a3b8;
+  --t-muted:#64748b;
+  --t-dim:#475569;
+
+  /* — Sizing — */
+  --radius:16px;
+  --radius-sm:10px;
+  --max-w:1160px;
+
+  /* — Transitions — */
+  --ease:cubic-bezier(0.25,0.46,0.45,0.94);
+  --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --tr:all 0.45s var(--ease);
+  --tr-fast:all 0.25s var(--ease-out);
 }
+
 html{scroll-behavior:smooth}
 body{
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans SC',sans-serif;
-  background:var(--space-deep);
-  color:var(--text-primary);
+  background:var(--bg-void);
+  color:var(--t-primary);
   overflow-x:hidden;
   min-height:100vh;
   line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
 }
 
 /* ============================================================
-   WEBGL GALAXY CANVAS
+   BACKGROUND LAYERS
    ============================================================ */
+/* WebGL Galaxy canvas */
 #galaxy{
   position:fixed;top:0;left:0;width:100%;height:100%;
-  z-index:0;pointer-events:none;
+  z-index:0;pointer-events:none;opacity:0.85;
 }
-
-/* Interactive layer for drag events */
 #galaxy-interact{
   position:fixed;top:0;left:0;width:100%;height:100%;
   z-index:0;cursor:grab;
 }
 #galaxy-interact:active{cursor:grabbing}
 
-/* ============================================================
-   MAIN CONTENT OVERLAY
-   ============================================================ */
-.main{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 24px}
+/* Tech grid overlay */
+.grid-overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(91,141,239,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(91,141,239,0.035) 1px,transparent 1px);
+  background-size:56px 56px;
+  -webkit-mask-image:radial-gradient(ellipse 70% 55% at 50% 38%,#000 0%,transparent 80%);
+  mask-image:radial-gradient(ellipse 70% 55% at 50% 38%,#000 0%,transparent 80%);
+}
+
+/* Ambient glow orbs */
+.glow-orb{
+  position:fixed;border-radius:50%;pointer-events:none;z-index:0;
+  filter:blur(80px);opacity:0.18;
+}
+.glow-orb.orb-1{top:8%;left:-5%;width:480px;height:480px;
+  background:radial-gradient(circle,var(--c-blue) 0%,transparent 70%);}
+.glow-orb.orb-2{top:45%;right:-8%;width:520px;height:520px;
+  background:radial-gradient(circle,var(--c-purple) 0%,transparent 70%);opacity:0.14;}
+.glow-orb.orb-3{bottom:5%;left:30%;width:400px;height:400px;
+  background:radial-gradient(circle,var(--c-gold) 0%,transparent 70%);opacity:0.08;}
 
 /* ============================================================
-   NAVIGATION — Glass
+   MAIN CONTENT
+   ============================================================ */
+.main{position:relative;z-index:2;max-width:var(--max-w);margin:0 auto;padding:0 28px}
+
+/* ============================================================
+   NAVIGATION
    ============================================================ */
 .nav{
   position:sticky;top:0;z-index:100;
-  background:rgba(8,12,30,0.72);backdrop-filter:blur(28px) saturate(1.6);
-  -webkit-backdrop-filter:blur(28px) saturate(1.6);
-  border-bottom:1px solid var(--glass-border);padding:14px 0;
+  background:rgba(6,8,16,0.78);
+  backdrop-filter:blur(32px) saturate(1.8);
+  -webkit-backdrop-filter:blur(32px) saturate(1.8);
+  border-bottom:1px solid var(--glass-border);
+  transition:var(--tr-fast);
 }
-.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+.nav.scrolled{
+  background:rgba(6,8,16,0.92);
+  border-bottom-color:rgba(120,140,255,0.12);
+}
+.nav-inner{
+  max-width:var(--max-w);margin:0 auto;padding:0 28px;
+  height:64px;display:flex;align-items:center;justify-content:space-between;
+}
 .nav-brand{
-  font-size:18px;font-weight:700;
-  background:linear-gradient(135deg,var(--core-blue),var(--core-purple),var(--arm-gold));
+  font-size:17px;font-weight:800;letter-spacing:-0.3px;
+  display:flex;align-items:center;gap:10px;
+}
+.nav-brand .brand-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--c-blue),var(--c-purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:900;color:#fff;
+  box-shadow:0 4px 16px rgba(91,141,239,0.35);
+}
+.nav-brand .brand-text{
+  background:linear-gradient(135deg,var(--c-blue),var(--c-purple),var(--c-gold));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.nav-links{display:flex;gap:28px;list-style:none}
-.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:14px;font-weight:500;transition:color .3s;position:relative}
-.nav-links a::after{
-  content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;
-  background:linear-gradient(90deg,var(--core-blue),var(--core-purple));
-  transition:width .3s;border-radius:1px;
+.nav-links{display:flex;gap:6px;list-style:none;align-items:center}
+.nav-links a{
+  color:var(--t-secondary);text-decoration:none;
+  font-size:13.5px;font-weight:500;
+  padding:7px 14px;border-radius:8px;
+  transition:var(--tr-fast);position:relative;
 }
-.nav-links a:hover{color:var(--text-primary)}
-.nav-links a:hover::after{width:100%}
+.nav-links a:hover{
+  color:var(--t-primary);
+  background:rgba(91,141,239,0.08);
+}
+.nav-cta{
+  padding:8px 18px;border-radius:9px;
+  background:linear-gradient(135deg,var(--c-blue),var(--c-violet));
+  color:#fff !important;font-weight:600;font-size:13px;
+  box-shadow:0 4px 14px rgba(91,141,239,0.3);
+  transition:var(--tr-fast);
+}
+.nav-cta:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(91,141,239,0.45);
+  background:linear-gradient(135deg,var(--c-blue-bright),var(--c-purple));
+}
+
+/* Mobile menu toggle */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px}
+.nav-toggle span{width:24px;height:2px;background:var(--t-primary);border-radius:2px;transition:var(--tr-fast)}
 
 /* ============================================================
    HERO
    ============================================================ */
-.hero{text-align:center;padding:100px 0 70px;position:relative}
-.hero-glow{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:400px;height:400px;border-radius:50%;
-  background:radial-gradient(circle,rgba(139,92,246,0.12) 0%,transparent 70%);
-  pointer-events:none;z-index:-1;
+.hero{
+  text-align:center;
+  padding:120px 0 64px;
+  position:relative;
 }
-.hero-avatar-group{position:relative;display:inline-block;margin-bottom:32px}
-.hero-avatar{
-  width:110px;height:110px;border-radius:50%;
-  background:linear-gradient(135deg,var(--core-blue),var(--core-purple),var(--arm-gold));
-  display:flex;align-items:center;justify-content:center;
-  font-size:46px;font-weight:900;color:#fff;
-  box-shadow:0 0 80px rgba(74,108,247,0.3),0 0 40px rgba(139,92,246,0.2);
-  position:relative;z-index:2;
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:100px;
+  background:rgba(91,141,239,0.08);
+  border:1px solid rgba(91,141,239,0.2);
+  font-size:12.5px;color:var(--c-blue);font-weight:600;
+  margin-bottom:28px;letter-spacing:0.5px;
 }
-.avatar-ring{
-  position:absolute;top:-12px;left:-12px;width:134px;height:134px;
-  border-radius:50%;border:2px solid rgba(139,92,246,0.2);
-  animation:ringPulse 3s ease-in-out infinite;
+.hero-badge .pulse{
+  width:7px;height:7px;border-radius:50%;background:var(--c-emerald);
+  box-shadow:0 0 10px var(--c-emerald);
+  animation:pulse 2s ease-in-out infinite;
 }
-.avatar-ring:nth-child(2){
-  top:-24px;left:-24px;width:158px;height:158px;
-  border-color:rgba(74,108,247,0.12);animation-delay:.5s;
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.hero h1{
+  font-size:64px;font-weight:900;
+  margin-bottom:18px;letter-spacing:-2px;line-height:1.08;
 }
-@keyframes ringPulse{
-  0%,100%{transform:scale(1);opacity:.6}
-  50%{transform:scale(1.05);opacity:1}
-}
-.hero h1{font-size:52px;font-weight:900;margin-bottom:16px;letter-spacing:-1px}
 .hero h1 .gradient{
-  background:linear-gradient(135deg,var(--core-blue),var(--core-purple),var(--arm-gold));
+  background:linear-gradient(135deg,var(--c-blue) 0%,var(--c-purple) 45%,var(--c-gold) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.hero .subtitle{font-size:20px;color:var(--text-secondary);font-weight:300;margin-bottom:12px;letter-spacing:1px}
-.hero .tagline{font-size:15px;color:var(--text-muted);max-width:640px;margin:0 auto;line-height:1.9}
+.hero h1 .light{
+  font-weight:200;color:var(--t-secondary);
+}
+.hero .subtitle{
+  font-size:22px;color:var(--t-secondary);font-weight:300;
+  margin-bottom:16px;letter-spacing:0.3px;
+}
+.hero .tagline{
+  font-size:15.5px;color:var(--t-muted);
+  max-width:600px;margin:0 auto;line-height:1.9;
+}
+
+/* Hero decorative line */
+.hero-line{
+  width:1px;height:48px;margin:36px auto 0;
+  background:linear-gradient(to bottom,transparent,var(--c-blue),transparent);
+}
 
 /* ============================================================
-   STATS ROW
+   STATS — Dashboard Metrics
    ============================================================ */
-.stats{display:flex;gap:48px;justify-content:center;flex-wrap:wrap;padding:10px 0 70px}
-.stat-item{text-align:center;min-width:130px;position:relative}
-.stat-num{
-  font-size:42px;font-weight:900;
-  background:linear-gradient(135deg,var(--core-blue),var(--arm-gold));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--glass-border);
+  border-radius:var(--radius);overflow:hidden;
+  margin:0 0 100px;
+  border:1px solid var(--glass-border);
 }
-.stat-label{font-size:12px;color:var(--text-muted);margin-top:6px;text-transform:uppercase;letter-spacing:2px}
-.stat-item::after{
-  content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
-  width:20px;height:1px;background:rgba(139,92,246,0.3);border-radius:1px;
+.stat-item{
+  background:var(--glass);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  padding:28px 20px;text-align:center;
+  position:relative;transition:var(--tr);
+}
+.stat-item:hover{
+  background:var(--glass-hover);
+}
+.stat-item:hover .stat-num{
+  transform:scale(1.05);
+}
+.stat-num{
+  font-size:40px;font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(135deg,var(--c-blue),var(--c-gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  transition:transform 0.4s var(--ease-out);
+  line-height:1.1;
+}
+.stat-label{
+  font-size:11px;color:var(--t-muted);
+  margin-top:8px;text-transform:uppercase;letter-spacing:1.8px;font-weight:600;
 }
 
 /* ============================================================
    SECTION HEADERS
    ============================================================ */
-.section{margin-bottom:90px}
-.section-header{text-align:center;margin-bottom:56px;position:relative}
-.section-header h2{font-size:34px;font-weight:800;margin-bottom:10px;letter-spacing:-0.5px}
-.section-header p{color:var(--text-secondary);font-size:15px}
-.section-divider{width:70px;height:3px;border-radius:3px;margin:18px auto 0}
-.section-divider.r{background:linear-gradient(90deg,var(--core-blue),var(--core-purple))}
-.section-divider.python{background:linear-gradient(90deg,var(--arm-gold),#ef4444)}
-.section-divider.edu{background:linear-gradient(90deg,#6c63ff,#fd79a8)}
-.section-divider.agent{background:linear-gradient(90deg,#ed145a,var(--arm-gold),#10b981)}
+.section{margin-bottom:96px}
+.section-header{margin-bottom:48px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:var(--c-blue);
+  margin-bottom:14px;
+}
+.eyebrow .bar{
+  width:24px;height:2px;border-radius:2px;
+}
+.eyebrow.eyebrow-finance{color:var(--c-emerald)}
+.eyebrow.eyebrow-finance .bar{background:var(--c-emerald)}
+.eyebrow.eyebrow-r{color:var(--c-blue)}
+.eyebrow.eyebrow-r .bar{background:var(--c-blue)}
+.eyebrow.eyebrow-python{color:var(--c-gold)}
+.eyebrow.eyebrow-python .bar{background:var(--c-gold)}
+.eyebrow.eyebrow-edu{color:var(--c-violet)}
+.eyebrow.eyebrow-edu .bar{background:var(--c-violet)}
+.eyebrow.eyebrow-agent{color:var(--c-rose)}
+.eyebrow.eyebrow-agent .bar{background:var(--c-rose)}
+.eyebrow.eyebrow-about{color:var(--c-cyan)}
+.eyebrow.eyebrow-about .bar{background:var(--c-cyan)}
 
-/* Section glow */
-.section-header::before{
-  content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);
-  width:200px;height:80px;
-  background:radial-gradient(ellipse,rgba(139,92,246,0.06) 0%,transparent 70%);
-  pointer-events:none;
+.section-header h2{
+  font-size:38px;font-weight:800;letter-spacing:-1px;
+  margin-bottom:12px;line-height:1.15;
+}
+.section-header h2 .accent{
+  background:linear-gradient(135deg,var(--c-blue),var(--c-purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-header p{
+  color:var(--t-secondary);font-size:15.5px;max-width:640px;
 }
 
 /* ============================================================
-   SKILL CARDS GRID — Glass Morphism
+   SKILL CARDS — Modern Tech Cards
    ============================================================ */
-.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px}
+.skills-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:20px;
+}
 
 .skill-card{
-  background:var(--glass-bg);border:1px solid var(--glass-border);
-  border-radius:var(--radius);padding:32px;cursor:pointer;
-  transition:var(--transition);position:relative;overflow:hidden;
+  position:relative;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius);
+  padding:30px;cursor:pointer;
+  transition:var(--tr);
   text-decoration:none;display:block;color:inherit;
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  overflow:hidden;
 }
+/* Gradient border glow on hover */
 .skill-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  border-radius:3px 3px 0 0;transition:height .4s;
+  content:'';position:absolute;inset:0;border-radius:var(--radius);
+  padding:1px;
+  background:linear-gradient(135deg,transparent,transparent,transparent);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity 0.4s var(--ease-out);
+  pointer-events:none;
 }
+.skill-card.r-card::before{background:linear-gradient(135deg,var(--c-blue),var(--c-purple),transparent)}
+.skill-card.python-card::before{background:linear-gradient(135deg,var(--c-gold),var(--c-rose),transparent)}
+.skill-card.edu-card::before{background:linear-gradient(135deg,var(--c-violet),#a78bfa,transparent)}
+.skill-card.agent-card::before{background:linear-gradient(135deg,var(--c-rose),var(--c-gold),var(--c-emerald),transparent)}
+.skill-card.finance-card::before{background:linear-gradient(135deg,var(--c-emerald),var(--c-cyan),transparent)}
+
+/* Top accent bar */
 .skill-card::after{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(circle at 30% 20%,rgba(139,92,246,0.04),transparent 60%);
-  opacity:0;transition:opacity .4s;
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  border-radius:var(--radius) var(--radius) 0 0;
+  transition:height 0.4s var(--ease-out);
 }
-.skill-card.r-card::before{background:linear-gradient(90deg,var(--core-blue),var(--core-purple))}
-.skill-card.python-card::before{background:linear-gradient(90deg,var(--arm-gold),#ef4444)}
-.skill-card.edu-card::before{background:linear-gradient(90deg,#6c63ff,#a78bfa)}
-.skill-card.agent-card::before{background:linear-gradient(90deg,#ed145a,var(--arm-gold),#10b981)}
+.skill-card.r-card::after{background:linear-gradient(90deg,var(--c-blue),var(--c-purple))}
+.skill-card.python-card::after{background:linear-gradient(90deg,var(--c-gold),var(--c-rose))}
+.skill-card.edu-card::after{background:linear-gradient(90deg,var(--c-violet),#a78bfa)}
+.skill-card.agent-card::after{background:linear-gradient(90deg,var(--c-rose),var(--c-gold),var(--c-emerald))}
+.skill-card.finance-card::after{background:linear-gradient(90deg,var(--c-emerald),var(--c-cyan))}
+
 .skill-card:hover{
-  background:var(--glass-bg-hover);border-color:var(--glass-border-hover);
-  transform:translateY(-6px);
-  box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 40px rgba(139,92,246,0.08);
+  background:var(--glass-hover);
+  transform:translateY(-5px);
+  box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 50px rgba(91,141,239,0.06);
 }
-.skill-card:hover::before{height:5px}
-.skill-card:hover::after{opacity:1}
-.skill-card .card-icon{font-size:36px;margin-bottom:18px;transition:transform .3s}
-.skill-card:hover .card-icon{transform:scale(1.1)}
-.skill-card .card-title{font-size:19px;font-weight:700;margin-bottom:8px;color:var(--text-primary)}
-.skill-card .card-sub{font-size:14px;color:var(--text-secondary);line-height:1.7}
-.skill-card .card-badge{
-  display:inline-block;margin-top:14px;padding:4px 14px;border-radius:24px;
-  font-size:11px;font-weight:600;letter-spacing:0.5px;
+.skill-card.r-card:hover{box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 50px rgba(91,141,239,0.08)}
+.skill-card.python-card:hover{box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 50px rgba(245,158,11,0.08)}
+.skill-card.edu-card:hover{box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 50px rgba(139,92,246,0.08)}
+.skill-card.agent-card:hover{box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 50px rgba(244,63,94,0.08)}
+.skill-card.finance-card:hover{box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 50px rgba(16,185,129,0.08)}
+
+.skill-card:hover::before{opacity:1}
+.skill-card:hover::after{height:3px}
+
+.card-icon{
+  font-size:32px;margin-bottom:16px;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:52px;height:52px;border-radius:12px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--glass-border);
+  transition:var(--tr);
 }
-.badge-r{background:rgba(74,108,247,0.12);color:#7b9cf7}
-.badge-python{background:rgba(245,158,11,0.12);color:#fbbf24}
-.badge-edu{background:rgba(108,99,255,0.12);color:#a29bfe}
-.badge-agent{background:rgba(237,20,90,0.12);color:#f87171}
+.skill-card:hover .card-icon{
+  transform:scale(1.05) rotate(-3deg);
+  border-color:var(--glass-border-hover);
+}
+.card-title{
+  font-size:18px;font-weight:700;margin-bottom:8px;
+  color:var(--t-primary);letter-spacing:-0.3px;
+}
+.card-sub{
+  font-size:13.5px;color:var(--t-secondary);line-height:1.75;
+}
+.card-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:16px;padding:5px 12px;border-radius:100px;
+  font-size:11px;font-weight:600;letter-spacing:0.3px;
+}
+.badge-r{background:rgba(91,141,239,0.1);color:#7da2f7;border:1px solid rgba(91,141,239,0.15)}
+.badge-python{background:rgba(245,158,11,0.1);color:#fbbf24;border:1px solid rgba(245,158,11,0.15)}
+.badge-edu{background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.15)}
+.badge-agent{background:rgba(244,63,94,0.1);color:#f87171;border:1px solid rgba(244,63,94,0.15)}
+.badge-finance{background:rgba(16,185,129,0.1);color:#4ade80;border:1px solid rgba(16,185,129,0.15)}
+
+/* Card arrow indicator */
+.card-arrow{
+  position:absolute;top:30px;right:30px;
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--glass-border);
+  font-size:14px;color:var(--t-muted);
+  transition:var(--tr-fast);
+  opacity:0;transform:translateX(-8px);
+}
+.skill-card:hover .card-arrow{
+  opacity:1;transform:translateX(0);
+  color:var(--c-blue);
+}
+
+/* ============================================================
+   FINANCE INTRO
+   ============================================================ */
+.finance-intro{
+  max-width:780px;margin:-20px 0 40px;
+  color:var(--t-secondary);font-size:15px;line-height:1.9;
+}
+.finance-intro b{color:var(--t-primary);font-weight:600}
 
 /* ============================================================
    ABOUT SECTION
    ============================================================ */
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.about-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;
+}
 .about-card{
-  background:var(--glass-bg);border:1px solid var(--glass-border);
-  border-radius:var(--radius);padding:32px;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:var(--radius);padding:30px;
   backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  transition:var(--transition);
+  transition:var(--tr);
+  position:relative;overflow:hidden;
+}
+.about-card::after{
+  content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:linear-gradient(to bottom,var(--c-blue),transparent);
+  opacity:0;transition:opacity 0.4s;
 }
 .about-card:hover{
-  background:var(--glass-bg-hover);border-color:var(--glass-border-hover);
-  box-shadow:0 16px 40px rgba(0,0,0,0.4);
+  background:var(--glass-hover);
+  border-color:var(--glass-border-hover);
+  box-shadow:0 16px 40px rgba(0,0,0,0.35);
 }
-.about-card h3{font-size:19px;font-weight:700;margin-bottom:18px;color:var(--text-primary)}
-.about-card p,.about-card li{color:var(--text-secondary);font-size:14px;line-height:1.9}
+.about-card:hover::after{opacity:1}
+.about-card h3{
+  font-size:17px;font-weight:700;margin-bottom:18px;
+  color:var(--t-primary);display:flex;align-items:center;gap:8px;
+}
 .about-card ul{list-style:none;padding:0}
-.about-card li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:12px}
+.about-card li{
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);
+  display:flex;align-items:flex-start;gap:12px;
+  color:var(--t-secondary);font-size:13.5px;line-height:1.8;
+}
 .about-card li:last-child{border-bottom:none}
-.about-card li .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.dot-r{background:var(--core-blue);box-shadow:0 0 10px rgba(74,108,247,0.5)}
-.dot-python{background:var(--arm-gold);box-shadow:0 0 10px rgba(245,158,11,0.5)}
-.dot-sas{background:#10b981;box-shadow:0 0 10px rgba(16,185,129,0.5)}
+.about-card li .dot{
+  width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:7px;
+}
+.dot-r{background:var(--c-blue);box-shadow:0 0 8px rgba(91,141,239,0.5)}
+.dot-python{background:var(--c-gold);box-shadow:0 0 8px rgba(245,158,11,0.5)}
+.dot-sas{background:var(--c-emerald);box-shadow:0 0 8px rgba(16,185,129,0.5)}
+.about-card li a{color:var(--c-blue);text-decoration:none;transition:var(--tr-fast)}
+.about-card li a:hover{color:var(--c-cyan)}
 
 /* ============================================================
    FOOTER
    ============================================================ */
 .footer{
-  text-align:center;padding:44px 0;border-top:1px solid var(--glass-border);
-  color:var(--text-muted);font-size:13px;margin-top:40px
+  position:relative;z-index:2;
+  text-align:center;padding:48px 0;
+  border-top:1px solid var(--glass-border);
+  margin-top:60px;
 }
-.footer a{color:var(--text-secondary);text-decoration:none;transition:color .3s}
-.footer a:hover{color:var(--arm-gold)}
+.footer-brand{
+  font-size:16px;font-weight:700;margin-bottom:10px;
+  background:linear-gradient(135deg,var(--c-blue),var(--c-purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.footer-text{color:var(--t-muted);font-size:13px}
+.footer-links{
+  display:flex;gap:20px;justify-content:center;margin-top:12px;
+}
+.footer-links a{
+  color:var(--t-secondary);text-decoration:none;font-size:13px;
+  padding:6px 16px;border-radius:8px;border:1px solid var(--glass-border);
+  transition:var(--tr-fast);
+}
+.footer-links a:hover{
+  color:var(--t-primary);border-color:var(--glass-border-hover);
+  background:var(--glass);
+}
 
 /* ============================================================
-   CONSTELLATION LINE DECORATION
+   SCROLL REVEAL ANIMATIONS
    ============================================================ */
-.constellation{
-  position:absolute;pointer-events:none;z-index:0;opacity:.15;
+.reveal{
+  opacity:0;transform:translateY(28px);
+  transition:opacity 0.7s var(--ease-out),transform 0.7s var(--ease-out);
 }
-.constellation svg{width:100%;height:100%}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.08s}
+.reveal-delay-2{transition-delay:0.16s}
+.reveal-delay-3{transition-delay:0.24s}
+.reveal-delay-4{transition-delay:0.32s}
+.reveal-delay-5{transition-delay:0.4s}
+.reveal-delay-6{transition-delay:0.48s}
 
-/* ============================================================
-   ANIMATIONS
-   ============================================================ */
-.fade-in{opacity:0;transform:translateY(30px);animation:fadeInUp .8s forwards}
-@keyframes fadeInUp{to{opacity:1;transform:translateY(0)}}
-
-/* Stagger delays */
-.fade-in:nth-child(1){animation-delay:0s}
-.fade-in:nth-child(2){animation-delay:.08s}
-.fade-in:nth-child(3){animation-delay:.16s}
-.fade-in:nth-child(4){animation-delay:.24s}
-.fade-in:nth-child(5){animation-delay:.32s}
-.fade-in:nth-child(6){animation-delay:.4s}
-.fade-in:nth-child(7){animation-delay:.48s}
-.fade-in:nth-child(8){animation-delay:.56s}
-.fade-in:nth-child(9){animation-delay:.64s}
-.fade-in:nth-child(10){animation-delay:.72s}
-.fade-in:nth-child(11){animation-delay:.80s}
-.fade-in:nth-child(12){animation-delay:.88s}
-.fade-in:nth-child(13){animation-delay:.96s}
-.fade-in:nth-child(14){animation-delay:1.04s}
-.fade-in:nth-child(15){animation-delay:1.12s}
+/* Hero entrance */
+.hero-fade{opacity:0;animation:heroFade 1s var(--ease-out) forwards}
+.hero-fade-1{animation-delay:0.1s}
+.hero-fade-2{animation-delay:0.25s}
+.hero-fade-3{animation-delay:0.4s}
+.hero-fade-4{animation-delay:0.55s}
+@keyframes heroFade{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
 
 /* ============================================================
    RESPONSIVE
    ============================================================ */
-@media(max-width:768px){
-  .hero h1{font-size:32px}
-  .hero{padding:70px 0 40px}
-  .skills-grid{grid-template-columns:1fr}
+@media(max-width:900px){
+  .stats{grid-template-columns:repeat(2,1fr)}
   .about-grid{grid-template-columns:1fr}
-  .stats{gap:24px}
-  .stat-num{font-size:30px}
-  .nav-links{display:none}
-  .hero-avatar{width:80px;height:80px;font-size:34px}
-  .avatar-ring{top:-10px;left:-10px;width:100px;height:100px}
-  .avatar-ring:nth-child(2){top:-20px;left:-20px;width:120px;height:120px}
 }
-  /* ===== Financial Professional Skills (finance cards) ===== */
-  .skill-card.finance-card::before{background:linear-gradient(90deg,#22c55e,#38bdf8)}
-  .skill-card.finance-card:hover{box-shadow:0 24px 60px rgba(0,0,0,0.5),0 0 40px rgba(34,197,94,0.10)}
-  .badge-finance{background:rgba(34,197,94,0.14);color:#4ade80}
-  .section-divider.finance{background:linear-gradient(90deg,#22c55e,#38bdf8)}
-  .finance-intro{
-    text-align:center;max-width:780px;margin:-28px auto 42px;
-    color:var(--text-secondary);font-size:15px;line-height:1.9;
+@media(max-width:768px){
+  .hero{padding:80px 0 40px}
+  .hero h1{font-size:38px;letter-spacing:-1px}
+  .hero .subtitle{font-size:17px}
+  .skills-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr);margin-bottom:60px}
+  .stat-num{font-size:30px}
+  .section{margin-bottom:64px}
+  .section-header h2{font-size:28px}
+  .nav-links{
+    display:none;position:absolute;top:64px;left:0;right:0;
+    flex-direction:column;background:rgba(6,8,16,0.95);
+    backdrop-filter:blur(32px);padding:16px 28px;gap:4px;
+    border-bottom:1px solid var(--glass-border);
   }
-  .finance-intro b{color:var(--text-primary);font-weight:600}
+  .nav-links.open{display:flex}
+  .nav-toggle{display:flex}
+  .finance-intro{margin:-10px 0 32px;font-size:14px}
+}
 </style>
 </head>
 <body>
 
-<!-- WebGL Galaxy Canvas (background layer, pointer-events: none) -->
+<!-- Background Layers -->
 <canvas id="galaxy"></canvas>
-
-<!-- Interactive drag layer (captures mouse events) -->
 <div id="galaxy-interact"></div>
+<div class="grid-overlay"></div>
+<div class="glow-orb orb-1"></div>
+<div class="glow-orb orb-2"></div>
+<div class="glow-orb orb-3"></div>
 
 <!-- Navigation -->
-<nav class="nav">
+<nav class="nav" id="nav">
   <div class="nav-inner">
-    <span class="nav-brand">LW · Data Science</span>
-    <ul class="nav-links">
+    <span class="nav-brand">
+      <span class="brand-mark">W</span>
+      <span class="brand-text">LW · Data Science</span>
+    </span>
+    <ul class="nav-links" id="navLinks">
       <li><a href="#finance-skills">金融技能</a></li>
       <li><a href="#r-skills">R 生态</a></li>
       <li><a href="#python-skills">Python 生态</a></li>
       <li><a href="#edu-skills">教育软件</a></li>
-      <li><a href="#quandl-agent">投研Agent</a></li>
+      <li><a href="#quandl-agent">投研 Agent</a></li>
       <li><a href="#about">关于我</a></li>
+      <li><a href="https://github.com/wulixin" target="_blank" class="nav-cta">GitHub</a></li>
     </ul>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
-<!-- Main Content Overlay -->
+<!-- Main Content -->
 <div class="main">
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-glow"></div>
-    <div class="hero-avatar-group">
-      <div class="avatar-ring"></div>
-      <div class="avatar-ring"></div>
-      <div class="hero-avatar">W</div>
+    <div class="hero-badge hero-fade hero-fade-1">
+      <span class="pulse"></span>
+      Data Science · Quantitative Finance · R / Python / SAS
     </div>
-    <h1><span class="gradient">武利鑫</span> LiXin WU</h1>
-    <p class="subtitle">Data Scientist · Quantitative Finance Researcher</p>
-    <p class="tagline">
+    <h1 class="hero-fade hero-fade-2">
+      <span class="gradient">武利鑫</span> <span class="light">LiXin WU</span>
+    </h1>
+    <p class="subtitle hero-fade hero-fade-3">Data Scientist &middot; Quantitative Finance Researcher</p>
+    <p class="tagline hero-fade hero-fade-4">
       专注数据科学与量化金融研究，以 R / Python / SAS 为核心工具链，
       构建从数据挖掘、统计分析到机器学习与金融建模的完整技术栈。
     </p>
+    <div class="hero-line"></div>
   </section>
 
   <!-- Stats -->
-  <div class="stats">
+  <div class="stats reveal">
     <div class="stat-item"><div class="stat-num">15+</div><div class="stat-label">R 领域专题</div></div>
     <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">Python 生态分析</div></div>
     <div class="stat-item"><div class="stat-num">300+</div><div class="stat-label">开源包技能卡</div></div>
@@ -345,31 +595,34 @@ body{
 
   <!-- Financial Professional Skills -->
   <section class="section" id="finance-skills">
-    <div class="section-header">
-      <h2>💼 金融分析师专业技能体系</h2>
+    <div class="section-header reveal">
+      <span class="eyebrow eyebrow-finance"><span class="bar"></span>FINANCE</span>
+      <h2>金融分析师<span class="accent">专业技能体系</span></h2>
       <p>聚焦期货、衍生品与 ETF 指数化投资三大实战方向，配套 R / Python 双语模型与策略代码</p>
-      <div class="section-divider finance"></div>
     </div>
-    <p class="finance-intro">
+    <p class="finance-intro reveal">
       在量化与指数化投资时代，体系化的专业分析能力是投研与一线展业的基石。以下三套技能图谱由浅入深梳理核心知识框架、模型算法与可运行代码，
       分别覆盖 <b>期货分析师</b>、<b>FDA 衍生品分析师</b> 与 <b>ETF 策略师</b> 三条成长路径——
       既是系统学习的路线图，也是可直接上手的实战工具箱。
     </p>
 
     <div class="skills-grid">
-      <a class="skill-card finance-card fade-in" href="期货与衍生品分析师必备技能/期货分析师知识体系.html" target="_blank">
+      <a class="skill-card finance-card reveal reveal-delay-1" href="期货与衍生品分析师必备技能/期货分析师知识体系.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">📊</div>
         <div class="card-title">期货分析师知识体系</div>
         <div class="card-sub">8 大模块 / 30+ 模型算法 / 60+ 双语代码：定价、技术分析、量化模型、风控、期权与套利策略</div>
         <span class="card-badge badge-finance">期货 · R+Python</span>
       </a>
-      <a class="skill-card finance-card fade-in" href="期货与衍生品分析师必备技能/FDA衍生品分析师课程.html" target="_blank">
+      <a class="skill-card finance-card reveal reveal-delay-2" href="期货与衍生品分析师必备技能/FDA衍生品分析师课程.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🎓</div>
         <div class="card-title">FDA 衍生品分析师课程体系</div>
         <div class="card-sub">FDA I / II / III 级 + 法律法规：微观宏观、衍生品定价、信用与结构化产品、波动率与随机模型</div>
         <span class="card-badge badge-finance">FDA · R+Python</span>
       </a>
-      <a class="skill-card finance-card fade-in" href="期货与衍生品分析师必备技能/ETF策略师.html" target="_blank">
+      <a class="skill-card finance-card reveal reveal-delay-3" href="期货与衍生品分析师必备技能/ETF策略师.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🚀</div>
         <div class="card-title">ETF 策略师成长之路</div>
         <div class="card-sub">5 阶成长路径 / 26 只重点 ETF / 9 类策略：指数认知、产品图谱、持有·轮动·期现·组合配置</div>
@@ -380,112 +633,113 @@ body{
 
   <!-- R Skills -->
   <section class="section" id="r-skills">
-    <div class="section-header">
-      <h2>🔬 R 语言包技能汇总</h2>
+    <div class="section-header reveal">
+      <span class="eyebrow eyebrow-r"><span class="bar"></span>R ECOSYSTEM</span>
+      <h2>R 语言包<span class="accent">技能汇总</span></h2>
       <p>CRAN Task View 风格 · D3.js 力导向图可视化 · 中英双语</p>
-      <div class="section-divider r"></div>
     </div>
 
     <div class="skills-grid">
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/timeseries.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-1" href="https://wulixin.github.io/R语言时间序列包技能汇总/timeseries.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">📈</div>
         <div class="card-title">Time Series 时间序列</div>
         <div class="card-sub">ARIMA、GARCH、状态空间模型等时序分析核心包</div>
         <span class="card-badge badge-r">R · CRAN Task View</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/finance.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-1" href="https://wulixin.github.io/R语言时间序列包技能汇总/finance.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">💰</div>
         <div class="card-title">Empirical Finance 实证金融</div>
         <div class="card-sub">资产定价、风险建模、投资组合优化的R包生态</div>
         <span class="card-badge badge-r">R · Finance</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/ml.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-2" href="https://wulixin.github.io/R语言时间序列包技能汇总/ml.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🤖</div>
         <div class="card-title">Machine Learning 机器学习</div>
         <div class="card-sub">分类、回归、聚类、深度学习等ML全栈R包</div>
         <span class="card-badge badge-r">R · 9领域29包</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/econometrics.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-2" href="https://wulixin.github.io/R语言时间序列包技能汇总/econometrics.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">📊</div>
         <div class="card-title">Econometrics 计量经济学</div>
         <div class="card-sub">面板数据、工具变量、微观计量等实证研究工具包</div>
         <span class="card-badge badge-r">R · Econometrics</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/optimization.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-3" href="https://wulixin.github.io/R语言时间序列包技能汇总/optimization.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">⚡</div>
         <div class="card-title">Optimization 优化与数学规划</div>
         <div class="card-sub">线性规划、非线性优化、凸优化等12领域135包</div>
         <span class="card-badge badge-r">R · 12领域135包</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/anomaly.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-3" href="https://wulixin.github.io/R语言时间序列包技能汇总/anomaly.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🔍</div>
         <div class="card-title">Anomaly Detection 异常检测</div>
         <div class="card-sub">异常值识别、变点检测、离群分析R包汇总</div>
         <span class="card-badge badge-r">R · Anomaly</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/cluster.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-4" href="https://wulixin.github.io/R语言时间序列包技能汇总/cluster.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🧩</div>
         <div class="card-title">Cluster Analysis 聚类分析</div>
         <div class="card-sub">K-means、层次聚类、密度聚类等方法R包集合</div>
         <span class="card-badge badge-r">R · Cluster</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/network.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-4" href="https://wulixin.github.io/R语言时间序列包技能汇总/network.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🕸️</div>
         <div class="card-title">Network Analysis 网络分析</div>
         <div class="card-sub">社交网络、图论分析、网络可视化的R包生态</div>
         <span class="card-badge badge-r">R · Network</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/nlp.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-5" href="https://wulixin.github.io/R语言时间序列包技能汇总/nlp.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">📝</div>
         <div class="card-title">NLP 自然语言处理</div>
         <div class="card-sub">文本挖掘、情感分析、主题建模等NLP工具包</div>
         <span class="card-badge badge-r">R · NLP</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/hpc.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-5" href="https://wulixin.github.io/R语言时间序列包技能汇总/hpc.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🚀</div>
         <div class="card-title">HPC 高性能计算</div>
         <div class="card-sub">并行计算、GPU加速、分布式处理的R包方案</div>
         <span class="card-badge badge-r">R · HPC</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/mixed.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-6" href="https://wulixin.github.io/R语言时间序列包技能汇总/mixed.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🔀</div>
         <div class="card-title">Mixed Models 混合模型</div>
         <div class="card-sub">线性混合、广义混合、多层次模型的R包汇总</div>
         <span class="card-badge badge-r">R · Mixed Models</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/official.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-6" href="https://wulixin.github.io/R语言时间序列包技能汇总/official.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">📋</div>
         <div class="card-title">Official & Survey Statistics 官方统计</div>
         <div class="card-sub">调查统计、抽样设计、官方统计标准R包</div>
         <span class="card-badge badge-r">R · Official Stats</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/deploy.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-1" href="https://wulixin.github.io/R语言时间序列包技能汇总/deploy.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🚢</div>
         <div class="card-title">Model Deployment 模型部署</div>
         <div class="card-sub">模型序列化、API服务、容器化部署R包方案</div>
         <span class="card-badge badge-r">R · Deployment</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/dynamic.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-2" href="https://wulixin.github.io/R语言时间序列包技能汇总/dynamic.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🎨</div>
         <div class="card-title">Dynamic Visualization 动态可视化</div>
         <div class="card-sub">交互图表、动画、Web图形等动态可视化包</div>
         <span class="card-badge badge-r">R · Viz</span>
       </a>
-
-      <a class="skill-card r-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/teaching.html" target="_blank">
+      <a class="skill-card r-card reveal reveal-delay-3" href="https://wulixin.github.io/R语言时间序列包技能汇总/teaching.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🎓</div>
         <div class="card-title">Teaching Statistics 统计教学</div>
         <div class="card-sub">统计教学辅助、可视化教学、互动学习R包</div>
@@ -496,35 +750,36 @@ body{
 
   <!-- Python Skills -->
   <section class="section" id="python-skills">
-    <div class="section-header">
-      <h2>🐍 Python 开源生态分析</h2>
+    <div class="section-header reveal">
+      <span class="eyebrow eyebrow-python"><span class="bar"></span>PYTHON ECOSYSTEM</span>
+      <h2>Python 开源<span class="accent">生态分析</span></h2>
       <p>深度拆解主流开源项目的技术架构与工具链</p>
-      <div class="section-divider python"></div>
     </div>
 
     <div class="skills-grid">
-      <a class="skill-card python-card fade-in" href="https://wulixin.github.io/Python开源技术分享/quantopian-ecosystem.html" target="_blank">
+      <a class="skill-card python-card reveal reveal-delay-1" href="https://wulixin.github.io/Python开源技术分享/quantopian-ecosystem.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🎯</div>
         <div class="card-title">Quantopian 开源生态</div>
         <div class="card-sub">量化投资平台技术架构 · Zipline/Pyfolio/Alphalens 全解析</div>
         <span class="card-badge badge-python">Python · Quant</span>
       </a>
-
-      <a class="skill-card python-card fade-in" href="https://wulixin.github.io/Python开源技术分享/aws-ecosystem.html" target="_blank">
+      <a class="skill-card python-card reveal reveal-delay-2" href="https://wulixin.github.io/Python开源技术分享/aws-ecosystem.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">☁️</div>
         <div class="card-title">AWS 开源生态</div>
         <div class="card-sub">云计算与数据工程工具链 · SageMaker/Glue/Lambda 深度分析</div>
         <span class="card-badge badge-python">Python · Cloud</span>
       </a>
-
-      <a class="skill-card python-card fade-in" href="https://wulixin.github.io/Python开源技术分享/h2oai-ecosystem.html" target="_blank">
+      <a class="skill-card python-card reveal reveal-delay-3" href="https://wulixin.github.io/Python开源技术分享/h2oai-ecosystem.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🧠</div>
         <div class="card-title">H2O.ai 开源生态</div>
         <div class="card-sub">AutoML 与分布式机器学习平台技术架构</div>
         <span class="card-badge badge-python">Python · AutoML</span>
       </a>
-
-      <a class="skill-card python-card fade-in" href="https://wulixin.github.io/R语言时间序列包技能汇总/modeloriented.html" target="_blank">
+      <a class="skill-card python-card reveal reveal-delay-4" href="https://wulixin.github.io/R语言时间序列包技能汇总/modeloriented.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">💡</div>
         <div class="card-title">ModelOriented · XAI 开源生态</div>
         <div class="card-sub">可解释AI完整工具链 · DALEX/DrWhy/shapviz/fairmodels/survex 全解析</div>
@@ -535,21 +790,22 @@ body{
 
   <!-- Education Software -->
   <section class="section" id="edu-skills">
-    <div class="section-header">
-      <h2>🎓 面向未来定制化教育软件开发</h2>
+    <div class="section-header reveal">
+      <span class="eyebrow eyebrow-edu"><span class="bar"></span>EDUCATION</span>
+      <h2>面向未来<span class="accent">定制化教育软件</span></h2>
       <p>以 AI + 交互式 Web 技术打造个性化学习工具，助力下一代教育</p>
-      <div class="section-divider edu"></div>
     </div>
 
     <div class="skills-grid">
-      <a class="skill-card edu-card fade-in" href="初中生背单词/index.html" target="_blank">
+      <a class="skill-card edu-card reveal reveal-delay-1" href="初中生背单词/index.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">📖</div>
         <div class="card-title">WordQuest · 初中英语词汇闯关</div>
         <div class="card-sub">基于四六级6000词的多维题型训练系统，涵盖介词、冠词、时态、拼写等闯关模式，游戏化学习体验</div>
         <span class="card-badge badge-edu">Web App · Education</span>
       </a>
-
-      <a class="skill-card edu-card fade-in" href="初中物理常识训练/index.html" target="_blank">
+      <a class="skill-card edu-card reveal reveal-delay-2" href="初中物理常识训练/index.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">⚛️</div>
         <div class="card-title">初中物理常识训练 · 1000题</div>
         <div class="card-sub">覆盖力学、电学、光学、热学等全部知识模块，智能批改 + 错题回顾 + 进度追踪</div>
@@ -560,28 +816,29 @@ body{
 
   <!-- QuandlFinance Agent -->
   <section class="section" id="quandl-agent">
-    <div class="section-header">
-      <h2>🤖 QuandlFinance Agent · 24h 超级投研助理</h2>
+    <div class="section-header reveal">
+      <span class="eyebrow eyebrow-agent"><span class="bar"></span>AI AGENT</span>
+      <h2>QuandlFinance Agent<span class="accent"> · 24h 投研助理</span></h2>
       <p>Quant · Data Science · Marketing — 三合一智能研究平台</p>
-      <div class="section-divider agent"></div>
     </div>
 
     <div class="skills-grid">
-      <a class="skill-card agent-card fade-in" href="QuandlFinance/home.html" target="_blank">
+      <a class="skill-card agent-card reveal reveal-delay-1" href="QuandlFinance/home.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">📈</div>
         <div class="card-title">股票/基金投资研究</div>
         <div class="card-sub">热点板块深度研究 · 涨停股关联分析 · 量化指标挖掘 · 基金组合构建 · 指数基金预测</div>
         <span class="card-badge badge-agent">Quant · 24h Online</span>
       </a>
-
-      <a class="skill-card agent-card fade-in" href="QuandlFinance/datascience.html" target="_blank">
+      <a class="skill-card agent-card reveal reveal-delay-2" href="QuandlFinance/datascience.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🧪</div>
         <div class="card-title">数据科学与 AI</div>
         <div class="card-sub">推荐算法 · 情感分析 · 文本挖掘 · 机器学习框架 · 共享单车数据挖掘 · 算法与AI应用</div>
         <span class="card-badge badge-agent">Data Science · 24h Online</span>
       </a>
-
-      <a class="skill-card agent-card fade-in" href="QuandlFinance/marketing.html" target="_blank">
+      <a class="skill-card agent-card reveal reveal-delay-3" href="QuandlFinance/marketing.html" target="_blank">
+        <span class="card-arrow">&#8599;</span>
         <div class="card-icon">🎯</div>
         <div class="card-title">市场营销科学</div>
         <div class="card-sub">选择模型产品设计 · HLM分层线性模型 · 客户渠道转化分析 · 服务营销策略</div>
@@ -592,74 +849,73 @@ body{
 
   <!-- About -->
   <section class="section" id="about">
-    <div class="section-header">
-      <h2>👤 关于我</h2>
+    <div class="section-header reveal">
+      <span class="eyebrow eyebrow-about"><span class="bar"></span>PROFILE</span>
+      <h2>关于<span class="accent">我</span></h2>
       <p>Education · Experience · Training</p>
     </div>
 
     <div class="about-grid">
-      <div class="about-card fade-in">
+      <div class="about-card reveal reveal-delay-1">
         <h3>📚 教育背景</h3>
         <ul>
-          <li><span class="dot dot-r"></span> 湖北经济学院 · 市场营销 (2013.9 – 2017.7) · 导师：<a href="https://mp.weixin.qq.com/s/36E2tsmPKxZIf1qYRdBnSQ" target="_blank" style="color:#7b9cf7">叶敏教授</a> · 毕业论文：<a href="https://mp.weixin.qq.com/s/36E2tsmPKxZIf1qYRdBnSQ" target="_blank" style="color:#7b9cf7">基于RFM数据挖掘的动态客户管理</a></li>
-          <li><span class="dot dot-python"></span> 青海民族大学 · 金融硕士 (2024.9 – 2027.7)</li>
+          <li><span class="dot dot-r"></span> <span>湖北经济学院 · 市场营销 (2013.9 – 2017.7) · 导师：<a href="https://mp.weixin.qq.com/s/36E2tsmPKxZIf1qYRdBnSQ" target="_blank">叶敏教授</a> · 毕业论文：<a href="https://mp.weixin.qq.com/s/36E2tsmPKxZIf1qYRdBnSQ" target="_blank">基于RFM数据挖掘的动态客户管理</a></span></li>
+          <li><span class="dot dot-python"></span> <span>青海民族大学 · 金融硕士 (2024.9 – 2027.7)</span></li>
         </ul>
       </div>
-
-      <div class="about-card fade-in">
+      <div class="about-card reveal reveal-delay-2">
         <h3>💼 工作经历</h3>
         <ul>
-          <li><span class="dot dot-sas"></span> 民生银行深圳分行 · 数据分析师(实习)，个人金融财富顾问 (2017.3 – 2019.1)</li>
-          <li><span class="dot dot-r"></span> 大同证券孝义营业部 · 理财经理 / 证券投资顾问 (2019.6 – 2024.8)</li>
+          <li><span class="dot dot-sas"></span> <span>民生银行深圳分行 · 数据分析师(实习)，个人金融财富顾问 (2017.3 – 2019.1)</span></li>
+          <li><span class="dot dot-r"></span> <span>大同证券孝义营业部 · 理财经理 / 证券投资顾问 (2019.6 – 2024.8)</span></li>
         </ul>
       </div>
-
-      <div class="about-card fade-in">
+      <div class="about-card reveal reveal-delay-3">
         <h3>🎓 职业培训</h3>
         <ul>
-          <li><span class="dot dot-r"></span> CDA 数据挖掘工程师 (2016.5 – 2017.1)</li>
-          <li><span class="dot dot-python"></span> 深圳证券交易所 · ETF 策略师 (2023.3 – 2023.7)</li>
-          <li><span class="dot dot-sas"></span> 期货协会 · FDA 衍生品分析师 (2023.6 – 2023.12)</li>
+          <li><span class="dot dot-r"></span> <span>CDA 数据挖掘工程师 (2016.5 – 2017.1)</span></li>
+          <li><span class="dot dot-python"></span> <span>深圳证券交易所 · ETF 策略师 (2023.3 – 2023.7)</span></li>
+          <li><span class="dot dot-sas"></span> <span>期货协会 · FDA 衍生品分析师 (2023.6 – 2023.12)</span></li>
         </ul>
       </div>
-
-      <div class="about-card fade-in">
+      <div class="about-card reveal reveal-delay-4">
         <h3>🔧 技术栈</h3>
         <ul>
-          <li><span class="dot dot-r"></span> R · 时间序列 / 计量经济学 / 机器学习 / 可视化</li>
-          <li><span class="dot dot-python"></span> Python · 量化金融 / 数据分析 / Web 开发</li>
-          <li><span class="dot dot-sas"></span> SAS · 统计分析 / 宏编程 / 金融建模</li>
-          <li><span class="dot dot-r"></span> D3.js · 力导向图 / 交互式数据可视化</li>
-          <li><span class="dot dot-python"></span> Git / GitHub · 开源协作与版本管理</li>
+          <li><span class="dot dot-r"></span> <span>R · 时间序列 / 计量经济学 / 机器学习 / 可视化</span></li>
+          <li><span class="dot dot-python"></span> <span>Python · 量化金融 / 数据分析 / Web 开发</span></li>
+          <li><span class="dot dot-sas"></span> <span>SAS · 统计分析 / 宏编程 / 金融建模</span></li>
+          <li><span class="dot dot-r"></span> <span>D3.js · 力导向图 / 交互式数据可视化</span></li>
+          <li><span class="dot dot-python"></span> <span>Git / GitHub · 开源协作与版本管理</span></li>
         </ul>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>© 2026 LiXin WU · Built with ❤️ using WebGL & vanilla JS</p>
-    <p style="margin-top:8px">
-      <a href="https://github.com/wulixin" target="_blank">GitHub</a> · 
-      <a href="mailto:wulixin@example.com">Email</a>
-    </p>
-  </footer>
-
 </div>
 
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-brand">LW · Data Science</div>
+  <p class="footer-text">&copy; 2026 LiXin WU · Built with WebGL &amp; vanilla JS</p>
+  <div class="footer-links">
+    <a href="https://github.com/wulixin" target="_blank">GitHub</a>
+    <a href="mailto:wulixin@example.com">Email</a>
+  </div>
+</footer>
+
 <!-- ============================================================
-     GLSL SHADERS (inlined via script tags)
+     GLSL SHADERS
      ============================================================ -->
 <script id="vs-galaxy" type="x-shader/x-vertex">
 precision highp float;
 
-attribute float a_type;        /* 0=core, 1=arm, 2=halo */
-attribute float a_armIdx;      /* which spiral arm */
-attribute float a_radiusFrac;  /* 0..1 along arm */
-attribute float a_angleOff;    /* angular scatter */
-attribute float a_heightOff;   /* vertical scatter */
+attribute float a_type;
+attribute float a_armIdx;
+attribute float a_radiusFrac;
+attribute float a_angleOff;
+attribute float a_heightOff;
 attribute float a_size;
-attribute float a_seed;        /* noise seed */
+attribute float a_seed;
 
 uniform mat4 u_mvp;
 uniform float u_time;
@@ -673,7 +929,6 @@ varying float v_type;
 varying float v_seed;
 varying float v_alpha;
 
-/* ===== 3D Simplex Noise (Ashima Arts) ===== */
 vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
@@ -720,64 +975,42 @@ float snoise(vec3 v){
 }
 
 void main(){
-  /* --- Spiral arm computation --- */
   float armAngle=a_armIdx*6.2831853/u_armCount;
   float rMin=0.08;
   float rMax=3.5;
   float r=mix(rMin,rMax,a_radiusFrac);
-
-  /* Logarithmic spiral angle */
   float logR=log(r/rMin);
   float angle=armAngle+logR*u_twist+a_angleOff;
-
-  /* 3D position before noise */
   float px=r*cos(angle);
   float pz=r*sin(angle);
-
-  /* --- Noise perturbation --- */
   float freq=u_noiseScale;
   float n1=snoise(vec3(px*freq,pz*freq,u_time*0.15+a_seed));
   float n2=snoise(vec3(px*freq*2.3+5.7,pz*freq*2.3-3.2,u_time*0.22+a_seed*1.7));
   float n3=snoise(vec3(px*freq*0.7+9.1,pz*freq*0.7-6.3,u_time*0.08+a_seed*2.9));
   float noise=n1*0.55+n2*0.3+n3*0.15;
-
   r+=noise*u_noiseAmp*(0.6+0.4*a_radiusFrac);
   angle+=noise*0.25*u_noiseAmp;
   px=r*cos(angle);
   pz=r*sin(angle);
-
-  /* Height: thin in core, spread in arms, thick in halo */
   float heightSpread;
-  if(a_type<0.5){
-    heightSpread=0.12;            /* core - thin */
-  }else if(a_type<1.5){
-    heightSpread=0.35*r;          /* arm - spreads with radius */
-  }else{
-    heightSpread=1.5*r;           /* halo - spherical */
-  }
+  if(a_type<0.5){heightSpread=0.12;}
+  else if(a_type<1.5){heightSpread=0.35*r;}
+  else{heightSpread=1.5*r;}
   float py=a_heightOff*heightSpread;
-
-  /* Extra organic wobble for arms at mid-radius (star-forming regions) */
   if(a_type>0.5&&a_type<1.5){
     float midR=smoothstep(0.0,0.5,a_radiusFrac)*(1.0-smoothstep(0.5,1.0,a_radiusFrac));
     py+=midR*n2*0.25;
   }
-
   vec4 worldPos=vec4(px,py,pz,1.0);
   gl_Position=u_mvp*worldPos;
-
-  /* Point size: big bright core, smaller arms, tiny halo */
   float baseSize;
   if(a_type<0.5)baseSize=3.5+a_size*2.5;
   else if(a_type<1.5)baseSize=1.8+a_size*1.5;
   else baseSize=0.8+a_size*0.8;
   gl_PointSize=baseSize*(1.4-0.7*a_radiusFrac);
-
   v_radius=r;
   v_type=a_type;
   v_seed=a_seed;
-
-  /* Alpha: core is bright, arms fade with radius, halo is faint */
   if(a_type<0.5)v_alpha=0.9;
   else if(a_type<1.5)v_alpha=0.75*(1.0-0.35*a_radiusFrac);
   else v_alpha=0.3;
@@ -786,60 +1019,33 @@ void main(){
 
 <script id="fs-galaxy" type="x-shader/x-fragment">
 precision highp float;
-
 varying float v_radius;
 varying float v_type;
 varying float v_seed;
 varying float v_alpha;
-
 uniform float u_time;
-
 void main(){
-  /* Point-sprite radial gradient */
-  float d=length(gl_PointCoord-0.5)*2.0; /* 0 at center, 1 at edge */
+  float d=length(gl_PointCoord-0.5)*2.0;
   float glow=1.0-smoothstep(0.0,1.0,d);
-  glow=pow(glow,1.8); /* sharper falloff for star-like glow */
-
-  /* Twinkling: multi-frequency organic flicker */
+  glow=pow(glow,1.8);
   float t=u_time;
-  float twinkle=0.7
-    +0.15*sin(t*3.7+v_seed*113.0)
-    +0.1*sin(t*7.1+v_seed*79.0)
-    +0.05*sin(t*13.3+v_seed*47.0);
+  float twinkle=0.7+0.15*sin(t*3.7+v_seed*113.0)+0.1*sin(t*7.1+v_seed*79.0)+0.05*sin(t*13.3+v_seed*47.0);
   twinkle=clamp(twinkle,0.45,1.0);
-
-  /* Color gradient: blue-purple core → gold edges */
   vec3 coreBlue=vec3(0.20,0.38,0.95);
   vec3 corePurple=vec3(0.50,0.15,0.85);
   vec3 midCyan=vec3(0.25,0.75,0.95);
   vec3 edgeGold=vec3(1.0,0.65,0.08);
   vec3 edgeWhite=vec3(1.0,0.9,0.7);
-
-  /* Multi-stop gradient based on radius */
   float rNorm=clamp(v_radius/3.5,0.0,1.0);
   vec3 color;
-  if(rNorm<0.15){
-    color=mix(coreBlue,corePurple,rNorm/0.15);
-  }else if(rNorm<0.4){
-    color=mix(corePurple,midCyan,(rNorm-0.15)/0.25);
-  }else if(rNorm<0.7){
-    color=mix(midCyan,edgeGold,(rNorm-0.4)/0.3);
-  }else{
-    color=mix(edgeGold,edgeWhite,(rNorm-0.7)/0.3);
-  }
-
-  /* Subtle color variation based on particle seed */
+  if(rNorm<0.15){color=mix(coreBlue,corePurple,rNorm/0.15);}
+  else if(rNorm<0.4){color=mix(corePurple,midCyan,(rNorm-0.15)/0.25);}
+  else if(rNorm<0.7){color=mix(midCyan,edgeGold,(rNorm-0.4)/0.3);}
+  else{color=mix(edgeGold,edgeWhite,(rNorm-0.7)/0.3);}
   color+=vec3(0.04,0.02,-0.01)*sin(v_seed*37.0);
   color+=vec3(-0.02,0.03,0.02)*cos(v_seed*53.0+1.2);
-
-  /* Core particles: slight purple boost */
-  if(v_type<0.5){
-    color=mix(color,vec3(0.6,0.3,0.9),0.2);
-  }
-
-  /* Brightness boost at center of each point */
+  if(v_type<0.5){color=mix(color,vec3(0.6,0.3,0.9),0.2);}
   float coreBright=1.0+0.6*(1.0-d);
-
   float alpha=glow*twinkle*v_alpha;
   gl_FragColor=vec4(color*coreBright,alpha);
 }
@@ -851,13 +1057,10 @@ void main(){
 <script>
 (function(){
   'use strict';
-
-  /* ---- Canvas & GL setup ---- */
   const canvas=document.getElementById('galaxy');
   const gl=canvas.getContext('webgl',{alpha:true,antialias:true})||canvas.getContext('experimental-webgl',{alpha:true,antialias:true});
-  if(!gl){console.warn('WebGL not supported, falling back to static bg');return;}
+  if(!gl){console.warn('WebGL not supported');return;}
 
-  /* ---- Shader compilation ---- */
   function compileShader(src,type){
     const shader=gl.createShader(type);
     gl.shaderSource(shader,src);
@@ -886,7 +1089,6 @@ void main(){
   }
   gl.useProgram(prog);
 
-  /* ---- Attribute locations ---- */
   const aLoc={
     type:gl.getAttribLocation(prog,'a_type'),
     armIdx:gl.getAttribLocation(prog,'a_armIdx'),
@@ -896,8 +1098,6 @@ void main(){
     size:gl.getAttribLocation(prog,'a_size'),
     seed:gl.getAttribLocation(prog,'a_seed'),
   };
-
-  /* ---- Uniform locations ---- */
   const uLoc={
     mvp:gl.getUniformLocation(prog,'u_mvp'),
     time:gl.getUniformLocation(prog,'u_time'),
@@ -907,12 +1107,10 @@ void main(){
     noiseAmp:gl.getUniformLocation(prog,'u_noiseAmp'),
   };
 
-  /* ---- Particle generation (8000 particles) ---- */
   const TOTAL=8000;
   const ARM_COUNT=4;
-  const CORE_RATIO=0.22;   /* 22% core */
-  const ARM_RATIO=0.62;    /* 62% arms */
-  /* Halo: remaining 16% */
+  const CORE_RATIO=0.22;
+  const ARM_RATIO=0.62;
 
   const attrData={
     type:new Float32Array(TOTAL),
@@ -927,33 +1125,25 @@ void main(){
   for(let i=0;i<TOTAL;i++){
     const r=Math.random();
     let type,armIdx,radiusFrac,angleOff,heightOff,size;
-
     if(r<CORE_RATIO){
-      /* Core bulge — dense, concentrated at center */
-      type=0;
-      armIdx=Math.floor(Math.random()*ARM_COUNT);
+      type=0;armIdx=Math.floor(Math.random()*ARM_COUNT);
       radiusFrac=Math.pow(Math.random(),3.5)*0.25;
       angleOff=(Math.random()-0.5)*Math.PI*2;
       heightOff=(Math.random()-0.5)*0.3;
       size=Math.random()*2.5+1.5;
     }else if(r<(CORE_RATIO+ARM_RATIO)){
-      /* Spiral arms — distributed along arm with noise scatter */
-      type=1;
-      armIdx=Math.floor(Math.random()*ARM_COUNT);
+      type=1;armIdx=Math.floor(Math.random()*ARM_COUNT);
       radiusFrac=Math.random();
       angleOff=(Math.random()-0.5)*0.45;
       heightOff=(Math.random()-0.5)*0.8;
       size=Math.random()*1.8+0.6;
     }else{
-      /* Halo — random spherical distribution */
-      type=2;
-      armIdx=Math.floor(Math.random()*ARM_COUNT);
+      type=2;armIdx=Math.floor(Math.random()*ARM_COUNT);
       radiusFrac=Math.random();
       angleOff=Math.random()*Math.PI*2;
       heightOff=(Math.random()-0.5)*2.5;
       size=Math.random()*0.8+0.2;
     }
-
     attrData.type[i]=type;
     attrData.armIdx[i]=armIdx;
     attrData.radiusFrac[i]=radiusFrac;
@@ -963,7 +1153,6 @@ void main(){
     attrData.seed[i]=Math.random()*1000;
   }
 
-  /* ---- Create & fill buffers ---- */
   function createBuffer(data){
     const buf=gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER,buf);
@@ -972,31 +1161,21 @@ void main(){
   }
 
   const bufs={};
-  for(const key in attrData){
-    bufs[key]=createBuffer(attrData[key]);
-  }
+  for(const key in attrData){bufs[key]=createBuffer(attrData[key]);}
 
   function bindAttr(name,size){
     gl.bindBuffer(gl.ARRAY_BUFFER,bufs[name]);
     gl.enableVertexAttribArray(aLoc[name]);
     gl.vertexAttribPointer(aLoc[name],size,gl.FLOAT,false,0,0);
   }
+  bindAttr('type',1);bindAttr('armIdx',1);bindAttr('radiusFrac',1);
+  bindAttr('angleOff',1);bindAttr('heightOff',1);bindAttr('size',1);bindAttr('seed',1);
 
-  bindAttr('type',1);
-  bindAttr('armIdx',1);
-  bindAttr('radiusFrac',1);
-  bindAttr('angleOff',1);
-  bindAttr('heightOff',1);
-  bindAttr('size',1);
-  bindAttr('seed',1);
-
-  /* ---- Enable point sprite blending ---- */
   gl.enable(gl.BLEND);
   gl.blendFunc(gl.SRC_ALPHA,gl.ONE);
   gl.blendEquation(gl.FUNC_ADD);
   gl.disable(gl.DEPTH_TEST);
 
-  /* ---- Matrix helpers ---- */
   function mat4Perspective(out,fovy,aspect,near,far){
     const f=1.0/Math.tan(fovy/2);
     const nf=1/(near-far);
@@ -1005,60 +1184,40 @@ void main(){
     out[8]=0;out[9]=0;out[10]=(far+near)*nf;out[11]=-1;
     out[12]=0;out[13]=0;out[14]=2*far*near*nf;out[15]=0;
   }
-
   function mat4Multiply(out,a,b){
     for(let i=0;i<4;i++){
       for(let j=0;j<4;j++){
-        out[i+j*4]=
-          a[i]*b[j*4]+a[i+4]*b[j*4+1]+a[i+8]*b[j*4+2]+a[i+12]*b[j*4+3];
+        out[i+j*4]=a[i]*b[j*4]+a[i+4]*b[j*4+1]+a[i+8]*b[j*4+2]+a[i+12]*b[j*4+3];
       }
     }
   }
-
   function mat4RotX(out,a,angle){
     const s=Math.sin(angle),c=Math.cos(angle);
     const m=[1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1];
     mat4Multiply(out,a,m);
   }
-
   function mat4RotY(out,a,angle){
     const s=Math.sin(angle),c=Math.cos(angle);
     const m=[c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1];
     mat4Multiply(out,a,m);
   }
-
   function mat4Translate(out,a,vec){
     out[0]=a[0];out[1]=a[1];out[2]=a[2];out[3]=a[3];
     out[4]=a[4];out[5]=a[5];out[6]=a[6];out[7]=a[7];
     out[8]=a[8];out[9]=a[9];out[10]=a[10];out[11]=a[11];
-    out[12]=a[12]+vec[0];
-    out[13]=a[13]+vec[1];
-    out[14]=a[14]+vec[2];
-    out[15]=a[15];
+    out[12]=a[12]+vec[0];out[13]=a[13]+vec[1];out[14]=a[14]+vec[2];out[15]=a[15];
   }
 
-  /* ---- Interaction state ---- */
-  let rotX=0.45;       /* initial tilt (looking slightly down at galaxy) */
-  let rotY=0;
-  let zoom=4.5;
-  let targetRotX=0.45;
-  let targetRotY=0;
-  let targetZoom=4.5;
-
-  let isDragging=false;
-  let prevMouseX=0,prevMouseY=0;
-  let velocityX=0,velocityY=0;
-  let lastMoveTime=0;
+  let rotX=0.45,rotY=0,zoom=4.5;
+  let targetRotX=0.45,targetRotY=0,targetZoom=4.5;
+  let isDragging=false,prevMouseX=0,prevMouseY=0;
+  let velocityX=0,velocityY=0,lastMoveTime=0;
 
   const interact=document.getElementById('galaxy-interact');
-
   interact.addEventListener('mousedown',function(e){
-    isDragging=true;
-    prevMouseX=e.clientX;
-    prevMouseY=e.clientY;
+    isDragging=true;prevMouseX=e.clientX;prevMouseY=e.clientY;
     velocityX=0;velocityY=0;
   });
-
   window.addEventListener('mousemove',function(e){
     if(!isDragging)return;
     const now=performance.now();
@@ -1068,16 +1227,11 @@ void main(){
     targetRotY+=dx*0.005;
     targetRotX+=dy*0.005;
     targetRotX=Math.max(-1.2,Math.min(1.2,targetRotX));
-    velocityX=dx/dt*16;
-    velocityY=dy/dt*16;
-    prevMouseX=e.clientX;
-    prevMouseY=e.clientY;
-    lastMoveTime=now;
+    velocityX=dx/dt*16;velocityY=dy/dt*16;
+    prevMouseX=e.clientX;prevMouseY=e.clientY;lastMoveTime=now;
   });
-
   window.addEventListener('mouseup',function(){isDragging=false;});
 
-  /* Touch support */
   interact.addEventListener('touchstart',function(e){
     if(e.touches.length===1){
       isDragging=true;
@@ -1086,7 +1240,6 @@ void main(){
       velocityX=0;velocityY=0;
     }
   },{passive:false});
-
   window.addEventListener('touchmove',function(e){
     if(!isDragging||e.touches.length!==1)return;
     const now=performance.now();
@@ -1096,22 +1249,16 @@ void main(){
     targetRotY+=dx*0.005;
     targetRotX+=dy*0.005;
     targetRotX=Math.max(-1.2,Math.min(1.2,targetRotX));
-    velocityX=dx/dt*16;
-    velocityY=dy/dt*16;
-    prevMouseX=e.touches[0].clientX;
-    prevMouseY=e.touches[0].clientY;
-    lastMoveTime=now;
+    velocityX=dx/dt*16;velocityY=dy/dt*16;
+    prevMouseX=e.touches[0].clientX;prevMouseY=e.touches[0].clientY;lastMoveTime=now;
   },{passive:false});
-
   window.addEventListener('touchend',function(){isDragging=false;});
 
-  /* Scroll to zoom */
   window.addEventListener('wheel',function(e){
     targetZoom+=e.deltaY*0.005;
     targetZoom=Math.max(2.5,Math.min(10,targetZoom));
   },{passive:true});
 
-  /* ---- Resize ---- */
   function resize(){
     canvas.width=window.innerWidth;
     canvas.height=window.innerHeight;
@@ -1120,65 +1267,116 @@ void main(){
   resize();
   window.addEventListener('resize',resize);
 
-  /* ---- Animation loop ---- */
   const mvp=new Float32Array(16);
   const persp=new Float32Array(16);
   const id=new Float32Array(16);
   id[0]=1;id[5]=1;id[10]=1;id[15]=1;
-
   let lastTime=performance.now();
   let autoRotY=0;
 
   function animate(now){
     requestAnimationFrame(animate);
-
     const dt=Math.min((now-lastTime)/1000,0.1);
     lastTime=now;
-
-    /* Auto-rotate slowly when not dragging */
     if(!isDragging){
       autoRotY+=dt*0.08;
-      /* Inertia decay */
-      velocityX*=0.94;
-      velocityY*=0.94;
+      velocityX*=0.94;velocityY*=0.94;
       if(Math.abs(velocityX)>0.001)targetRotY+=velocityX*0.016;
       if(Math.abs(velocityY)>0.001)targetRotX+=velocityY*0.016;
     }
-
-    /* Smooth interpolation */
     const lerp=1-Math.exp(-8*dt);
     rotX+=(targetRotX-rotX)*lerp;
     rotY+=(targetRotY-rotY)*lerp;
     zoom+=(targetZoom-zoom)*lerp;
-
-    /* Build MVP matrix */
     const aspect=canvas.width/Math.max(canvas.height,1);
     mat4Perspective(persp,0.8,aspect,0.1,50);
-
-    /* View = translate(-z) * rotateX * rotateY */
     const view=new Float32Array(16);
     view.set(id);
     mat4RotX(view,view,-rotX);
     mat4RotY(view,view,-(rotY+autoRotY));
     mat4Translate(view,view,[0,0,-zoom]);
-
     mat4Multiply(mvp,persp,view);
-
-    /* Render */
     gl.clearColor(0.008,0.012,0.025,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
     gl.uniformMatrix4fv(uLoc.mvp,false,mvp);
     gl.uniform1f(uLoc.time,now*0.001);
     gl.uniform1f(uLoc.twist,2.8);
     gl.uniform1f(uLoc.armCount,ARM_COUNT);
     gl.uniform1f(uLoc.noiseScale,1.8);
     gl.uniform1f(uLoc.noiseAmp,0.55);
-
     gl.drawArrays(gl.POINTS,0,TOTAL);
   }
-
   requestAnimationFrame(animate);
+})();
+</script>
+
+<!-- ============================================================
+     UI INTERACTIONS
+     ============================================================ -->
+<script>
+(function(){
+  'use strict';
+
+  /* — Nav scroll state — */
+  const nav=document.getElementById('nav');
+  window.addEventListener('scroll',function(){
+    if(window.scrollY>20){nav.classList.add('scrolled');}
+    else{nav.classList.remove('scrolled');}
+  });
+
+  /* — Mobile menu — */
+  const navToggle=document.getElementById('navToggle');
+  const navLinks=document.getElementById('navLinks');
+  navToggle.addEventListener('click',function(){
+    navLinks.classList.toggle('open');
+  });
+  navLinks.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click',function(){
+      navLinks.classList.remove('open');
+    });
+  });
+
+  /* — Scroll reveal via IntersectionObserver — */
+  const observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  },{threshold:0.12,rootMargin:'0px 0px -60px 0px'});
+
+  document.querySelectorAll('.reveal').forEach(function(el){
+    observer.observe(el);
+  });
+
+  /* — Animated stat counters — */
+  const statObserver=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(!entry.isIntersecting)return;
+      const el=entry.target;
+      const text=el.textContent;
+      const match=text.match(/^(\d+)/);
+      if(!match){statObserver.unobserve(el);return;}
+      const target=parseInt(match[1],10);
+      const suffix=text.slice(match[1].length);
+      const duration=1200;
+      const startTime=performance.now();
+      function tick(now){
+        const progress=Math.min((now-startTime)/duration,1);
+        const eased=1-Math.pow(1-progress,3);
+        const current=Math.round(target*eased);
+        el.textContent=current+suffix;
+        if(progress<1)requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      statObserver.unobserve(el);
+    });
+  },{threshold:0.5});
+
+  document.querySelectorAll('.stat-num').forEach(function(el){
+    statObserver.observe(el);
+  });
 })();
 </script>
 
